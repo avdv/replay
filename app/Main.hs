@@ -1,67 +1,45 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 module Main where
 
-import Control.Monad (void)
-import Control.Monad.IO.Class (liftIO)
-import Data.Monoid ((<>))
-import qualified Graphics.Vty as V
+import           Control.Monad          (void)
+import           Control.Monad.IO.Class (liftIO)
+import           Data.Monoid            ((<>))
+import qualified Graphics.Vty           as V
 
-import qualified Data.Text as DT
+import qualified Data.Text              as DT
 
-import Lens.Micro.TH
-import Lens.Micro ((&), (.~), (%~), (^.))
+import           Lens.Micro             ((%~), (&), (.~), (^.))
+import           Lens.Micro.TH
 
-import qualified Brick.Types as T
-import qualified Brick.Main as M
-import qualified Brick.Widgets.Center as C
-import qualified Brick.Widgets.Border as B
-import Brick.Types
-  ( Widget
-  , ViewportType(Horizontal, Vertical, Both)
-  )
-import Brick.AttrMap
-  ( attrMap
-  )
-import Brick.Forms
-  ( Form
-  , newForm
-  , formState
-  , formFocus
-  , setFieldValid
-  , renderForm
-  , handleFormEvent
-  , invalidFields
-  , allFieldsValid
-  , focusedFormInputAttr
-  , invalidFormInputAttr
-  , checkboxField
-  , radioField
-  , editShowableField
-  , editTextField
-  , editPasswordField
-  , (@@=)
-  )
-import Brick.Widgets.Core
-  ( hLimit
-  , vLimit
-  , hBox
-  , vBox
-  , viewport
-  , str
-  )
-import System.Process
-import System.Exit (ExitCode(..))
+import           Brick.AttrMap          (attrMap)
+import           Brick.Forms            (Form, allFieldsValid, checkboxField,
+                                         editPasswordField, editShowableField,
+                                         editTextField, focusedFormInputAttr,
+                                         formFocus, formState, handleFormEvent,
+                                         invalidFields, invalidFormInputAttr,
+                                         newForm, radioField, renderForm,
+                                         setFieldValid, (@@=))
+import qualified Brick.Main             as M
+import           Brick.Types            (ViewportType (Both, Horizontal, Vertical),
+                                         Widget)
+import qualified Brick.Types            as T
+import qualified Brick.Widgets.Border   as B
+import qualified Brick.Widgets.Center   as C
+import           Brick.Widgets.Core     (hBox, hLimit, str, vBox, vLimit,
+                                         viewport)
+import           System.Exit            (ExitCode (..))
+import           System.Process
 
 data Name = VP1
           | InputField
           deriving (Ord, Show, Eq)
 
 data State = State {
-  _output :: String,
-    _errorMessage :: Maybe String,
-  _input :: DT.Text,
-    _search :: DT.Text
+  _output       :: String,
+  _errorMessage :: Maybe String,
+  _input        :: DT.Text,
+  _search       :: DT.Text
   }
 
 makeLenses ''State
@@ -120,7 +98,7 @@ getOutput input = do
   (exitc, stdout, err) <- readProcessWithExitCode cmd args ""
   case exitc of
     ExitFailure _ -> error err
-    ExitSuccess -> pure stdout
+    ExitSuccess   -> pure stdout
 
 main :: IO ()
 main = do
