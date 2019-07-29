@@ -23,5 +23,6 @@ main = do
   where
     opts = info (options <**> helper)
       ( fullDesc
+     <> noIntersperse
      <> progDesc "Repeatedly run a command and display its output."
      <> header "repeat - interactive command line tool" )
