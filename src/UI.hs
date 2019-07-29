@@ -28,7 +28,7 @@ import qualified Brick.Widgets.Border   as B
 import qualified Brick.Widgets.Center   as C
 import           Brick.Widgets.Core     (hBox, hLimit, str, vBox, vLimit,
                                          viewport)
-import           Lib                    (getOutput)
+import           Lib                    (Options(..), getOutput)
 
 data Name = VP1
           | InputField
@@ -36,6 +36,7 @@ data Name = VP1
 
 data State = State {
   _output       :: String,
+  options       :: Options,
   _errorMessage :: Maybe String,
   _input        :: DT.Text,
   _search       :: DT.Text
@@ -70,11 +71,12 @@ appEvent s (T.VtyEvent (V.EvKey V.KEnd []))    = M.vScrollToEnd vp1Scroll >> M.c
 appEvent s (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt s
 appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) =
   do
-    out <- liftIO $ getOutput $ DT.unpack text
+    out <- liftIO $ getOutput cmdargs (DT.unpack text)
     M.continue $ mkForm $ state & output .~ out
   where
     state = formState f
     text = state^.input
+    cmdargs = cmdline $ options state
 
 
 appEvent s ev = do
@@ -91,9 +93,11 @@ app =
           }
 
 
-run :: IO()
-run = do
-  output <- getOutput "."
-  let initialState = State { _input = ".", _output = output, _errorMessage = Nothing, _search = "" }
+run :: Options -> IO()
+run options = do
+  output <- getOutput (cmdline options) "."
+  let initialState = State {
+        _input = ".", options = options, _output = output, _errorMessage = Nothing, _search = ""
+        }
       f = mkForm initialState
   void $ M.defaultMain app f
