@@ -24,6 +24,7 @@ dependencies:
 - brick >= 0.47.1 && < 0.48
 - vty >= 5.15 && < 6
 - process
+- microlens
 - microlens-th
 - text
 

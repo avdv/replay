@@ -3,12 +3,14 @@
 module Main where
 
 import Control.Monad (void)
+import Control.Monad.IO.Class (liftIO)
 import Data.Monoid ((<>))
 import qualified Graphics.Vty as V
 
 import qualified Data.Text as DT
 
 import Lens.Micro.TH
+import Lens.Micro ((&), (.~), (%~), (^.))
 
 import qualified Brick.Types as T
 import qualified Brick.Main as M
@@ -89,13 +91,14 @@ appEvent s (T.VtyEvent (V.EvKey V.KPageUp []))    = M.vScrollPage vp1Scroll T.Up
 appEvent s (T.VtyEvent (V.EvKey V.KHome []))    = M.vScrollToBeginning vp1Scroll >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KEnd []))    = M.vScrollToEnd vp1Scroll >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt s
-appEvent s (T.VtyEvent (V.EvKey V.KEnter [])) = do
-  let cmdOut = do
-        out <- getOutput $ DT.unpack text
-        return $ DT.pack out
-  M.continue $ output s cmdOut
+appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) =
+  do
+    out <- liftIO $ getOutput $ DT.unpack text
+    M.continue $ mkForm $ state & output .~ out
   where
-    text = _input $ formState s
+    state = formState f
+    text = state^.input
+
 
 appEvent s ev = do
   s' <- handleFormEvent ev s
