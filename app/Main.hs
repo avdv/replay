@@ -1,9 +1,15 @@
 module Main where
 
 import           Data.Semigroup      ((<>))
+import           Lib                 (Options (..))
 import           Options.Applicative
+import           System.Exit         (exitSuccess)
 import           UI                  (run)
-import           Lib                 (Options(..))
+
+showVersion :: IO ()
+showVersion = do
+  putStrLn "replay version 0.1"
+  exitSuccess
 
 options :: Parser Options
 options = Options
@@ -14,12 +20,16 @@ options = Options
          <> showDefault
          <> value "input"
          <> metavar "NAME" )
-      <*> some (argument str (metavar "COMMAND ARGS"))
+      <*> switch
+          ( long "version"
+          <> short 'v'
+          <> help "output version information and exit")
+      <*> some (argument str (metavar "COMMAND [ARGS]"))
 
 main :: IO ()
 main = do
   cmdOptions <- execParser opts
-  run cmdOptions
+  if (version cmdOptions) then showVersion else run cmdOptions
   where
     opts = info (options <**> helper)
       ( fullDesc

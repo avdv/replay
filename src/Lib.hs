@@ -15,6 +15,7 @@ getOutput cmdline input = do
 
 data Options = Options {
   varName :: String,
+  version :: Bool,
   cmdline :: [String]
   }
   deriving(Show)
