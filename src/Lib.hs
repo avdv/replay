@@ -1,17 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Lib (Options(..), getOutput) where
-import           Data.Text      (pack, replace, unpack)
-import           System.Exit    (ExitCode (..))
+import           Control.Monad.Except
+import           Data.Text            (pack, replace, unpack)
+import           System.Exit          (ExitCode (..))
 import           System.Process
 
-getOutput :: [String] -> String -> IO String
+getOutput :: [String] -> String -> ExceptT String IO String
 getOutput cmdline input = do
   let cmd = head $ cmdline
       args = [ (unpack . replace "input" (pack input) . pack) word | word <- tail cmdline ]
-  (exitc, stdout, err) <- readProcessWithExitCode cmd args ""
+  (exitc, stdout, err) <- liftIO $ readProcessWithExitCode cmd args ""
   case exitc of
-    ExitFailure _ -> error err
-    ExitSuccess   -> pure stdout
+    ExitFailure _ -> throwError err
+    ExitSuccess   -> return stdout
 
 data Options = Options {
   varName :: String,

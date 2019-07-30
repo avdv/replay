@@ -26,6 +26,7 @@ dependencies:
 - process
 - microlens
 - microlens-th
+- mtl
 - optparse-applicative
 - text
 

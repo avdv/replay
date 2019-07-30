@@ -3,6 +3,7 @@
 module UI (run) where
 
 import           Control.Monad          (void)
+import           Control.Monad.Except
 import           Control.Monad.IO.Class (liftIO)
 import           Data.Monoid            ((<>))
 import qualified Graphics.Vty           as V
@@ -23,12 +24,15 @@ import           Brick.Forms            (Form, allFieldsValid, checkboxField,
 import qualified Brick.Main             as M
 import           Brick.Types            (ViewportType (Both, Horizontal, Vertical),
                                          Widget)
+
+import qualified Brick.AttrMap          as A
 import qualified Brick.Types            as T
+import           Brick.Util             (fg, on)
 import qualified Brick.Widgets.Border   as B
 import qualified Brick.Widgets.Center   as C
 import           Brick.Widgets.Core     (hBox, hLimit, str, vBox, vLimit,
-                                         viewport)
-import           Lib                    (Options(..), getOutput)
+                                         updateAttrMap, viewport, withAttr)
+import           Lib                    (Options (..), getOutput)
 
 data Name = VP1
           | InputField
@@ -44,13 +48,31 @@ data State = State {
 
 makeLenses ''State
 
+errorAttr :: A.AttrName
+errorAttr = "error"
+
+borderMappings :: [(A.AttrName, V.Attr)]
+borderMappings =
+    [ (B.borderAttr,         V.yellow `on` V.black)
+    , (errorAttr,            fg V.red)
+    ]
+
+errorWidget :: String -> Widget Name
+errorWidget msg =
+    updateAttrMap (A.applyAttrMappings borderMappings) $
+    B.borderWithLabel (withAttr errorAttr $ str "Error") $
+    vLimit 5 $
+    C.center $
+    str msg
+
 drawUi :: Form State e Name -> [Widget Name]
 drawUi f = [ui]
     where
-        ui = vBox [ pair, B.hBorder, form ]
+        ui = vBox $ pair : errorPane ++ [ B.hBorder, form ]
         form = renderForm f
         state = formState f
-        -- input = vBox [str "input" ]
+        error = state^.errorMessage
+        errorPane = maybe [] (\m -> [errorWidget m]) error
         pair = hBox [ viewport VP1 Vertical $
                       vBox [str $ _output state]
                     ]
@@ -69,24 +91,30 @@ appEvent s (T.VtyEvent (V.EvKey V.KPageUp []))    = M.vScrollPage vp1Scroll T.Up
 appEvent s (T.VtyEvent (V.EvKey V.KHome []))    = M.vScrollToBeginning vp1Scroll >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KEnd []))    = M.vScrollToEnd vp1Scroll >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt s
-appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) =
+appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) = rerun f >>= M.continue
+appEvent s ev = handleFormEvent ev s >>= M.continue
+
+
+rerun :: (Form State e Name) -> T.EventM Name (Form State e Name)
+rerun f =
   do
-    out <- liftIO $ getOutput cmdargs (DT.unpack text)
-    M.continue $ mkForm $ state & output .~ out
+    out <- liftIO $ runExceptT $ getOutput cmdargs (DT.unpack text)
+    let newState = case out of
+          Right newOutput ->
+            state & output .~ newOutput
+                  & errorMessage .~ Nothing
+          Left msg -> state & errorMessage .~ (Just msg)
+    return $ mkForm newState
   where
     state = formState f
     text = state^.input
     cmdargs = cmdline $ options state
 
 
-appEvent s ev = do
-  s' <- handleFormEvent ev s
-  M.continue s'
-
 app :: M.App (Form State e Name) e Name
 app =
     M.App { M.appDraw = drawUi
-          , M.appStartEvent = return
+          , M.appStartEvent = rerun
           , M.appHandleEvent = appEvent
           , M.appAttrMap = const $ attrMap V.defAttr []
           , M.appChooseCursor = M.showFirstCursor
@@ -95,9 +123,8 @@ app =
 
 run :: Options -> IO()
 run options = do
-  output <- getOutput (cmdline options) "."
   let initialState = State {
-        _input = ".", options = options, _output = output, _errorMessage = Nothing, _search = ""
+        _input = ".", options = options, _output = "", _errorMessage = Nothing, _search = ""
         }
       f = mkForm initialState
   void $ M.defaultMain app f
