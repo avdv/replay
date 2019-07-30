@@ -30,8 +30,8 @@ import qualified Brick.Types            as T
 import           Brick.Util             (fg, on)
 import qualified Brick.Widgets.Border   as B
 import qualified Brick.Widgets.Center   as C
-import           Brick.Widgets.Core     (hBox, hLimit, str, vBox, vLimit,
-                                         updateAttrMap, viewport, withAttr)
+import           Brick.Widgets.Core     (hBox, hLimit, str, txt, updateAttrMap,
+                                         vBox, vLimit, viewport, withAttr)
 import           Lib                    (Options (..), getOutput)
 
 data Name = VP1
@@ -39,7 +39,7 @@ data Name = VP1
           deriving (Ord, Show, Eq)
 
 data State = State {
-  _output       :: String,
+  _output       :: DT.Text,
   options       :: Options,
   _errorMessage :: Maybe String,
   _input        :: DT.Text,
@@ -74,7 +74,7 @@ drawUi f = [ui]
         error = state^.errorMessage
         errorPane = maybe [] (\m -> [errorWidget m]) error
         pair = hBox [ viewport VP1 Vertical $
-                      vBox [str $ _output state]
+                      vBox [txt $ _output state]
                     ]
 
 vp1Scroll :: M.ViewportScroll Name
@@ -101,7 +101,7 @@ rerun f =
     out <- liftIO $ runExceptT $ getOutput cmdargs (DT.unpack text)
     let newState = case out of
           Right newOutput ->
-            state & output .~ newOutput
+            state & output .~ (DT.pack newOutput)
                   & errorMessage .~ Nothing
           Left msg -> state & errorMessage .~ (Just msg)
     return $ mkForm newState
