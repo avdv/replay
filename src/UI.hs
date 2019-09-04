@@ -33,6 +33,7 @@ import qualified Brick.Widgets.Center   as C
 import           Brick.Widgets.Core     (hBox, hLimit, str, txt, updateAttrMap,
                                          vBox, vLimit, viewport, withAttr)
 import           Lib                    (Options (..), getOutput)
+import           System.Posix.IO        (OpenMode (..), defaultFileFlags, openFd)
 
 data Name = VP1
           | InputField
@@ -127,4 +128,10 @@ run options = do
         _input = ".", options = options, _output = "", _errorMessage = Nothing, _search = ""
         }
       f = mkForm initialState
-  void $ M.defaultMain app f
+      buildVty = do
+        tty <- openFd "/dev/tty" ReadWrite Nothing defaultFileFlags
+        config <- V.standardIOConfig
+        v <- V.mkVty $ config { V.inputFd = Just tty, V.outputFd = Just tty }
+        return v
+  initialVty <- buildVty
+  void $ M.customMain initialVty buildVty Nothing app f

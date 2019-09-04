@@ -29,6 +29,7 @@ dependencies:
 - mtl
 - optparse-applicative
 - text
+- unix
 
 library:
   source-dirs: src
