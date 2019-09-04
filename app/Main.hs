@@ -1,6 +1,7 @@
 module Main where
 
 import           Data.Semigroup      ((<>))
+import           Data.Text           (unpack)
 import           Lib                 (Options (..))
 import           Options.Applicative
 import           System.Exit         (exitSuccess)
@@ -29,10 +30,13 @@ options = Options
 main :: IO ()
 main = do
   cmdOptions <- execParser opts
-  if (version cmdOptions) then showVersion else run cmdOptions
+  if (version cmdOptions) then showVersion else runUI cmdOptions
   where
     opts = info (options <**> helper)
       ( fullDesc
      <> noIntersperse
      <> progDesc "Repeatedly run a command and display its output."
-     <> header "repeat - interactive command line tool" )
+     <> header "replay - interactive command line tool" )
+    runUI cmdOptions = do
+      result <- run cmdOptions
+      putStrLn $ unpack result

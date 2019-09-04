@@ -122,7 +122,7 @@ app =
           }
 
 
-run :: Options -> IO()
+run :: Options -> IO (DT.Text)
 run options = do
   let initialState = State {
         _input = ".", options = options, _output = "", _errorMessage = Nothing, _search = ""
@@ -134,4 +134,6 @@ run options = do
         v <- V.mkVty $ config { V.inputFd = Just tty, V.outputFd = Just tty }
         return v
   initialVty <- buildVty
-  void $ M.customMain initialVty buildVty Nothing app f
+  result <- M.customMain initialVty buildVty Nothing app f
+  return $ (formState result) ^. output
+
