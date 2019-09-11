@@ -1,10 +1,10 @@
-name:                repeat
+name:                replay
 version:             0.1.0.0
-github:              "githubuser/repeat"
+github:              "githubuser/replay"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2019 Author name here"
+author:              "Claudio Bley"
+maintainer:          "claudio.bley@gmail.com"
+copyright:           "2019 Claudio Bley"
 
 extra-source-files:
 - README.md
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/repeat#readme>
+description:         Please see the README on GitHub at <https://github.com/githubuser/replay#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -43,7 +43,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - repeat
+    - replay
 
 tests:
   repeat-test:
@@ -54,4 +54,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - repeat
+    - replay
