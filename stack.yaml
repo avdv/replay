@@ -35,7 +35,7 @@ packages:
 # forks / in-progress versions pinned to a git hash. For example:
 #
 extra-deps:
-- brick-0.47.1@sha256:de548e3c39cc393dafbc1ecfe788746103fe5233d5a69c2cca5da8ed819ba661,13868
+- brick-0.49@sha256:29a3aa814fc28f7333342d084373591b4f65b8116c849912effa7beec4021232
 - config-ini-0.2.4.0@sha256:38a6d484d471c6fac81445de2eac8c4e8c82760962fca5491ae1c3bfca9c4047
 - data-clist-0.1.2.3@sha256:0a4ad5f045c285eb533c2baa228581d2ff3ee123a4da7ca84e95a74aea9fb058
 - text-zipper-0.10.1@sha256:8b73a97a3717a17df9b0a722b178950c476ff2268ca5c583e99d010c94af849e
