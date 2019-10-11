@@ -22,7 +22,7 @@ description:         Please see the README on GitHub at <https://github.com/gith
 dependencies:
 - base >= 4.7 && < 5
 - brick >= 0.49 && < 0.50
-- vty >= 5.15 && < 6
+- vty >= 5.25.1 && < 6
 - process
 - microlens
 - microlens-th
@@ -47,7 +47,7 @@ executables:
     - replay
 
 tests:
-  repeat-test:
+  replay-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -56,3 +56,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - replay
+    - hspec
+    - QuickCheck
