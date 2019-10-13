@@ -30,13 +30,14 @@ import qualified Brick.Types            as T
 import           Brick.Util             (fg, on)
 import qualified Brick.Widgets.Border   as B
 import qualified Brick.Widgets.Center   as C
-import           Brick.Widgets.Core     (hBox, hLimit, str, txt, updateAttrMap,
+import           Brick.Widgets.Core     (cached, hBox, hLimit, str, txt, updateAttrMap,
                                          vBox, vLimit, viewport, withAttr)
 import           Lib                    (Options (..), getOutput)
 import           System.Posix.IO        (OpenMode (..), defaultFileFlags, openFd)
 
 data Name = VP1
           | InputField
+          | CachedText
           deriving (Ord, Show, Eq)
 
 data State = State {
@@ -75,7 +76,7 @@ drawUi f = [ui]
         error = state^.errorMessage
         errorPane = maybe [] (\m -> [errorWidget m]) error
         pair = hBox [ viewport VP1 Vertical $
-                      vBox [txt $ _output state]
+                      cached CachedText $ txt $ _output state
                     ]
 
 vp1Scroll :: M.ViewportScroll Name
@@ -92,7 +93,7 @@ appEvent s (T.VtyEvent (V.EvKey V.KPageUp []))    = M.vScrollPage vp1Scroll T.Up
 appEvent s (T.VtyEvent (V.EvKey V.KHome []))    = M.vScrollToBeginning vp1Scroll >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KEnd []))    = M.vScrollToEnd vp1Scroll >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt s
-appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) = rerun f >>= M.continue
+appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) = M.invalidateCacheEntry CachedText >> rerun f >>= M.continue
 appEvent s ev = handleFormEvent ev s >>= M.continue
 
 
