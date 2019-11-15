@@ -85,7 +85,7 @@ vp1Scroll = M.viewportScroll VP1
 mkForm :: State -> Form State e Name
 mkForm = newForm [ editTextField input InputField (Just 1) ]
 
-appEvent :: (Form State e Name) -> T.BrickEvent Name e -> T.EventM Name (T.Next (Form State e Name))
+appEvent :: Form State e Name -> T.BrickEvent Name e -> T.EventM Name (T.Next (Form State e Name))
 appEvent s (T.VtyEvent (V.EvKey V.KDown []))  = M.vScrollBy vp1Scroll 1 >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KUp []))    = M.vScrollBy vp1Scroll (-1) >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KPageDown []))    = M.vScrollPage vp1Scroll T.Down >> M.continue s
@@ -97,7 +97,7 @@ appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) = M.invalidateCacheEntry CachedTex
 appEvent s ev = handleFormEvent ev s >>= M.continue
 
 
-rerun :: (Form State e Name) -> T.EventM Name (Form State e Name)
+rerun :: Form State e Name -> T.EventM Name (Form State e Name)
 rerun f =
   do
     out <- liftIO $ runExceptT $ getOutput cmdargs (DT.unpack text)
@@ -123,7 +123,7 @@ app =
           }
 
 
-run :: Options -> IO (DT.Text)
+run :: Options -> IO DT.Text
 run options = do
   let initialState = State {
         _input = ".", options = options, _output = "", _errorMessage = Nothing, _search = ""
@@ -132,9 +132,8 @@ run options = do
       buildVty = do
         tty <- openFd "/dev/tty" ReadWrite Nothing defaultFileFlags
         config <- V.standardIOConfig
-        v <- V.mkVty $ config { V.inputFd = Just tty, V.outputFd = Just tty }
-        return v
+        V.mkVty $ config { V.inputFd = Just tty, V.outputFd = Just tty }
   initialVty <- buildVty
   result <- M.customMain initialVty buildVty Nothing app f
-  return $ (formState result) ^. output
+  return $ formState result ^. output
 
