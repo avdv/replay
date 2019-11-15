@@ -10,7 +10,7 @@ import qualified Graphics.Vty           as V
 
 import qualified Data.Text              as DT
 
-import           Lens.Micro             ((%~), (&), (.~), (^.))
+import           Lens.Micro             ((%~), (&), (.~), (^.), (?~))
 import           Lens.Micro.TH
 
 import           Brick.AttrMap          (attrMap)
@@ -105,7 +105,7 @@ rerun f =
           Right newOutput ->
             state & output .~ (DT.pack newOutput)
                   & errorMessage .~ Nothing
-          Left msg -> state & errorMessage .~ (Just msg)
+          Left msg -> state & errorMessage ?~ msg
     return $ mkForm newState
   where
     state = formState f
