@@ -7,7 +7,7 @@ import           System.Process
 
 getOutput :: [String] -> String -> ExceptT String IO String
 getOutput cmdline input = do
-  let cmd = head $ cmdline
+  let cmd = head cmdline
       args = [ (unpack . replace "input" (pack input) . pack) word | word <- tail cmdline ]
   (exitc, stdout, err) <- liftIO $ readProcessWithExitCode cmd args ""
   case exitc of
