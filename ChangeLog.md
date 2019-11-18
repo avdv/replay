@@ -1,3 +1,3 @@
-# Changelog for repeat
+# Changelog for replay
 
 ## Unreleased changes
