@@ -7,10 +7,8 @@ import           Options.Applicative
 import           System.Exit         (exitSuccess)
 import           UI                  (run)
 
-showVersion :: IO ()
-showVersion = do
-  putStrLn "replay version 0.1"
-  exitSuccess
+versionOption :: Parser (a -> a)
+versionOption = infoOption "replay version 0.1" (long "version" <> short 'v' <> help "output version information and exit")
 
 options :: Parser Options
 options = Options
@@ -21,18 +19,14 @@ options = Options
          <> showDefault
          <> value "input"
          <> metavar "NAME" )
-      <*> switch
-          ( long "version"
-          <> short 'v'
-          <> help "output version information and exit")
-      <*> some (argument str (metavar "COMMAND [ARGS]"))
+      <*> some (argument str (metavar "COMMAND ARGS"))
 
 main :: IO ()
 main = do
   cmdOptions <- execParser opts
-  if (version cmdOptions) then showVersion else runUI cmdOptions
+  runUI cmdOptions
   where
-    opts = info (options <**> helper)
+    opts = info (versionOption <*> options <**> helper)
       ( fullDesc
      <> noIntersperse
      <> progDesc "Repeatedly run a command and display its output."
