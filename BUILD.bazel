@@ -1,0 +1,46 @@
+load(
+    "@rules_haskell//haskell:defs.bzl",
+    "haskell_binary",
+    "haskell_library",
+    "haskell_test",
+)
+
+haskell_library(
+    name = "lib",
+    srcs = glob(["src/**/*.hs"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "@stackage//:base",
+        "@stackage//:brick",
+        "@stackage//:microlens",
+        "@stackage//:microlens-th",
+        "@stackage//:mtl",
+        "@stackage//:optparse-applicative",
+        "@stackage//:process",
+        "@stackage//:text",
+        "@stackage//:unix",
+        "@stackage//:vty",
+    ],
+)
+
+haskell_binary(
+    name = "replay",
+    srcs = glob(["app/**/*.hs"]),
+    deps = [
+        "//:lib",
+        "@stackage//:base",
+        "@stackage//:optparse-applicative",
+        "@stackage//:text",
+    ],
+)
+
+#haskell_test(
+#    name = "unit",
+#    srcs = glob(["test/**/*.hs"]),
+#    deps = [
+#        ":args",
+#        "@stackage//:base",
+#        "@stackage//:hspec",
+#        "@stackage//:optparse-applicative",
+#    ],
+#)
