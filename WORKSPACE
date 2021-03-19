@@ -23,11 +23,6 @@ load(
 # Setup all Bazel dependencies required by rules_haskell.
 rules_haskell_dependencies()
 
-load(
-    "@rules_haskell//haskell:toolchain.bzl",
-    "rules_haskell_toolchains",
-)
-
 # Load nixpkgs_git_repository from rules_nixpkgs,
 # which was already initialized by rules_haskell_dependencies above.
 load(
@@ -67,8 +62,6 @@ load("@rules_haskell//haskell:cabal.bzl", "stack_snapshot")
 
 stack_snapshot(
     name = "stackage",
-    # Note: `bazel run @stackage-unpinned//:pin` to update
-    stack_snapshot_json = "//:stackage_snapshot.json",
     extra_deps = {"zlib": ["@zlib.hs"]},
     flags = {
         # Sets the default explicitly to demonstrate the flags attribute.
@@ -93,4 +86,6 @@ stack_snapshot(
         "vty",
     ],
     snapshot = "lts-16.31",
+    # Note: `bazel run @stackage-unpinned//:pin` to update
+    stack_snapshot_json = "//:stackage_snapshot.json",
 )
