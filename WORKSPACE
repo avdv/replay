@@ -45,7 +45,7 @@ nixpkgs_python_configure(
 # https://github.com/tweag/rules_nixpkgs/blob/master/README.md
 nixpkgs_git_repository(
     name = "nixpkgs",
-    revision = "20.03",
+    revision = "20.09",
     # sha256 = …
 )
 
@@ -58,15 +58,17 @@ load(
 # For more information:
 # https://api.haskell.build/haskell/nixpkgs.html#haskell_register_ghc_nixpkgs
 haskell_register_ghc_nixpkgs(
-    attribute_path = "ghc",
+    attribute_path = "haskell.compiler.ghc884",
     repository = "@nixpkgs",
-    version = "8.6.5",
+    version = "8.8.4",
 )
 
 load("@rules_haskell//haskell:cabal.bzl", "stack_snapshot")
 
 stack_snapshot(
     name = "stackage",
+    # Note: `bazel run @stackage-unpinned//:pin` to update
+    stack_snapshot_json = "//:stackage_snapshot.json",
     extra_deps = {"zlib": ["@zlib.hs"]},
     flags = {
         # Sets the default explicitly to demonstrate the flags attribute.
@@ -90,5 +92,5 @@ stack_snapshot(
         "unix",
         "vty",
     ],
-    snapshot = "lts-14.27",
+    snapshot = "lts-16.31",
 )
