@@ -4,6 +4,7 @@ import           Control.Monad.Except
 import           Data.Text            (pack, replace, unpack)
 import           System.Exit          (ExitCode (..))
 import           System.Process
+import           System.INotify
 
 getOutput :: [String] -> String -> ExceptT String IO String
 getOutput cmdline input = do
@@ -16,6 +17,7 @@ getOutput cmdline input = do
 
 data Options = Options {
   varName :: String,
+  watchFiles :: [String],
   cmdline :: [String]
   }
   deriving(Show)

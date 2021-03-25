@@ -19,6 +19,13 @@ options = Options
          <> showDefault
          <> value "input"
          <> metavar "NAME" )
+      <*> many (strOption (
+        long "watch"
+        <> short 'w'
+        <> help "watch FILE and re-run command automatically if it changes"
+        <> action "file"
+        <> metavar "FILE"
+      ))
       <*> some (argument str (metavar "COMMAND ARGS"))
 
 main :: IO ()

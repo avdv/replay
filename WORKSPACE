@@ -74,6 +74,7 @@ stack_snapshot(
         "base",
         "brick",
         "bytestring",
+        "hinotify",
         "hspec",
         "microlens",
         "microlens-th",

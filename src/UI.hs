@@ -1,19 +1,23 @@
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 module UI (run) where
 
-import           Control.Monad          (void)
+import           Control.Monad          (unless, void)
 import           Control.Monad.Except
 import           Control.Monad.IO.Class (liftIO)
 import           Data.Monoid            ((<>))
 import qualified Graphics.Vty           as V
 
+import           Data.Foldable          (traverse_)
 import qualified Data.Text              as DT
+import qualified Data.ByteString.Char8  as BS
 
 import           Lens.Micro             ((%~), (&), (.~), (^.), (?~))
 import           Lens.Micro.TH
 
 import           Brick.AttrMap          (attrMap)
+import           Brick.BChan            (BChan, newBChan, writeBChan)
 import           Brick.Forms            (Form, allFieldsValid, checkboxField,
                                          editPasswordField, editShowableField,
                                          editTextField, focusedFormInputAttr,
@@ -34,6 +38,7 @@ import           Brick.Widgets.Core     (cached, hBox, hLimit, str, txt, updateA
                                          vBox, vLimit, viewport, withAttr)
 import           Lib                    (Options (..), getOutput)
 import           System.Posix.IO        (OpenMode (..), defaultFileFlags, openFd)
+import           System.INotify
 
 data Name = VP1
           | InputField
@@ -85,7 +90,8 @@ vp1Scroll = M.viewportScroll VP1
 mkForm :: State -> Form State e Name
 mkForm = newForm [ editTextField input InputField (Just 1) ]
 
-appEvent :: Form State e Name -> T.BrickEvent Name e -> T.EventM Name (T.Next (Form State e Name))
+appEvent :: Form State MyEvents Name -> T.BrickEvent Name MyEvents -> T.EventM Name (T.Next (Form State MyEvents Name))
+appEvent f (T.AppEvent Rerun) = M.invalidateCacheEntry CachedText >> rerun f >>= M.continue
 appEvent s (T.VtyEvent (V.EvKey V.KDown []))  = M.vScrollBy vp1Scroll 1 >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KUp []))    = M.vScrollBy vp1Scroll (-1) >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KPageDown []))    = M.vScrollPage vp1Scroll T.Down >> M.continue s
@@ -103,7 +109,7 @@ rerun f =
     out <- liftIO $ runExceptT $ getOutput cmdargs (DT.unpack text)
     let newState = case out of
           Right newOutput ->
-            state & output .~ (DT.pack newOutput)
+            state & output .~ DT.pack newOutput
                   & errorMessage .~ Nothing
           Left msg -> state & errorMessage ?~ msg
     return $ mkForm newState
@@ -112,8 +118,10 @@ rerun f =
     text = state^.input
     cmdargs = cmdline $ options state
 
+-- custom event type
+data MyEvents = Rerun
 
-app :: M.App (Form State e Name) e Name
+app :: M.App (Form State MyEvents Name) MyEvents Name
 app =
     M.App { M.appDraw = drawUi
           , M.appStartEvent = rerun
@@ -123,8 +131,19 @@ app =
           }
 
 
+watch :: [String] -> IO (Maybe (BChan MyEvents))
+watch [] = pure Nothing
+watch files = do
+    inotify <- initINotify
+    bchan <- newBChan 10
+    print inotify
+    let paths = map BS.pack files
+    traverse_ (\file -> addWatch inotify [Modify] file (const $ writeBChan bchan Rerun)) paths
+    return $ Just bchan
+
 run :: Options -> IO DT.Text
 run options = do
+
   let initialState = State {
         _input = ".", options = options, _output = "", _errorMessage = Nothing, _search = ""
         }
@@ -134,6 +153,7 @@ run options = do
         config <- V.standardIOConfig
         V.mkVty $ config { V.inputFd = Just tty, V.outputFd = Just tty }
   initialVty <- buildVty
-  result <- M.customMain initialVty buildVty Nothing app f
+  notify <- watch $ watchFiles options
+  result <- M.customMain initialVty buildVty notify app f
   return $ formState result ^. output
 

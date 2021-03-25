@@ -11,6 +11,8 @@ haskell_library(
     deps = [
         "@stackage//:base",
         "@stackage//:brick",
+        "@stackage//:bytestring",
+        "@stackage//:hinotify",
         "@stackage//:microlens",
         "@stackage//:microlens-th",
         "@stackage//:mtl",
@@ -25,6 +27,11 @@ haskell_library(
 haskell_binary(
     name = "replay",
     srcs = glob(["app/**/*.hs"]),
+    compiler_flags =
+        [
+            "-threaded",  # Use multicore runtime
+            "-rtsopts",  # Enable specifying runtime options on command line
+        ],
     deps = [
         "//:lib",
         "@stackage//:base",
