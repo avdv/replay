@@ -35,7 +35,7 @@ import           Brick.Util             (fg, on)
 import qualified Brick.Widgets.Border   as B
 import qualified Brick.Widgets.Center   as C
 import           Brick.Widgets.Core     (cached, hBox, hLimit, str, txt, updateAttrMap,
-                                         vBox, vLimit, viewport, withAttr)
+                                         vBox, vLimit, viewport, withAttr, (<+>))
 import           Lib                    (Options (..), getOutput)
 import           System.Posix.IO        (OpenMode (..), defaultFileFlags, openFd)
 import           System.INotify
@@ -89,7 +89,7 @@ vp1Scroll :: M.ViewportScroll Name
 vp1Scroll = M.viewportScroll VP1
 
 mkForm :: State -> Form State e Name
-mkForm = newForm [ editTextField currentInput InputField (Just 1) ]
+mkForm = newForm [ (str "> " <+>) @@= editTextField currentInput InputField (Just 1) ]
 
 appEvent :: Form State MyEvents Name -> T.BrickEvent Name MyEvents -> T.EventM Name (T.Next (Form State MyEvents Name))
 appEvent f (T.AppEvent Rerun) = M.invalidateCacheEntry CachedText >> rerun f >>= M.continue
