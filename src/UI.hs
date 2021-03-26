@@ -1,4 +1,4 @@
-{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE BlockArguments    #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 module UI (run) where
@@ -9,11 +9,11 @@ import           Control.Monad.IO.Class (liftIO)
 import           Data.Monoid            ((<>))
 import qualified Graphics.Vty           as V
 
+import qualified Data.ByteString.Char8  as BS
 import           Data.Foldable          (traverse_)
 import qualified Data.Text              as DT
-import qualified Data.ByteString.Char8  as BS
 
-import           Lens.Micro             ((%~), (&), (.~), (^.), (?~))
+import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
 import           Lens.Micro.TH
 
 import           Brick.AttrMap          (attrMap)
@@ -34,11 +34,13 @@ import qualified Brick.Types            as T
 import           Brick.Util             (fg, on)
 import qualified Brick.Widgets.Border   as B
 import qualified Brick.Widgets.Center   as C
-import           Brick.Widgets.Core     (cached, hBox, hLimit, str, txt, updateAttrMap,
-                                         vBox, vLimit, viewport, withAttr, (<+>))
+import           Brick.Widgets.Core     (cached, hBox, hLimit, str, txt,
+                                         updateAttrMap, vBox, vLimit, viewport,
+                                         withAttr, (<+>))
 import           Lib                    (Options (..), getOutput)
-import           System.Posix.IO        (OpenMode (..), defaultFileFlags, openFd)
 import           System.INotify
+import           System.Posix.IO        (OpenMode (..), defaultFileFlags,
+                                         openFd)
 
 data Name = VP1
           | InputField
@@ -165,4 +167,3 @@ run options = do
   notify <- watch $ watchFiles options
   result <- M.customMain initialVty buildVty notify app f
   return $ formState result ^. output
-

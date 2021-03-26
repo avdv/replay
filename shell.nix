@@ -2,7 +2,7 @@
 
 pkgs.mkShell {
   buildInputs = with pkgs; [
-    haskellPackages.ormolu
+    stylish-haskell
     bazel-watcher
     bazel-buildtools
   ];
