@@ -24,7 +24,7 @@ import           Brick.Forms            (Form, allFieldsValid, checkboxField,
                                          formFocus, formState, handleFormEvent,
                                          invalidFields, invalidFormInputAttr,
                                          newForm, radioField, renderForm,
-                                         setFieldValid, (@@=))
+                                         setFieldValid, updateFormState, (@@=))
 import qualified Brick.Main             as M
 import           Brick.Types            (ViewportType (Both, Horizontal, Vertical),
                                          Widget)
@@ -50,7 +50,8 @@ data State = State {
   options       :: Options,
   _errorMessage :: Maybe String,
   _input        :: DT.Text,
-  _search       :: DT.Text
+  _search       :: DT.Text,
+  _currentInput :: DT.Text
   }
 
 makeLenses ''State
@@ -88,7 +89,7 @@ vp1Scroll :: M.ViewportScroll Name
 vp1Scroll = M.viewportScroll VP1
 
 mkForm :: State -> Form State e Name
-mkForm = newForm [ editTextField input InputField (Just 1) ]
+mkForm = newForm [ editTextField currentInput InputField (Just 1) ]
 
 appEvent :: Form State MyEvents Name -> T.BrickEvent Name MyEvents -> T.EventM Name (T.Next (Form State MyEvents Name))
 appEvent f (T.AppEvent Rerun) = M.invalidateCacheEntry CachedText >> rerun f >>= M.continue
@@ -99,7 +100,12 @@ appEvent s (T.VtyEvent (V.EvKey V.KPageUp []))    = M.vScrollPage vp1Scroll T.Up
 appEvent s (T.VtyEvent (V.EvKey V.KHome []))    = M.vScrollToBeginning vp1Scroll >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KEnd []))    = M.vScrollToEnd vp1Scroll >> M.continue s
 appEvent s (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt s
-appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) = M.invalidateCacheEntry CachedText >> rerun f >>= M.continue
+appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) = do
+  M.invalidateCacheEntry CachedText
+  let state = formState f
+      state' = state & input .~ (state ^. currentInput)
+      f' = updateFormState state' f
+  rerun f' >>= M.continue
 appEvent s ev = handleFormEvent ev s >>= M.continue
 
 
@@ -145,7 +151,7 @@ run :: Options -> IO DT.Text
 run options = do
 
   let initialState = State {
-        _input = ".", options = options, _output = "", _errorMessage = Nothing, _search = ""
+        _input = "", options = options, _output = "", _errorMessage = Nothing, _search = "", _currentInput = ""
         }
       f = mkForm initialState
       buildVty = do
