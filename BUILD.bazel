@@ -4,9 +4,22 @@ load(
     "haskell_library",
 )
 
+config_setting(
+    name = "optimize_build",
+    values = {
+        "compilation_mode": "opt",
+    },
+)
+
 haskell_library(
     name = "lib",
     srcs = glob(["src/**/*.hs"]),
+    compiler_flags = select(
+        {
+            ":optimize_build": ["-O2"],
+            "//conditions:default": [],
+        },
+    ),
     visibility = ["//visibility:public"],
     deps = [
         "@stackage//:base",
@@ -31,7 +44,10 @@ haskell_binary(
         [
             "-threaded",  # Use multicore runtime
             "-rtsopts",  # Enable specifying runtime options on command line
-        ],
+        ] + select({
+            ":optimize_build": ["-O2"],
+            "//conditions:default": [],
+        }),
     deps = [
         "//:lib",
         "@stackage//:base",
