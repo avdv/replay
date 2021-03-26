@@ -6,11 +6,11 @@ import           System.Exit          (ExitCode (..))
 import           System.Process
 import           System.INotify
 
-getOutput :: [String] -> String -> ExceptT String IO String
-getOutput cmdline input = do
+getOutput :: [String] -> String -> String -> ExceptT String IO String
+getOutput cmdline input stdin = do
   let cmd = head cmdline
       args = [ (unpack . replace "input" (pack input) . pack) word | word <- tail cmdline ]
-  (exitc, stdout, err) <- liftIO $ readProcessWithExitCode cmd args ""
+  (exitc, stdout, err) <- liftIO $ readProcessWithExitCode cmd args stdin
   case exitc of
     ExitFailure _ -> throwError err
     ExitSuccess   -> return stdout
@@ -18,6 +18,7 @@ getOutput cmdline input = do
 data Options = Options {
   varName :: String,
   watchFiles :: [String],
+  useStdin :: Bool,
   cmdline :: [String]
   }
   deriving(Show)

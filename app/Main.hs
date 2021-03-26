@@ -26,6 +26,10 @@ options = Options
         <> action "file"
         <> metavar "FILE"
       ))
+      <*> switch
+          ( long "from-stdin"
+          <> short 'i'
+          <> help "read input from stdin, pipe into program continually" )
       <*> some (argument str (metavar "COMMAND ARGS"))
 
 main :: IO ()

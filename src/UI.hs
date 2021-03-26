@@ -48,6 +48,7 @@ data Name = VP1
 data State = State {
   _output       :: DT.Text,
   options       :: Options,
+  _stdInput     :: String,
   _errorMessage :: Maybe String,
   _input        :: DT.Text,
   _search       :: DT.Text,
@@ -112,7 +113,9 @@ appEvent s ev = handleFormEvent ev s >>= M.continue
 rerun :: Form State e Name -> T.EventM Name (Form State e Name)
 rerun f =
   do
-    out <- liftIO $ runExceptT $ getOutput cmdargs (DT.unpack text)
+    out <- liftIO do
+      let stdin = state ^. stdInput
+      runExceptT $ getOutput cmdargs (DT.unpack text) stdin
     let newState = case out of
           Right newOutput ->
             state & output .~ DT.pack newOutput
@@ -149,9 +152,9 @@ watch files = do
 
 run :: Options -> IO DT.Text
 run options = do
-
+  stdin <- if useStdin options then getContents else pure ""
   let initialState = State {
-        _input = "", options = options, _output = "", _errorMessage = Nothing, _search = "", _currentInput = ""
+        _input = "", _stdInput = stdin, options = options, _output = "", _errorMessage = Nothing, _search = "", _currentInput = ""
         }
       f = mkForm initialState
       buildVty = do
