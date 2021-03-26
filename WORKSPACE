@@ -27,7 +27,7 @@ rules_haskell_dependencies()
 # which was already initialized by rules_haskell_dependencies above.
 load(
     "@io_tweag_rules_nixpkgs//nixpkgs:nixpkgs.bzl",
-    "nixpkgs_git_repository",
+    "nixpkgs_local_repository",
     "nixpkgs_python_configure",
 )
 
@@ -35,13 +35,15 @@ nixpkgs_python_configure(
     repository = "@nixpkgs",
 )
 
-# Fetch a version of nixpkgs from GitHub.
-# For more information see the documentation of rules_nixpkgs at
-# https://github.com/tweag/rules_nixpkgs/blob/master/README.md
-nixpkgs_git_repository(
+nixpkgs_local_repository(
     name = "nixpkgs",
-    revision = "nixos-20.09",
-    sha256 = "65246eddd2107c186315c91ad8eca9e9a5f362c3a0077e36173e83def9d21177",
+    nix_file = "//nix:nixpkgs.nix",
+    nix_file_deps = [
+        "//nix:BUILD",
+        "//nix:default.nix",
+        "//nix:sources.nix",
+        "//nix:sources.json",
+    ],
 )
 
 load(
