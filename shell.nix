@@ -1,9 +1,9 @@
-{ pkgs ? import <nixpkgs> { } }:
+{ project ? import ./nix { }
+}:
 
-pkgs.mkShell {
-  buildInputs = with pkgs; [
-    stylish-haskell
-    bazel-watcher
-    bazel-buildtools
-  ];
+project.pkgs.mkShell {
+  buildInputs = builtins.attrValues project.devTools;
+  shellHook = ''
+    ${project.ci.pre-commit-check.shellHook}
+  '';
 }

@@ -2,3 +2,4 @@
 repeat.cabal
 *~
 /bazel-*
+/.pre-commit-config.yaml
