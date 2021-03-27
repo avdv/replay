@@ -41,6 +41,8 @@ import           Lib                    (Options (..), getOutput)
 import           System.INotify
 import           System.Posix.IO        (OpenMode (..), defaultFileFlags,
                                          openFd)
+import qualified System.Posix.IO        as IO (stdInput)
+import           System.Posix.Terminal  (queryTerminal)
 
 data Name = VP1
           | InputField
@@ -154,7 +156,10 @@ watch files = do
 
 run :: Options -> IO DT.Text
 run options = do
-  stdin <- if useStdin options then getContents else pure ""
+  isTTY <- queryTerminal IO.stdInput
+  let fromStdin = useStdin options
+  when (isTTY && fromStdin) $ error "cannot use --from-stdin option when stdin is a TTY"
+  stdin <- if fromStdin then getContents else pure ""
   let initialState = State {
         _input = "", _stdInput = stdin, options = options, _output = "", _errorMessage = Nothing, _search = "", _currentInput = ""
         }
