@@ -7,6 +7,8 @@ parts of the command, hit enter to re-run the command again. Repeat.
 
 ---
 
+![Github workflow status](https://github.com/avdv/replay/actions/workflows/test.yml/badge.svg?branch=main)</div>
+
 # Building
 
 You can build this project using [Bazel](https://bazel.build/) on [NixOS](https://nixos.org/):
