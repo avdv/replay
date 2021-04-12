@@ -16,4 +16,11 @@ run --host_platform=@rules_haskell//haskell/platforms:linux_x86_64_nixpkgs
 # We also need to setup an utf8 locale
 test --test_env=LANG=en_US.utf8 --test_env=LOCALE_ARCHIVE
 
+# CI configuration
+
+build:ci --bes_results_url=https://app.buildbuddy.io/invocation/
+build:ci --bes_backend=grpcs://cloud.buildbuddy.io
+build:ci --remote_cache=grpcs://cloud.buildbuddy.io
+build:ci --remote_timeout=3600
+
 try-import .bazelrc.local

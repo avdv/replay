@@ -21,6 +21,18 @@ jobs:
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
         # Only needed for private caches
         #authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: Set up BuildBuddy
+      env:
+        BUILDBUDDY_API_KEY: '${{ secrets.BUILDBUDDY_API_KEY }}'
+      run: |
+        cat > .bazelrc.local <<EOF
+        common --config=ci
+        build --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
+        EOF
+        cat > ~/.netrc <<EOF
+        machine api.github.com
+                password ${{ secrets.GITHUB_TOKEN }}
+        EOF
     - run: git fetch --tags --force --recurse-submodules
     - run: nix-build
     - run: nix-shell --run "bazel build replay"
