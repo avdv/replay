@@ -12,9 +12,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2.3.4
     - uses: cachix/install-nix-action@v13
+      with:
+         nix_path: nixpkgs=./nix/nixpkgs.nix
     # https://github.com/nmattia/niv/issues/280
-    - run: GITHUB_PATH= nix-shell --run "niv update"
-    - run: nix-shell --run "pre-commit run --all-files" || true
+    - run: GITHUB_PATH= nix-shell --run "niv update" -p niv
+    - uses: cachix/cachix-action@v10
+      with:
+        name: cbley
+        extraPullNames: pre-commit-hooks
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - run: nix-build
+    - run: nix-shell --run "pre-commit run --all-files" -p pre-commit || true
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:
