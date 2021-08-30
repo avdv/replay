@@ -15,7 +15,7 @@ jobs:
       with:
          nix_path: nixpkgs=./nix/nixpkgs.nix
     # https://github.com/nmattia/niv/issues/280
-    - run: GITHUB_PATH= nix-shell --run "niv update" -p niv
+    - run: nix-shell --run "niv update" -p niv
     - uses: cachix/cachix-action@v10
       with:
         name: cbley
