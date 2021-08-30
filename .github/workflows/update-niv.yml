@@ -21,6 +21,7 @@ jobs:
         name: cbley
         extraPullNames: pre-commit-hooks
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+        skipPush: true
     - run: nix-build
     - run: nix-shell --run "pre-commit run --all-files" -p pre-commit || true
     - name: Create Pull Request
