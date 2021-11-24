@@ -31,3 +31,4 @@ jobs:
         title: "[automation] update niv dependencies"
         branch: "automation/update-niv-dependencies"
         token: "${{ secrets.PR_TOKEN }}"
+        delete-branch: true
