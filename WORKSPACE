@@ -88,7 +88,7 @@ stack_snapshot(
         "unix",
         "vty",
     ],
-    snapshot = "lts-17.7",
+    snapshot = "lts-18.6",
     # Note: `bazel run @stackage-unpinned//:pin` to update
     stack_snapshot_json = "//:stackage_snapshot.json",
 )
