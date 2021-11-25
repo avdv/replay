@@ -1,18 +1,18 @@
 # Give your project a name. :)
 workspace(name = "replay")
 
-# Load the repository rule to download an http archive.
+# Load the repository rule to download a git repo
 load(
-    "@bazel_tools//tools/build_defs/repo:http.bzl",
-    "http_archive",
+    "@bazel_tools//tools/build_defs/repo:git.bzl",
+    "git_repository",
 )
 
 # Download rules_haskell and make it accessible as "@rules_haskell".
-http_archive(
+git_repository(
     name = "rules_haskell",
-    sha256 = "b4e2c00da9bc6668fa0404275fecfdb31beb700abdba0e029e74cacc388d94d6",
-    strip_prefix = "rules_haskell-0.13",
-    urls = ["https://github.com/tweag/rules_haskell/archive/v0.13.tar.gz"],
+    commit = "d3d8bede5597c4ffc373f9742a6a733c728505b2",
+    remote = "https://github.com/tweag/rules_haskell.git",
+    shallow_since = "1637785596 +0000",
 )
 
 load(
