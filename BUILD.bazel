@@ -14,7 +14,9 @@ config_setting(
 haskell_library(
     name = "lib",
     srcs = glob(["src/**/*.hs"]),
-    compiler_flags = select(
+    compiler_flags = [
+        "-Wall",
+    ] + select(
         {
             ":optimize_build": ["-O2"],
             "//conditions:default": [],
@@ -42,6 +44,7 @@ haskell_binary(
     srcs = glob(["app/**/*.hs"]),
     compiler_flags =
         [
+            "-Wall",
             "-threaded",  # Use multicore runtime
             "-rtsopts",  # Enable specifying runtime options on command line
         ] + select({
