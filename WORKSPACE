@@ -55,9 +55,9 @@ load(
 # For more information:
 # https://api.haskell.build/haskell/nixpkgs.html#haskell_register_ghc_nixpkgs
 haskell_register_ghc_nixpkgs(
-    attribute_path = "haskell.compiler.ghc8104",
+    attribute_path = "haskell.compiler.ghc8107",
     repository = "@nixpkgs",
-    version = "8.10.4",
+    version = "8.10.7",
 )
 
 load("@rules_haskell//haskell:cabal.bzl", "stack_snapshot")
@@ -88,7 +88,7 @@ stack_snapshot(
         "unix",
         "vty",
     ],
-    snapshot = "lts-18.6",
+    snapshot = "lts-18.18",
     # Note: `bazel run @stackage-unpinned//:pin` to update
     stack_snapshot_json = "//:stackage_snapshot.json",
 )
