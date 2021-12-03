@@ -16,7 +16,7 @@ in
   devTools = {
     inherit (pkgs) niv pre-commit bazel_4 bazel-watcher bazel-buildtools openjdk11_headless stylish-haskell haskell-language-server;
 
-    ghc = pkgs.haskell.packages.ghc8104.ghc;
+    ghc = pkgs.haskell.packages.ghc8107.ghc;
   };
 
   # to be built by github actions
