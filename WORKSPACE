@@ -10,9 +10,9 @@ load(
 # Download rules_haskell and make it accessible as "@rules_haskell".
 git_repository(
     name = "rules_haskell",
-    commit = "d3d8bede5597c4ffc373f9742a6a733c728505b2",
+    commit = "5434111e63a061f400191fcbcc88948453111f60",
     remote = "https://github.com/tweag/rules_haskell.git",
-    shallow_since = "1637785596 +0000",
+    shallow_since = "1638540350 +0000",
 )
 
 load(
