@@ -28,6 +28,20 @@ in
         nixpkgs-fmt.enable = true;
         nix-linter.enable = true;
         stylish-haskell.enable = true;
+        buildifier = {
+          enable = true;
+
+          name = "buildifier";
+
+          entry = "${pkgs.buildifier}/bin/buildifier -mode=fix -lint=fix";
+
+          files = "^(WORKSPACE|BUILD([.]bazel)?|.+[.]bzl)$";
+
+          # List of file types to run on (default: [ "file" ] (all files))
+          # see also https://pre-commit.com/#filtering-files-with-types
+          # You probably only need to specify one of `files` or `types`:
+          #types = [ "text" "c" ];
+        };
       };
       # generated files / submodules
       excludes = [
