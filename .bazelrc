@@ -7,8 +7,8 @@ test:ci --test_output=errors
 
 # This project uses a GHC provisioned via nix.
 # We need to use the rules_haskell nix toolchain accordingly:
-build --host_platform=@rules_haskell//haskell/platforms:linux_x86_64_nixpkgs
-run --host_platform=@rules_haskell//haskell/platforms:linux_x86_64_nixpkgs
+build --host_platform=@io_tweag_rules_nixpkgs//nixpkgs/platforms:host
+run --host_platform=@io_tweag_rules_nixpkgs//nixpkgs/platforms:host
 
 # test environment does not propagate locales by default
 # some tests reads files written in UTF8, we need to propagate the correct
@@ -19,8 +19,8 @@ test --test_env=LANG=en_US.utf8 --test_env=LOCALE_ARCHIVE
 # CI configuration
 
 build:ci --bes_results_url=https://app.buildbuddy.io/invocation/
-build:ci --bes_backend=grpcs://cloud.buildbuddy.io
-build:ci --remote_cache=grpcs://cloud.buildbuddy.io
-build:ci --remote_timeout=3600
+build:ci --bes_backend=grpcs://remote.buildbuddy.io
+build:ci --remote_cache=grpcs://remote.buildbuddy.io
+build:ci --remote_timeout=36002
 
 try-import .bazelrc.local

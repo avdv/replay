@@ -6,6 +6,7 @@ load(
     "@bazel_tools//tools/build_defs/repo:git.bzl",
     "git_repository",
 )
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # Download rules_haskell and make it accessible as "@rules_haskell".
 git_repository(
@@ -14,6 +15,22 @@ git_repository(
     remote = "https://github.com/tweag/rules_haskell.git",
     shallow_since = "1638540350 +0000",
 )
+
+http_archive(
+    name = "rules_sh",
+    sha256 = "63eb736f7562ed80054e373392abb0d4950d70e22542665079158854bd2cd98f",
+    strip_prefix = "rules_sh-39e356843071f93caf2caaf427d46cd10717501b",
+    urls = ["https://github.com/tweag/rules_sh/archive/39e356843071f93caf2caaf427d46cd10717501b.tar.gz"],
+)
+
+load("@rules_sh//sh:repositories.bzl", "rules_sh_dependencies")
+
+rules_sh_dependencies()
+
+load("@rules_sh//sh:posix.bzl", "sh_posix_configure")
+
+# Bring in a "local" toolchain - (only hermetic if in a pure nix-shell!)
+sh_posix_configure()
 
 load(
     "@rules_haskell//haskell:repositories.bzl",
@@ -37,12 +54,9 @@ nixpkgs_python_configure(
 
 nixpkgs_local_repository(
     name = "nixpkgs",
-    nix_file = "//nix:nixpkgs.nix",
+    nix_file = "//:nixpkgs.nix",
     nix_file_deps = [
-        "//nix:BUILD",
-        "//nix:default.nix",
-        "//nix:sources.nix",
-        "//nix:sources.json",
+        "//:flake.lock",
     ],
 )
 
@@ -92,3 +106,7 @@ stack_snapshot(
     # Note: `bazel run @stackage-unpinned//:pin` to update
     stack_snapshot_json = "//:stackage_snapshot.json",
 )
+
+load("//:ghc_inside_nix.bzl", "register_ghc_in_nix")
+
+register_ghc_in_nix(version = "8.10.7")
