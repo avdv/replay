@@ -12,23 +12,26 @@
   };
 
   outputs = { nixpkgs, flake-utils, pre-commit-hooks, ... }:
-    flake-utils.lib.eachSystem [ "aarch64-linux" "x86_64-darwin" "x86_64-linux" ]
+    with flake-utils.lib.system;
+    flake-utils.lib.eachSystem [ aarch64-linux x86_64-darwin x86_64-linux ]
       (system:
         let
           pkgs = import nixpkgs { inherit system; };
-          # pkgs = nixpkgs.legacyPackages.${system};
+          bazel = pkgs.bazel_4;
+          inherit (pkgs) bazel-watcher;
+          ghc = import ./nix/ghc.nix { inherit pkgs; };
           nativeBuildInputs = with pkgs; [
             git
-            haskell.compiler.ghc8107
-            #bazel_4 #bazel-watcher bazel-buildtools
-            openjdk11_headless #stylish-haskell
+            ghc
+          ];
+          devTools = with pkgs; [
+            bazel
             haskell-language-server
-          ] ++ lib.optional (system != "asdf") bazel-watcher;
+          ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
             name = "replay-0.2.0";
-            bazel = pkgs.bazel_4;
             src = ./.;
 
             removeRulesCC = false;
@@ -39,22 +42,24 @@
               "--verbose_failures"
             ];
 
+            passthru = {
+              exePath = "/bin/replay";
+            };
+
             bazelTarget = "//:replay";
 
-            inherit nativeBuildInputs;
+            inherit bazel nativeBuildInputs;
 
             fetchAttrs = {
-              preBuild = ''ls -l'';
-              sha256 = "sha256-v1vEFO0IGoDGyFSvsxQjs4vgmpAfDsiARbtjtkIyxY4=";
+              sha256 = "sha256-Hw1ANW+0AP0TLNBmaM5uDryTZCEtF3Jz8ctEplD9K34=";
             };
 
             buildAttrs = {
               preBuild = ''
-                ls -lh bazel-out/host/bin/external/rules_haskell/haskell/ghc_wrapper || true
-                cat bazel-out/host/bin/external/rules_haskell/haskell/ghc_wrapper || true
+                patchShebangs $bazelOut/external/rules_haskell/haskell/private/ghc_wrapper.sh
               '';
               installPhase = ''
-                install -Dm755 bazel-bin/replay $out/bin/replay
+                install -D -t $out/bin bazel-bin/replay
               '';
             };
           };
@@ -88,7 +93,7 @@
             shellHook = ''
               ${checks.pre-commit-check.shellHook}
             '';
-            nativeBuildInputs = nativeBuildInputs ++ [ pkgs.bazel_4 ];
+            nativeBuildInputs = nativeBuildInputs ++ devTools;
           };
         }
       );

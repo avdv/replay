@@ -2,6 +2,7 @@ load(
     "@rules_haskell//haskell:defs.bzl",
     "haskell_binary",
     "haskell_library",
+    "haskell_toolchain_library",
 )
 
 config_setting(
@@ -24,19 +25,69 @@ haskell_library(
     ),
     visibility = ["//visibility:public"],
     deps = [
-        "@stackage//:base",
-        "@stackage//:brick",
-        "@stackage//:bytestring",
-        "@stackage//:hinotify",
-        "@stackage//:microlens",
-        "@stackage//:microlens-th",
-        "@stackage//:mtl",
-        "@stackage//:optparse-applicative",
-        "@stackage//:process",
-        "@stackage//:text",
-        "@stackage//:unix",
-        "@stackage//:vty",
+        "{}_pkg".format(pkg)
+        for pkg in "base brick bytestring hinotify microlens microlens-th mtl optparse-applicative process text unix vty".split(" ")
     ],
+)
+
+haskell_toolchain_library(
+    name = "base_pkg",
+    package = "base",
+)
+
+haskell_toolchain_library(
+    name = "optparse-applicative_pkg",
+    package = "optparse-applicative",
+)
+
+haskell_toolchain_library(
+    name = "text_pkg",
+    package = "text",
+)
+
+haskell_toolchain_library(
+    name = "brick_pkg",
+    package = "brick",
+)
+
+haskell_toolchain_library(
+    name = "bytestring_pkg",
+    package = "bytestring",
+)
+
+haskell_toolchain_library(
+    name = "process_pkg",
+    package = "process",
+)
+
+haskell_toolchain_library(
+    name = "vty_pkg",
+    package = "vty",
+)
+
+haskell_toolchain_library(
+    name = "microlens_pkg",
+    package = "microlens",
+)
+
+haskell_toolchain_library(
+    name = "microlens-th_pkg",
+    package = "microlens-th",
+)
+
+haskell_toolchain_library(
+    name = "mtl_pkg",
+    package = "mtl",
+)
+
+haskell_toolchain_library(
+    name = "unix_pkg",
+    package = "unix",
+)
+
+haskell_toolchain_library(
+    name = "hinotify_pkg",
+    package = "hinotify",
 )
 
 haskell_binary(
@@ -52,10 +103,10 @@ haskell_binary(
             "//conditions:default": [],
         }),
     deps = [
+        "base_pkg",
+        "optparse-applicative_pkg",
+        "text_pkg",
         "//:lib",
-        "@stackage//:base",
-        "@stackage//:optparse-applicative",
-        "@stackage//:text",
     ],
 )
 

@@ -79,39 +79,6 @@ haskell_register_ghc_nixpkgs(
     version = "8.10.7",
 )
 
-load("@rules_haskell//haskell:cabal.bzl", "stack_snapshot")
-
-stack_snapshot(
-    name = "stackage",
-    extra_deps = {"zlib": ["@zlib.hs"]},
-    flags = {
-        # Sets the default explicitly to demonstrate the flags attribute.
-        "zlib": [
-            "-non-blocking-ffi",
-            "-pkg-config",
-        ],
-    },
-    packages = [
-        "base",
-        "brick",
-        "bytestring",
-        "hinotify",
-        "hspec",
-        "microlens",
-        "microlens-th",
-        "mtl",
-        "optparse-applicative",
-        "process",
-        "text",
-        "text-show",
-        "unix",
-        "vty",
-    ],
-    snapshot = "lts-18.18",
-    # Note: `bazel run @stackage-unpinned//:pin` to update
-    stack_snapshot_json = "//:stackage_snapshot.json",
-)
-
 load("//:ghc_inside_nix.bzl", "register_ghc_in_nix")
 
 register_ghc_in_nix(version = "8.10.7")
