@@ -69,7 +69,12 @@ load(
 # For more information:
 # https://api.haskell.build/haskell/nixpkgs.html#haskell_register_ghc_nixpkgs
 haskell_register_ghc_nixpkgs(
-    attribute_path = "haskell.compiler.ghc8107",
+    attribute_path = None,
+    nix_file = "//nix:ghc.nix",
+    nix_file_deps = [
+        "//:nixpkgs.nix",
+        "//:flake.lock",
+    ],
     repository = "@nixpkgs",
     version = "8.10.7",
 )
