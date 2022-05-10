@@ -11,9 +11,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Download rules_haskell and make it accessible as "@rules_haskell".
 git_repository(
     name = "rules_haskell",
-    commit = "5434111e63a061f400191fcbcc88948453111f60",
+    commit = "b37aa57773cfc61681cc0f23a634a99f8908af56",  # v0.14
     remote = "https://github.com/tweag/rules_haskell.git",
-    shallow_since = "1638540350 +0000",
+    shallow_since = "1640042990 +0000",
 )
 
 http_archive(
