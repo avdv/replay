@@ -63,9 +63,9 @@
               '';
             };
           };
+          packages.default = packages.replay;
 
-          defaultApp = flake-utils.lib.mkApp { drv = defaultPackage; };
-          defaultPackage = packages.replay;
+          apps.default = flake-utils.lib.mkApp { drv = defaultPackage; };
 
           checks = {
             pre-commit-check = pre-commit-hooks.lib.${system}.run {
@@ -89,12 +89,17 @@
             };
           };
 
-          devShell = pkgs.mkShell {
+          devShells.default = pkgs.mkShell {
             shellHook = ''
               ${checks.pre-commit-check.shellHook}
             '';
             nativeBuildInputs = nativeBuildInputs ++ devTools;
           };
+
+          # compatibility for nix < 2.7.0
+          defaultApp = apps.default;
+          defaultPackage = packages.default;
+          devShell = devShells.default;
         }
       );
 }
