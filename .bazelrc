@@ -4,11 +4,7 @@ build:ci --verbose_failures
 common:ci --color=no
 test:ci --test_output=errors
 
-
-# This project uses a GHC provisioned via nix.
-# We need to use the rules_haskell nix toolchain accordingly:
-build --host_platform=@io_tweag_rules_nixpkgs//nixpkgs/platforms:host
-run --host_platform=@io_tweag_rules_nixpkgs//nixpkgs/platforms:host
+try-import .bazelrc.nix
 
 # test environment does not propagate locales by default
 # some tests reads files written in UTF8, we need to propagate the correct

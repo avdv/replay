@@ -38,7 +38,6 @@
 
             bazelBuildFlags = [
               "--compilation_mode=opt" # optimize
-              "--sandbox_debug"
               "--verbose_failures"
             ];
 
@@ -51,12 +50,13 @@
             inherit bazel nativeBuildInputs;
 
             fetchAttrs = {
-              sha256 = "sha256-Hw1ANW+0AP0TLNBmaM5uDryTZCEtF3Jz8ctEplD9K34=";
+              sha256 = "sha256-ncmHm3ccz4zDpjz63kD3/42tAdW4VjqQJ9QCPLriTTo=";
             };
 
             buildAttrs = {
               preBuild = ''
                 patchShebangs $bazelOut/external/rules_haskell/haskell/private/ghc_wrapper.sh
+                rm .bazelrc.nixpkgs
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
