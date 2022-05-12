@@ -33,6 +33,5 @@ jobs:
         machine api.github.com
                 password ${{ secrets.GITHUB_TOKEN }}
         EOF
-    - run: git fetch --tags --force --recurse-submodules
-    - run: nix-build
-    - run: nix-shell --run "bazel build replay"
+    - run: nix flake check
+    - run: nix run . -- --help
