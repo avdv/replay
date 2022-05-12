@@ -1,10 +1,8 @@
 module Main where
 
-import           Data.Semigroup      ((<>))
 import           Data.Text           (unpack)
 import           Lib                 (Options (..))
 import           Options.Applicative
-import           System.Exit         (exitSuccess)
 import           UI                  (run)
 
 versionOption :: Parser (a -> a)
