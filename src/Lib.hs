@@ -5,7 +5,6 @@ module Lib (Options (..), getOutput) where
 import           Control.Monad.Except
 import           Data.Text            (pack, replace, unpack)
 import           System.Exit          (ExitCode (..))
-import           System.INotify
 import           System.Process
 
 getOutput :: [String] -> String -> String -> ExceptT String IO String
