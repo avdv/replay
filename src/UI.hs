@@ -3,46 +3,42 @@
 {-# LANGUAGE TemplateHaskell   #-}
 module UI (run) where
 
-import           Control.Monad          (unless, void)
 import           Control.Monad.Except
-import           Control.Monad.IO.Class (liftIO)
-import           Data.Monoid            ((<>))
-import qualified Graphics.Vty           as V
+import qualified Graphics.Vty          as V
 
-import qualified Data.ByteString.Char8  as BS
-import           Data.Foldable          (traverse_)
-import qualified Data.Text              as DT
+import qualified Data.ByteString.Char8 as BS
+import           Data.Foldable         (traverse_)
+import qualified Data.Text             as DT
 
-import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
+import           Lens.Micro            ((%~), (&), (.~), (?~), (^.))
 import           Lens.Micro.TH
 
-import           Brick.AttrMap          (attrMap)
-import           Brick.BChan            (BChan, newBChan, writeBChan)
-import           Brick.Forms            (Form, allFieldsValid, checkboxField,
-                                         editPasswordField, editShowableField,
-                                         editTextField, focusedFormInputAttr,
-                                         formFocus, formState, handleFormEvent,
-                                         invalidFields, invalidFormInputAttr,
-                                         newForm, radioField, renderForm,
-                                         setFieldValid, updateFormState, (@@=))
-import qualified Brick.Main             as M
-import           Brick.Types            (ViewportType (Both, Horizontal, Vertical),
-                                         Widget)
+import           Brick.AttrMap         (attrMap)
+import           Brick.BChan           (BChan, newBChan, writeBChan)
+import           Brick.Forms           (Form, allFieldsValid, checkboxField,
+                                        editPasswordField, editShowableField,
+                                        editTextField, focusedFormInputAttr,
+                                        formFocus, formState, handleFormEvent,
+                                        invalidFields, invalidFormInputAttr,
+                                        newForm, radioField, renderForm,
+                                        setFieldValid, updateFormState, (@@=))
+import qualified Brick.Main            as M
+import           Brick.Types           (ViewportType (Both, Horizontal, Vertical),
+                                        Widget)
 
-import qualified Brick.AttrMap          as A
-import qualified Brick.Types            as T
-import           Brick.Util             (fg, on)
-import qualified Brick.Widgets.Border   as B
-import qualified Brick.Widgets.Center   as C
-import           Brick.Widgets.Core     (cached, hBox, hLimit, str, txt,
-                                         updateAttrMap, vBox, vLimit, viewport,
-                                         withAttr, (<+>))
-import           Lib                    (Options (..), getOutput)
+import qualified Brick.AttrMap         as A
+import qualified Brick.Types           as T
+import           Brick.Util            (fg, on)
+import qualified Brick.Widgets.Border  as B
+import qualified Brick.Widgets.Center  as C
+import           Brick.Widgets.Core    (cached, hBox, hLimit, str, txt,
+                                        updateAttrMap, vBox, vLimit, viewport,
+                                        withAttr, (<+>))
+import           Lib                   (Options (..), getOutput)
 import           System.INotify
-import           System.Posix.IO        (OpenMode (..), defaultFileFlags,
-                                         openFd)
-import qualified System.Posix.IO        as IO (stdInput)
-import           System.Posix.Terminal  (queryTerminal)
+import           System.Posix.IO       (OpenMode (..), defaultFileFlags, openFd)
+import qualified System.Posix.IO       as IO (stdInput)
+import           System.Posix.Terminal (queryTerminal)
 
 data Name = VP1
           | InputField
