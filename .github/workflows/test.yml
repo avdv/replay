@@ -34,4 +34,5 @@ jobs:
                 password ${{ secrets.GITHUB_TOKEN }}
         EOF
     - run: nix flake check
+    - run: nix build --print-build-logs
     - run: nix run . -- --help
