@@ -1,0 +1,20 @@
+diff --git a/haskell/toolchain.bzl b/haskell/toolchain.bzl
+index 2cecc0b8..b3b519e2 100644
+--- a/haskell/toolchain.bzl
++++ b/haskell/toolchain.bzl
+@@ -142,6 +142,7 @@ def _haskell_toolchain_impl(ctx):
+         for tool, asterius_binary in ahc_binaries.items():
+             tools_struct_args[ASTERIUS_BINARIES[tool]] = asterius_binary
+     else:
++        print("non-asterius:", ctx.files.tools)
+         ghc_binaries = _lookup_binaries(_GHC_BINARIES, ctx.files.tools, ctx.attr.version)
+         tools_struct_args = {
+             name.replace("-", "_"): file
+@@ -270,6 +271,7 @@ def _haskell_toolchain_impl(ctx):
+ 
+ common_attrs = {
+     "tools": attr.label_list(
++        allow_files = True,
+         mandatory = True,
+     ),
+     "libraries": attr.label_list(
