@@ -36,6 +36,8 @@
 
             removeRulesCC = false;
 
+            bazelFlags = [ "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain" ];
+
             bazelBuildFlags = [
               "--compilation_mode=opt" # optimize
               "--verbose_failures"

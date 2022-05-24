@@ -266,7 +266,6 @@ def register_ghc_in_nix(
         target_constraints = target_constraints,
         haskell_toolchain_repo_name = haskell_toolchain_repo_name,
     )
-    native.register_toolchains("@{}//:toolchain".format(toolchain_repo_name))
 
     local_python_repo_name = "rules_haskell_python_local"
     if local_python_repo_name not in native.existing_rules():
