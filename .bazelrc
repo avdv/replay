@@ -4,7 +4,7 @@ build:ci --verbose_failures
 common:ci --color=no
 test:ci --test_output=errors
 
-try-import .bazelrc-nix
+try-import %workspace%/.bazelrc-nix
 
 # test environment does not propagate locales by default
 # some tests reads files written in UTF8, we need to propagate the correct
@@ -19,4 +19,4 @@ build:ci --bes_backend=grpcs://remote.buildbuddy.io
 build:ci --remote_cache=grpcs://remote.buildbuddy.io
 build:ci --remote_timeout=36002
 
-try-import .bazelrc.local
+try-import %workspace%/.bazelrc.local
