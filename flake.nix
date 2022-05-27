@@ -58,7 +58,7 @@
             buildAttrs = {
               preBuild = ''
                 patchShebangs $bazelOut/external/rules_haskell/haskell/private/ghc_wrapper.sh
-                rm .bazelrc.nixpkgs
+                rm .bazel-nix.rc
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay

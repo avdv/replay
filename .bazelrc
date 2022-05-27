@@ -4,7 +4,7 @@ build:ci --verbose_failures
 common:ci --color=no
 test:ci --test_output=errors
 
-try-import %workspace%/.bazelrc-nix
+try-import %workspace%/.bazel-nix.rc
 
 # test environment does not propagate locales by default
 # some tests reads files written in UTF8, we need to propagate the correct
