@@ -15,12 +15,27 @@ jobs:
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-      - name: Update flake.lock
-        uses: DeterminateSystems/update-flake-lock@v9
+      - name: Set author identity
+        run: |
+          git config user.email '${{ github.actor }}@users.noreply.github.com'
+          git config user.name '${{ github.actor }}'
+      - run: nix flake update --commit-lock-file
+      - name: Update fixed output hash
+        run: |
+          if ! output=$( nix build --no-link --rebuild ".#replay.deps" 2>&1 ); then
+            set -x
+            tail <<< "$output"
+            specified=$( sed -ne 's,.*specified: *\([^ ]*\),\1,p' <<< "$output")
+            got=$( sed -ne 's,.*got: *\([^ ]*\),\1,p' <<< "$output" )
+            sed -i'' -e "s,$specified,$got," flake.nix
+            git diff
+          fi
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
         with:
-          pr-title: "Update flake.lock" # Title of PR to be created
-          pr-labels: |                  # Labels to be set on the PR
-            dependencies
-          token: ${{ secrets.PR_TOKEN }}
-      - name: Print PR number
-        run: echo Pull request number is ${{ steps.update.outputs.pull-request-number }}.
+          commit-message: "Update `fetchAttrs.sha256` hash"
+          title: "Update flake.lock"
+          branch: "automation/update-flake-inputs"
+          labels: "dependencies"
+          token: "${{ secrets.PR_TOKEN }}"
+
