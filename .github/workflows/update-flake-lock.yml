@@ -22,7 +22,8 @@ jobs:
       - run: nix flake update --commit-lock-file
       - name: Update fixed output hash
         run: |
-          if ! output=$( nix build --no-link --print-build-logs '.#replay.deps' 2>&1 ); then
+          nix build --no-link '.#replay.deps' 2>&1 || true
+          if ! output=$( nix build --rebuild --no-link --print-build-logs '.#replay.deps' 2>&1 ); then
             if [[ "$output" != *'error: hash mismatch in fixed-output derivation'* ]]; then
               echo "build problem: $output" >&2 ; exit 1
             fi
