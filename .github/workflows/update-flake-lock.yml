@@ -22,16 +22,14 @@ jobs:
       - run: nix flake update --commit-lock-file
       - name: Update fixed output hash
         run: |
-          nix build --no-link --print-build-logs ".#replay.deps" 
-          if ! output=$( nix build --no-link --print-build-logs --rebuild ".#replay.deps" 2>&1 ); then
-            set -x
-            tail <<< "$output"
+          if ! output=$( nix build --no-link --print-build-logs '.#replay.deps' 2>&1 ); then
+            if [[ "$output" != *'error: hash mismatch in fixed-output derivation'* ]]; then
+              echo "build problem: $output" >&2 ; exit 1
+            fi
             specified=$( sed -ne 's,.*specified: *\([^ ]*\),\1,p' <<< "$output")
             got=$( sed -ne 's,.*got: *\([^ ]*\),\1,p' <<< "$output" )
             sed -i'' -e "s,$specified,$got," flake.nix
             git diff
-          else
-            echo "OK: $output"
           fi
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
