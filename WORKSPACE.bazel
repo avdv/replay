@@ -76,9 +76,9 @@ haskell_register_ghc_nixpkgs(
         "//:flake.lock",
     ],
     repository = "@nixpkgs",
-    version = "8.10.7",
+    version = "9.0.1",
 )
 
 load("//:ghc_inside_nix.bzl", "register_ghc_in_nix")
 
-register_ghc_in_nix(version = "8.10.7")
+register_ghc_in_nix(version = "9.0.1")
