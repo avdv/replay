@@ -65,6 +65,8 @@ load(
     "haskell_register_ghc_nixpkgs",
 )
 
+ghc_version = "9.0.1"
+
 # Fetch a GHC binary distribution from nixpkgs and register it as a toolchain.
 # For more information:
 # https://api.haskell.build/haskell/nixpkgs.html#haskell_register_ghc_nixpkgs
@@ -76,9 +78,9 @@ haskell_register_ghc_nixpkgs(
         "//:flake.lock",
     ],
     repository = "@nixpkgs",
-    version = "8.10.7",
+    version = ghc_version,
 )
 
 load("//:ghc_inside_nix.bzl", "register_ghc_in_nix")
 
-register_ghc_in_nix(version = "8.10.7")
+register_ghc_in_nix(version = ghc_version)
