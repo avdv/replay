@@ -53,7 +53,7 @@
             inherit bazel nativeBuildInputs;
 
             fetchAttrs = {
-              sha256 = "sha256-8Cx7vsahAZEz3kmv5lmGbBqZ+b3l9//pykz5Kgh9LDQ=";
+              sha256 = "sha256-pZOfaUb2P5dqOLnK6Q+smPOp5zGZBolim/YQxSjK69w=";
               preBuild = ''
                 rm .bazel-nix.rc
               '';
