@@ -36,8 +36,8 @@ import           Brick.Widgets.Core    (cached, hBox, hLimit, str, txt,
                                         withAttr, (<+>))
 import           Lib                   (Options (..), getOutput)
 import           System.INotify
-import           System.Posix.IO       (OpenMode (..), defaultFileFlags, openFd)
 import qualified System.Posix.IO       as IO (stdInput)
+import           System.Posix.IO       (OpenMode (..), defaultFileFlags, openFd)
 import           System.Posix.Terminal (queryTerminal)
 
 data Name = VP1
