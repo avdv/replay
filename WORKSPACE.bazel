@@ -60,7 +60,7 @@ load(
     "haskell_register_ghc_nixpkgs",
 )
 
-ghc_version = "9.2.2"
+ghc_version = "9.0.2"
 
 # Fetch a GHC binary distribution from nixpkgs and register it as a toolchain.
 # For more information:
