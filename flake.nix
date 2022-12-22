@@ -17,7 +17,7 @@
       (system:
         let
           pkgs = import nixpkgs { inherit system; };
-          bazel = pkgs.bazel_4;
+          bazel = pkgs.bazel_5;
           inherit (pkgs) bazel-watcher;
           ghc = import ./nix/ghc.nix { inherit pkgs; };
           nativeBuildInputs = with pkgs; [
@@ -53,7 +53,7 @@
             inherit bazel nativeBuildInputs;
 
             fetchAttrs = {
-              sha256 = "sha256-2TragSFrMw8mxXO2Er+YhKpF//Xq/2gtQxpkW+1t3sM=";
+              sha256 = "sha256-sgZv2Gwh+enSIgjh78wuPKLI/UT17xPoC1McS0cjsNA=";
               preBuild = ''
                 rm .bazel-nix.rc
               '';
