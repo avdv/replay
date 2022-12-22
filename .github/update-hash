@@ -1,0 +1,21 @@
+# !/usr/bin/env bash
+
+set -eo pipefail
+
+if [ $# -ne 1 ]; then
+  echo 'error: wrong number of arguments' >&2
+  echo "usage: $0 ATTR" >&2
+  exit 1
+fi
+
+attr="$1"
+outputHash=$( nix eval --raw ".#${attr}.outputHash" )
+sed -i'' -e "s,$outputHash,," flake.nix
+! output=$( nix build --no-link --print-build-logs '.#${attr}" 2>&1 )
+if [[ "$output" != *'error: hash mismatch in fixed-output derivation'* ]]; then
+    echo "build problem: $output" >&2 ; exit 1
+fi
+git restore flake.nix
+got=$( sed -ne 's,.*got: *\([^ ]*\),\1,p' <<< "$output" )
+sed -i'' -e "s,$outputHash,$got," flake.nix
+git diff
