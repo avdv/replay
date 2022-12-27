@@ -79,6 +79,7 @@
               hooks = {
                 nixpkgs-fmt.enable = true;
                 nix-linter.enable = true;
+                shellcheck.enable = true;
                 stylish-haskell.enable = true;
                 buildifier = {
                   enable = true;

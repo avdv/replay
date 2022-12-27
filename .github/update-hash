@@ -1,4 +1,4 @@
-# !/usr/bin/env bash
+#!/usr/bin/env bash
 
 set -eo pipefail
 
@@ -11,7 +11,10 @@ fi
 attr="$1"
 outputHash=$( nix eval --raw ".#${attr}.outputHash" )
 sed -i'' -e "s,$outputHash,," flake.nix
-! output=$( nix build --no-link --print-build-logs ".#${attr}" 2>&1 )
+if output=$( nix build --no-link --print-build-logs ".#${attr}" 2>&1 ); then
+    echo "expected the build to fail after replacing the hash" >&2
+    exit 1
+fi
 if [[ "$output" != *'error: hash mismatch in fixed-output derivation'* ]]; then
     echo "build problem: $output" >&2 ; exit 1
 fi
