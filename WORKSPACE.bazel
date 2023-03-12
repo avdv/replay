@@ -67,6 +67,10 @@ ghc_version = "9.2.7"
 # https://api.haskell.build/haskell/nixpkgs.html#haskell_register_ghc_nixpkgs
 haskell_register_ghc_nixpkgs(
     attribute_path = None,
+    ghcopts = [
+        "-W",
+        "-Werror",
+    ],
     nix_file = "//nix:ghc.nix",
     nix_file_deps = [
         "//:nixpkgs.nix",
