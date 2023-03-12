@@ -1,4 +1,5 @@
 {-# LANGUAGE BlockArguments    #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell   #-}
 module UI (run) where
@@ -144,11 +145,10 @@ watch files = do
     return $ Just bchan
 
 run :: Options -> IO DT.Text
-run options = do
+run opts@Options{useStdin} = do
   isTTY <- queryTerminal IO.stdInput
-  let fromStdin = useStdin options
-  when (isTTY && fromStdin) $ error "cannot use --from-stdin option when stdin is a TTY"
-  stdin <- if fromStdin then getContents else pure ""
+  when (isTTY && useStdin) $ error "cannot use --from-stdin option when stdin is a TTY"
+  stdin <- if useStdin then getContents else pure ""
   let initialState = State {
         _input = "", _stdInput = stdin, options = opts, _output = "", _errorMessage = Nothing, -- _search = "",
         _currentInput = ""
