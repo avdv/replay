@@ -8,9 +8,9 @@ import           System.Exit          (ExitCode (..))
 import           System.Process
 
 getOutput :: [String] -> String -> String -> ExceptT String IO String
-getOutput cmdline input stdin = do
-  let cmd = head cmdline
-      args = [(unpack . replace "input" (pack input) . pack) word | word <- tail cmdline]
+getOutput cmd_args input stdin = do
+  let cmd = head cmd_args
+      args = [(unpack . replace "input" (pack input) . pack) word | word <- tail cmd_args]
   (exitc, stdout, err) <- liftIO $ readProcessWithExitCode cmd args stdin
   case exitc of
     ExitFailure _ -> throwError err

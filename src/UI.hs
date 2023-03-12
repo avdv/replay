@@ -11,30 +11,24 @@ import qualified Data.ByteString.Char8 as BS
 import           Data.Foldable         (traverse_)
 import qualified Data.Text             as DT
 
-import           Lens.Micro            ((%~), (&), (.~), (?~), (^.))
+import           Lens.Micro            ((&), (.~), (?~), (^.))
 import           Lens.Micro.TH
 
 import           Brick.AttrMap         (attrMap)
 import           Brick.BChan           (BChan, newBChan, writeBChan)
-import           Brick.Forms           (Form, allFieldsValid, checkboxField,
-                                        editPasswordField, editShowableField,
-                                        editTextField, focusedFormInputAttr,
-                                        formFocus, formState, handleFormEvent,
-                                        invalidFields, invalidFormInputAttr,
-                                        newForm, radioField, renderForm,
-                                        setFieldValid, updateFormState, (@@=))
+import           Brick.Forms           (Form, editTextField, formState,
+                                        handleFormEvent, newForm, renderForm,
+                                        updateFormState, (@@=))
 import qualified Brick.Main            as M
-import           Brick.Types           (ViewportType (Both, Horizontal, Vertical),
-                                        Widget)
+import           Brick.Types           (ViewportType (Vertical), Widget)
 
 import qualified Brick.AttrMap         as A
 import qualified Brick.Types           as T
 import           Brick.Util            (fg, on)
 import qualified Brick.Widgets.Border  as B
 import qualified Brick.Widgets.Center  as C
-import           Brick.Widgets.Core    (cached, hBox, hLimit, str, txt,
-                                        updateAttrMap, vBox, vLimit, viewport,
-                                        withAttr, (<+>))
+import           Brick.Widgets.Core    (cached, hBox, str, txt, updateAttrMap,
+                                        vBox, vLimit, viewport, withAttr, (<+>))
 import           Lib                   (Options (..), getOutput)
 import           System.INotify
 import qualified System.Posix.IO       as IO (stdInput)
@@ -52,7 +46,7 @@ data State = State {
   _stdInput     :: String,
   _errorMessage :: Maybe String,
   _input        :: DT.Text,
-  _search       :: DT.Text,
+--  _search       :: DT.Text,
   _currentInput :: DT.Text
   }
 
@@ -81,8 +75,8 @@ drawUi f = [ui]
         ui = vBox $ pair : errorPane ++ [ B.hBorder, form ]
         form = renderForm f
         state = formState f
-        error = state^.errorMessage
-        errorPane = maybe [] (\m -> [errorWidget m]) error
+        errorMsg = state^.errorMessage
+        errorPane = maybe [] (\m -> [errorWidget m]) errorMsg
         pair = hBox [ viewport VP1 Vertical $
                       cached CachedText $ txt $ _output state
                     ]
@@ -156,7 +150,8 @@ run options = do
   when (isTTY && fromStdin) $ error "cannot use --from-stdin option when stdin is a TTY"
   stdin <- if fromStdin then getContents else pure ""
   let initialState = State {
-        _input = "", _stdInput = stdin, options = options, _output = "", _errorMessage = Nothing, _search = "", _currentInput = ""
+        _input = "", _stdInput = stdin, options = opts, _output = "", _errorMessage = Nothing, -- _search = "",
+        _currentInput = ""
         }
       f = mkForm initialState
       buildVty = do
@@ -164,6 +159,6 @@ run options = do
         config <- V.standardIOConfig
         V.mkVty $ config { V.inputFd = Just tty, V.outputFd = Just tty }
   initialVty <- buildVty
-  notify <- watch $ watchFiles options
+  notify <- watch $ watchFiles opts
   result <- M.customMain initialVty buildVty notify app f
   return $ formState result ^. output
