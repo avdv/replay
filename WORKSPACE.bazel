@@ -68,7 +68,13 @@ ghc_version = "9.2.7"
 haskell_register_ghc_nixpkgs(
     attribute_path = None,
     ghcopts = [
-        "-W",
+        "-Wall",
+        "-Wcompat",
+        "-Widentities",
+        "-Wincomplete-record-updates",
+        "-Wincomplete-uni-patterns",
+        "-Wpartial-fields",
+        "-Wredundant-constraints",
         "-Werror",
     ],
     nix_file = "//nix:ghc.nix",
