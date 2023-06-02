@@ -48,7 +48,7 @@
               exePath = "/bin/replay";
             };
 
-            bazelTarget = "//:replay";
+            bazelTargets = [ "//:replay" ];
 
             inherit bazel nativeBuildInputs;
 
