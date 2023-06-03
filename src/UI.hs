@@ -4,6 +4,7 @@
 module UI (run) where
 
 import           Control.Monad.Except
+import           Control.Monad.State   (gets, modify)
 import qualified Graphics.Vty          as V
 
 import qualified Data.ByteString.Char8 as BS
@@ -58,7 +59,7 @@ data State = State {
 makeLenses ''State
 
 errorAttr :: A.AttrName
-errorAttr = "error"
+errorAttr = A.attrName "error"
 
 borderMappings :: [(A.AttrName, V.Attr)]
 borderMappings =
@@ -92,40 +93,38 @@ vp1Scroll = M.viewportScroll VP1
 mkForm :: State -> Form State e Name
 mkForm = newForm [ (str "> " <+>) @@= editTextField currentInput InputField (Just 1) ]
 
-appEvent :: Form State MyEvents Name -> T.BrickEvent Name MyEvents -> T.EventM Name (T.Next (Form State MyEvents Name))
-appEvent f (T.AppEvent Rerun) = M.invalidateCacheEntry CachedText >> rerun f >>= M.continue
-appEvent s (T.VtyEvent (V.EvKey V.KDown []))  = M.vScrollBy vp1Scroll 1 >> M.continue s
-appEvent s (T.VtyEvent (V.EvKey V.KUp []))    = M.vScrollBy vp1Scroll (-1) >> M.continue s
-appEvent s (T.VtyEvent (V.EvKey V.KPageDown []))    = M.vScrollPage vp1Scroll T.Down >> M.continue s
-appEvent s (T.VtyEvent (V.EvKey V.KPageUp []))    = M.vScrollPage vp1Scroll T.Up >> M.continue s
-appEvent s (T.VtyEvent (V.EvKey V.KHome []))    = M.vScrollToBeginning vp1Scroll >> M.continue s
-appEvent s (T.VtyEvent (V.EvKey V.KEnd []))    = M.vScrollToEnd vp1Scroll >> M.continue s
-appEvent s (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt s
-appEvent f (T.VtyEvent (V.EvKey V.KEnter [])) = do
+appEvent :: T.BrickEvent Name MyEvents -> T.EventM Name (Form State MyEvents Name) ()
+appEvent (T.AppEvent Rerun) =
+  M.invalidateCacheEntry CachedText -- >> modify rerun
+appEvent (T.VtyEvent (V.EvKey V.KDown []))  = M.vScrollBy vp1Scroll 1
+appEvent (T.VtyEvent (V.EvKey V.KUp []))    = M.vScrollBy vp1Scroll (-1)
+appEvent (T.VtyEvent (V.EvKey V.KPageDown []))    = M.vScrollPage vp1Scroll T.Down
+appEvent (T.VtyEvent (V.EvKey V.KPageUp []))    = M.vScrollPage vp1Scroll T.Up
+appEvent (T.VtyEvent (V.EvKey V.KHome []))    = M.vScrollToBeginning vp1Scroll
+appEvent (T.VtyEvent (V.EvKey V.KEnd []))    = M.vScrollToEnd vp1Scroll
+appEvent (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt
+appEvent (T.VtyEvent (V.EvKey V.KEnter [])) = do
   M.invalidateCacheEntry CachedText
-  let state = formState f
-      state' = state & input .~ (state ^. currentInput)
-      f' = updateFormState state' f
-  rerun f' >>= M.continue
-appEvent s ev = handleFormEvent ev s >>= M.continue
+  state <- gets formState
+  modify $ updateFormState (state & input .~ (state ^. currentInput))
+  rerun
+appEvent ev = handleFormEvent ev
 
 
-rerun :: Form State e Name -> T.EventM Name (Form State e Name)
-rerun f =
+rerun :: T.EventM Name (Form State e Name) ()
+rerun =
   do
+    state <- gets formState
+    let text = state ^. input
+        cmdargs = cmdline $ options state
     out <- liftIO do
       let stdin = state ^. stdInput
       runExceptT $ getOutput cmdargs (DT.unpack text) stdin
-    let newState = case out of
-          Right newOutput ->
-            state & output .~ DT.pack newOutput
-                  & errorMessage .~ Nothing
-          Left msg -> state & errorMessage ?~ msg
-    return $ mkForm newState
-  where
-    state = formState f
-    text = state^.input
-    cmdargs = cmdline $ options state
+    modify $ updateFormState (case out of
+      Right newOutput ->
+         state & output .~ DT.pack newOutput
+               & errorMessage .~ Nothing
+      Left msg -> state & errorMessage ?~ msg)
 
 -- custom event type
 data MyEvents = Rerun
