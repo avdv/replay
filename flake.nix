@@ -19,7 +19,12 @@
           pkgs = import nixpkgs { inherit system; };
           bazel = pkgs.bazel_5;
           inherit (pkgs) bazel-watcher;
-          ghc = import ./nix/ghc.nix { inherit pkgs; };
+          ghc = import ./nix/ghc.nix
+            {
+              inherit pkgs;
+              ghcVersion = builtins.head (builtins.match ''.*[ \n]*GHC_VERSION *= *"([^ \n]+)".*'' (builtins.readFile ./ghc.bzl));
+              # ghcWith = pkgs.haskellPackages.ghcWithHoogle;
+            };
           nativeBuildInputs = with pkgs; [
             git
             ghc
