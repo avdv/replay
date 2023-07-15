@@ -1,6 +1,6 @@
-{ pkgs ? import ../nixpkgs.nix { } }:
+{ pkgs ? import <nixpkgs> { }, ghcVersion }:
 
-pkgs.haskellPackages.ghcWithPackages (hs: with hs; [
+pkgs.pkgs.haskell.packages."ghc${builtins.replaceStrings  ["."] [""] ghcVersion}".ghcWithPackages (hs: with hs; [
   brick
   hinotify
   hspec
