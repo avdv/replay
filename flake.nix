@@ -27,13 +27,10 @@
             };
           nativeBuildInputs = with pkgs; [
             git
-            ghc
             python3
           ];
-          devTools = with pkgs; [
-            bazel
-            haskell-language-server
-          ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
+          devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib; in
+            [ bazel buildifier ghc haskell-language-server ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
@@ -53,9 +50,11 @@
               exePath = "/bin/replay";
             };
 
+            inherit bazel;
+
             bazelTargets = [ "//:replay" ];
 
-            inherit bazel nativeBuildInputs;
+            nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
 
             fetchAttrs = {
               sha256 = "sha256-+XPMERWE9coEGjXv8u037Ar8riyg9ER+BDVFH2qLXSU=";
@@ -104,7 +103,8 @@
             shellHook = ''
               ${checks.pre-commit-check.shellHook}
             '';
-            nativeBuildInputs = nativeBuildInputs ++ devTools;
+            inherit nativeBuildInputs;
+            packages = devTools;
           };
 
           # compatibility for nix < 2.7.0
