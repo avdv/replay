@@ -18,19 +18,22 @@
         let
           pkgs = import nixpkgs { inherit system; };
           bazel = pkgs.bazel_5;
-          inherit (pkgs) bazel-watcher;
+          ghcVersion = builtins.head (builtins.match ''.*[ \n]*GHC_VERSION *= *"([^ \n]+)".*'' (builtins.readFile ./ghc.bzl));
           ghc = import ./nix/ghc.nix
             {
-              inherit pkgs;
-              ghcVersion = builtins.head (builtins.match ''.*[ \n]*GHC_VERSION *= *"([^ \n]+)".*'' (builtins.readFile ./ghc.bzl));
-              # ghcWith = pkgs.haskellPackages.ghcWithHoogle;
+              inherit ghcVersion pkgs;
+            };
+          ghcWithHoogle = import ./nix/ghc.nix
+            {
+              inherit ghcVersion pkgs;
+              withHoogle = true;
             };
           nativeBuildInputs = with pkgs; [
             git
             python3
           ];
           devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib; in
-            [ bazel buildifier ghc haskell-language-server ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
+            [ bazel buildifier ghcWithHoogle haskell-language-server ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
