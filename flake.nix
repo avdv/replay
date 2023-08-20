@@ -60,7 +60,7 @@
             nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
 
             fetchAttrs = {
-              sha256 = "sha256-liWoaQR9iwejCHtYhTOqY0cnB9dDt9p/J8tPDd/kwYU=";
+              sha256 = "sha256-iES0ffYeI2RqlkKhDLZzm7bunngme6YyoPQKPcuI0Sw=";
               preBuild = ''
                 rm .bazel-nix.rc
               '';
