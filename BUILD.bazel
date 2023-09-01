@@ -4,6 +4,7 @@ load(
     "haskell_library",
     "haskell_toolchain_library",
 )
+load("@bazel_gazelle//:def.bzl", "gazelle")
 
 config_setting(
     name = "optimize_build",
@@ -120,3 +121,5 @@ haskell_binary(
 #        "@stackage//:optparse-applicative",
 #    ],
 #)
+
+gazelle(name = "gazelle")
