@@ -77,21 +77,24 @@ load(
     "GHC_VERSION",
 )
 
+GHC_OPTS = [
+    "-Wall",
+    "-Wcompat",
+    "-Widentities",
+    "-Wincomplete-record-updates",
+    "-Wincomplete-uni-patterns",
+    "-Wpartial-fields",
+    "-Wredundant-constraints",
+    "-Werror",
+    "-XNamedFieldPuns",
+]
+
 # Fetch a GHC binary distribution from nixpkgs and register it as a toolchain.
 # For more information:
 # https://api.haskell.build/haskell/nixpkgs.html#haskell_register_ghc_nixpkgs
 haskell_register_ghc_nixpkgs(
     attribute_path = None,
-    ghcopts = [
-        "-Wall",
-        "-Wcompat",
-        "-Widentities",
-        "-Wincomplete-record-updates",
-        "-Wincomplete-uni-patterns",
-        "-Wpartial-fields",
-        "-Wredundant-constraints",
-        "-Werror",
-    ],
+    ghcopts = GHC_OPTS,
     nix_file = "//nix:ghc.nix",
     nix_file_deps = [
         "//:nixpkgs.nix",
@@ -108,7 +111,21 @@ haskell_register_ghc_nixpkgs(
 
 load("//:ghc_inside_nix.bzl", "register_ghc_in_nix")
 
-register_ghc_in_nix(version = GHC_VERSION)
+register_ghc_in_nix(
+    attribute_path = None,
+    ghcopts = GHC_OPTS,
+    nix_file = "//nix:ghc.nix",
+    nix_file_deps = [
+        "//:nixpkgs.nix",
+        "//:flake.lock",
+    ],
+    nixopts = [
+        "--argstr",
+        "ghcVersion",
+        GHC_VERSION,
+    ],
+    version = GHC_VERSION,
+)
 
 ###
 # gazelle
