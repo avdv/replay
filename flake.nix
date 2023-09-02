@@ -17,7 +17,7 @@
       (system:
         let
           pkgs = import nixpkgs { inherit system; };
-          bazel = pkgs.bazel_5;
+          bazel = pkgs.bazel_6;
           ghcVersion = builtins.head (builtins.match ''.*[ \n]*GHC_VERSION *= *"([^ \n]+)".*'' (builtins.readFile ./ghc.bzl));
           ghc = import ./nix/ghc.nix
             {
@@ -60,7 +60,7 @@
             nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
 
             fetchAttrs = {
-              sha256 = "sha256-iES0ffYeI2RqlkKhDLZzm7bunngme6YyoPQKPcuI0Sw=";
+              sha256 = "sha256-vc8kz5yyUPUX+mJVksb1bK2bZF4IL07d+EVmDVoDwto=";
               preBuild = ''
                 rm .bazel-nix.rc
               '';
