@@ -2,7 +2,7 @@
   description = "replay";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     flake-compat = {
       url = "github:edolstra/flake-compat";
       flake = false;
@@ -60,7 +60,7 @@
             nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
 
             fetchAttrs = {
-              sha256 = "sha256-MlmYxux4CT5r5+zDT8r5tPc1VYGX+wQNT9CUazE0irw=";
+              sha256 = "";
               preBuild = ''
                 rm .bazel-nix.rc
               '';
