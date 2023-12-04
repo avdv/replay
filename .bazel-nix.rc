@@ -5,3 +5,7 @@ run --host_platform=@rules_nixpkgs_core//platforms:host
 
 # disable auto config, use cc toolchain from nixpkgs
 build --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+
+# rules_haskell registers a default toolchain and the nixpkgs haskell toolchain
+# registered in the WORKSKPACE is skipped; explicitly add it here
+build --extra_toolchains @rules_haskell_ghc_nixpkgs_toolchain//:toolchain
