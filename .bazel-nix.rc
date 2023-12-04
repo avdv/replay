@@ -2,3 +2,7 @@
 # We need to use the rules_haskell nix toolchain accordingly:
 build --host_platform=@rules_nixpkgs_core//platforms:host
 run --host_platform=@rules_nixpkgs_core//platforms:host
+
+# rules_haskell registers a default toolchain and the nixpkgs haskell toolchain
+# registered in the WORKSKPACE is skipped; explicitly add it here
+build --extra_toolchains @rules_haskell_ghc_nixpkgs_toolchain//:toolchain
