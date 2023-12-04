@@ -1,58 +1,31 @@
 # Give your project a name. :)
 workspace(name = "replay")
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
-http_archive(
-    name = "bazel_skylib",
-    sha256 = "66ffd9315665bfaafc96b52278f57c7e2dd09f5ede279ea6d39b2be471e7e3aa",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.4.2/bazel-skylib-1.4.2.tar.gz",
-        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.4.2/bazel-skylib-1.4.2.tar.gz",
-    ],
-)
-
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 bazel_skylib_workspace()
 
-# Download rules_haskell and make it accessible as "@rules_haskell".
-http_archive(
-    name = "rules_haskell",
-    sha256 = "298f6f0db23391274b4eca215daa01797d05699469048ef94540d5829b466377",
-    strip_prefix = "rules_haskell-0.17",
-    url = "https://github.com/tweag/rules_haskell/archive/refs/tags/v0.17.tar.gz",
-)
-
-http_archive(
-    name = "rules_sh",
-    sha256 = "d668bb32f112ead69c58bde2cae62f6b8acefe759a8c95a2d80ff6a85af5ac5e",
-    strip_prefix = "rules_sh-0.3.0",
-    urls = ["https://github.com/tweag/rules_sh/archive/v0.3.0.tar.gz"],
-)
-
-load("@rules_sh//sh:repositories.bzl", "rules_sh_dependencies")
-
-rules_sh_dependencies()
-
-load("@rules_sh//sh:posix.bzl", "sh_posix_configure")
-
-# Bring in a "local" toolchain - (only hermetic if in a pure nix-shell!)
-sh_posix_configure()
+[
+    http_archive(
+        name = "rules_nixpkgs_{}".format(name),
+        sha256 = "980edfceef2e59e1122d9be6c52413bc298435f0a3d452532b8a48d7562ffd67",
+        strip_prefix = "rules_nixpkgs-0.10.0/toolchains/{}".format(name),
+        urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v0.10.0/rules_nixpkgs-0.10.0.tar.gz"],
+    )
+    for name in [
+        "go",
+        "python",
+        "posix",
+    ]
+]
 
 load(
-    "@rules_haskell//haskell:repositories.bzl",
-    "rules_haskell_dependencies",
-)
-
-# Setup all Bazel dependencies required by rules_haskell.
-rules_haskell_dependencies()
-
-# Load nixpkgs_git_repository from rules_nixpkgs,
-# which was already initialized by rules_haskell_dependencies above.
-load(
-    "@io_tweag_rules_nixpkgs//nixpkgs:nixpkgs.bzl",
+    "@rules_nixpkgs_core//:nixpkgs.bzl",
     "nixpkgs_local_repository",
+)
+load(
+    "@rules_nixpkgs_python//:python.bzl",
     "nixpkgs_python_configure",
 )
 
@@ -168,14 +141,16 @@ load(
 nixpkgs_go_configure(
     attribute_path = "go_1_20",
     repository = "@nixpkgs",
+    rules_go_repo_name = "io_bazel_rules_go",
 )
 
 gazelle_dependencies(go_repository_default_config = "//:WORKSPACE.bazel")
 
 http_archive(
     name = "io_tweag_gazelle_haskell_modules",
-    strip_prefix = "gazelle_haskell_modules-main",
-    url = "https://github.com/tweag/gazelle_haskell_modules/archive/main.zip",
+    sha256 = "5cc7d3fadab86cbbee6a99d99c3f94f076f4cdac53c6e583ab00e33a2dd0fb68",
+    strip_prefix = "gazelle_haskell_modules-6d9cedee8e00668eea51e057fd242e3218c1325a",
+    url = "https://github.com/tweag/gazelle_haskell_modules/archive/6d9cedee8e00668eea51e057fd242e3218c1325a.zip",
 )
 
 load("@io_tweag_gazelle_haskell_modules//:defs.bzl", "gazelle_haskell_modules_dependencies")
