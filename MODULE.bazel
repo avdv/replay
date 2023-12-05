@@ -17,3 +17,11 @@ bazel_dep(name = "rules_cc", version = "0.0.9")
 sh_configure = use_extension("@rules_sh//bzlmod:extensions.bzl", "sh_configure")
 
 use_repo(sh_configure, "local_posix_config")
+
+stack = use_extension("@rules_haskell//extensions:stack_snapshot.bzl", "stack_snapshot")
+
+stack.snapshot(name = "lts-18.28")
+
+stack.package(name = "json")
+
+use_repo(stack, "stackage")
