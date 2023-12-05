@@ -177,14 +177,3 @@ load("@io_tweag_gazelle_haskell_modules//:defs.bzl", "gazelle_haskell_modules_de
 gazelle_haskell_modules_dependencies(
     # json = "@someother//:some-other-json",
 )
-
-load("@rules_haskell//haskell:cabal.bzl", "stack_snapshot")
-
-stack_snapshot(
-    name = "stackage",
-    packages = [
-        "json",
-    ],
-    # Most snapshots of your choice might do
-    snapshot = "lts-18.28",
-)
