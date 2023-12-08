@@ -174,8 +174,9 @@ gazelle_dependencies(go_repository_default_config = "//:WORKSPACE.bazel")
 
 http_archive(
     name = "io_tweag_gazelle_haskell_modules",
-    strip_prefix = "gazelle_haskell_modules-main",
-    url = "https://github.com/tweag/gazelle_haskell_modules/archive/main.zip",
+    sha256 = "ddf75e0fa52d9b1571edf45bacecc84f39c7be05c6c65eaf7bcdc5817bb6e2e4",
+    strip_prefix = "gazelle_haskell_modules-52396b6a5f53c8dbaacee426d38ca63e9902f004",
+    url = "https://github.com/tweag/gazelle_haskell_modules/archive/52396b6a5f53c8dbaacee426d38ca63e9902f004.zip",
 )
 
 load("@io_tweag_gazelle_haskell_modules//:defs.bzl", "gazelle_haskell_modules_dependencies")
