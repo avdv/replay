@@ -21,7 +21,7 @@ config_setting(
 
 haskell_library(
     name = "lib",
-    compiler_flags = [
+    ghcopts = [
         "-Wall",
     ] + select(
         {
@@ -112,7 +112,7 @@ haskell_toolchain_library(
 
 haskell_binary(
     name = "replay",
-    compiler_flags =
+    ghcopts =
         [
             "-Wall",
             "-threaded",  # Use multicore runtime
