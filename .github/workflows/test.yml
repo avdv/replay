@@ -15,7 +15,7 @@ jobs:
     - uses: cachix/install-nix-action@v24
       with:
         nix_path: nixpkgs=./nix/nixpkgs.nix
-    - uses: cachix/cachix-action@v13
+    - uses: cachix/cachix-action@v14
       with:
         name: cbley
         extraPullNames: pre-commit-hooks
@@ -34,7 +34,7 @@ jobs:
     - uses: cachix/install-nix-action@v24
       with:
         nix_path: nixpkgs=./nix/nixpkgs.nix
-    - uses: cachix/cachix-action@v13
+    - uses: cachix/cachix-action@v14
       with:
         name: cbley
         extraPullNames: pre-commit-hooks
