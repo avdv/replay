@@ -34,7 +34,10 @@ options =
           <> short 'i'
           <> help "read input from stdin, pipe into program continually"
       )
-    <*> some (argument str (metavar "COMMAND ARGS"))
+    <*> argument str
+      ( metavar "COMMAND"
+          <> action "command" )
+    <*> some (argument str (metavar "[ARGS]"))
 
 main :: IO ()
 main = do

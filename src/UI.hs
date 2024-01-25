@@ -111,7 +111,8 @@ rerun =
   do
     state <- gets formState
     let text = state ^. input
-        cmdargs = cmdline $ options state
+        opt = options state
+        cmdargs = command opt : args opt
     out <- liftIO do
       let stdin = state ^. stdInput
       runExceptT $ getOutput cmdargs (DT.unpack text) stdin
