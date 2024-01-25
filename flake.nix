@@ -30,6 +30,7 @@
             };
           nativeBuildInputs = with pkgs; [
             git
+            installShellFiles
             python3
           ];
           devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib; in
@@ -73,6 +74,11 @@
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
+
+                installShellCompletion --cmd replay \
+                   --bash <( bazel-bin/replay --bash-completion-script $out/bin/replay ) \
+                   --fish <( bazel-bin/replay --fish-completion-script $out/bin/replay ) \
+                   --zsh <( bazel-bin/replay --zsh-completion-script $out/bin/replay )
               '';
             };
           };

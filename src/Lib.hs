@@ -20,6 +20,7 @@ data Options = Options
   { varName    :: String,
     watchFiles :: [String],
     useStdin   :: Bool,
-    cmdline    :: [String]
+    command    :: String,
+    args       :: [String]
   }
   deriving (Show)
