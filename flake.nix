@@ -38,7 +38,8 @@
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
-            name = "replay-0.2.0";
+            pname = "replay";
+            version = with builtins; head (split "\n" (readFile ./VERSION));
             src = ./.;
 
             removeRulesCC = false;
