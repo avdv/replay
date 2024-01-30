@@ -4,9 +4,11 @@ import           Data.Text           (unpack)
 import           Lib                 (Options (..))
 import           Options.Applicative
 import           UI                  (run)
+import qualified Version             (version)
 
 versionOption :: Parser (a -> a)
-versionOption = infoOption "replay version 0.1" (long "version" <> short 'v' <> help "output version information and exit")
+versionOption = infoOption ("replay version " ++ Version.version)
+  (long "version" <> short 'v' <> help "output version information and exit")
 
 options :: Parser Options
 options =
