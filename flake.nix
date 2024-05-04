@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nix-filter.url = "github:numtide/nix-filter";
     flake-compat = {
       url = "github:edolstra/flake-compat";
       flake = false;
@@ -11,12 +12,13 @@
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
   };
 
-  outputs = { nixpkgs, flake-utils, pre-commit-hooks, ... }:
+  outputs = { self, nixpkgs, nix-filter, flake-utils, pre-commit-hooks, ... }:
     with flake-utils.lib.system;
     flake-utils.lib.eachSystem [ aarch64-linux x86_64-darwin x86_64-linux ]
       (system:
         let
           pkgs = import nixpkgs { inherit system; };
+          filter = nix-filter.lib;
           bazel = pkgs.bazel_6;
           ghcVersion = builtins.head (builtins.match ''.*[ \n]*GHC_VERSION *= *"([^ \n]+)".*'' (builtins.readFile ./ghc.bzl));
           ghc = import ./nix/ghc.nix
@@ -40,7 +42,19 @@
           packages.replay = pkgs.buildBazelPackage {
             pname = "replay";
             version = with builtins; head (split "\n" (readFile ./VERSION));
-            src = ./.;
+            src = filter {
+              root = self;
+              exclude = [
+                (filter.matchExt ".md")
+                ./.bazel-nix.rc # disable the nixpkgs toolchain inside nix
+                ./.envrc
+                ./.github
+                ./flake.nix
+                ./flake.lock
+                ./images
+                ./shell.nix
+              ];
+            };
 
             removeRulesCC = false;
 
@@ -63,15 +77,11 @@
 
             fetchAttrs = {
               sha256 = "sha256-RAzAnD/xO42pGzHH0NgRe4yIwcLQDqXWD0/WxjFnnVo=";
-              preBuild = ''
-                rm .bazel-nix.rc
-              '';
             };
 
             buildAttrs = {
               preBuild = ''
                 patchShebangs $bazelOut/external/rules_haskell/haskell/private/ghc_wrapper.sh
-                rm .bazel-nix.rc
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
