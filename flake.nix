@@ -49,8 +49,10 @@
                 ./.bazel-nix.rc # disable the nixpkgs toolchain inside nix
                 ./.envrc
                 ./.github
+                ./.hie-bios
                 ./flake.nix
                 ./flake.lock
+                ./hie.yaml
                 ./images
                 ./shell.nix
               ];

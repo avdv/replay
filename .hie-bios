@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+# hie-bios passes in HIE_BIOS_ARG, but this script accepts an argument for testing alternatively
+arg="${HIE_BIOS_ARG-$1}"
+
+ws=$(bazel info workspace)
+execroot=$(bazel info execution_root)
+
+# make arg relative to workspace
+source="${arg#"$ws"/}"
+
+# determine the haskell_binary or haskell_library target of the source file
+declare -a target
+mapfile -t target < <(
+    bazel query "let uses = rdeps(//..., $source, 2) in kind(_haskell_library, \$uses) union kind(_haskell_binary, \$uses)"
+)
+
+function die() {
+    echo "$@" >&2
+    exit 1
+}
+
+case "${#target[@]}" in
+    1) ;;
+    0)
+        die "could not determine haskell target for $arg"
+        ;;
+    *)
+        die "matched multiple targets for $arg"
+        ;;
+esac
+
+# build all dependent targets
+declare -a dep_targets
+mapfile -t dep_targets < <(bazel query "kind(rule, deps(${target[0]}, 1))")
+
+if [[ "${#dep_targets[@]}" -ge 1 ]]; then
+    bazel build "${dep_targets[@]}"
+fi
+
+hie_bios_flags() {
+    echo -i
+    bazel run "${target[0]}@repl@bios" | while read -r line; do
+        # The bios script references files in the execroot bazel folder.
+        #
+        # We need to re-map the files back to to the workspace directory since
+        # the IDE should not try to open files inside of the execroot (and the
+        # hls would not work there).
+        #
+        # Also, hie-bios / ghcide needs to be able to locate files in the search
+        # path (given with -i flags). This is how it learns about the source files
+        # it should track, otherwise it will not be able to load modules from the
+        # same component. So we also have to map the search paths referencing
+        # the execroot back to the workspace too.
+        if [[ "$line" = "$execroot/"* ]]; then
+            relpath="${line#"$execroot/"}"
+            if [[ -f "$relpath" ]]; then
+                echo "$relpath"
+                continue
+            fi
+        elif [[ "$line" = "-i$execroot/"* ]]; then
+            relpath="${line#-i"$execroot"/}"
+            if [[ -d "$relpath" ]]; then
+                echo "-i$relpath"
+                continue
+            fi
+        fi
+        echo "$line"
+    done
+    # Make warnings non-fatal
+    echo -Wwarn
+}
+
+hie_bios_deps() {
+    bazel query "filter(\"^//\", buildfiles(deps(${target[0]})))" | while read -r label; do
+        package="${label#//}"
+        package="${package%:*}"
+        file="${label#*:}"
+
+        echo "$package/$file"
+    done
+}
+
+if [[ -z "${HIE_BIOS_DEPS-}" ]]; then
+    hie_bios_deps >&2
+else
+    hie_bios_deps >"$HIE_BIOS_DEPS"
+fi
+
+if [[ -z "${HIE_BIOS_OUTPUT-}" ]]; then
+    hie_bios_flags
+else
+    hie_bios_flags >"$HIE_BIOS_OUTPUT"
+fi
