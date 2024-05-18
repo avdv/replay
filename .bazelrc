@@ -4,6 +4,8 @@ build:ci --verbose_failures
 common:ci --color=no
 test:ci --test_output=errors
 
+build --incompatible_enable_cc_toolchain_resolution
+
 try-import %workspace%/.bazel-nix.rc
 
 # test environment does not propagate locales by default
