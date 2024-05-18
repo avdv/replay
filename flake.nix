@@ -121,7 +121,7 @@
             };
           };
 
-          devShells.default = pkgs.mkShell {
+          devShells.default = pkgs.mkShellNoCC {
             shellHook = ''
               ${checks.pre-commit-check.shellHook}
             '';

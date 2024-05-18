@@ -52,8 +52,14 @@ rules_haskell_dependencies()
 # which was already initialized by rules_haskell_dependencies above.
 load(
     "@io_tweag_rules_nixpkgs//nixpkgs:nixpkgs.bzl",
+    "nixpkgs_cc_configure",
     "nixpkgs_local_repository",
     "nixpkgs_python_configure",
+)
+
+nixpkgs_cc_configure(
+    name = "nixpkgs_cc",
+    repository = "@nixpkgs",
 )
 
 nixpkgs_python_configure(
