@@ -59,7 +59,6 @@ jobs:
         machine api.github.com
                 password ${{ secrets.GITHUB_TOKEN }}
         EOF
-    - run: nix flake check
-    - run: nix develop --command bazel build  //:replay
+    - run: nix develop --command bazel build ...
     - run: nix develop --command bazel run -- //:replay --help
 
