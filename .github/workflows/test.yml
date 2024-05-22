@@ -23,6 +23,7 @@ jobs:
         # Only needed for private caches
         #authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix flake check
+    - run: nix build --print-build-logs --rebuild '.#replay.deps'
     - run: nix build --print-build-logs
     - run: nix run . -- --help
 
