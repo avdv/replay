@@ -23,7 +23,12 @@ jobs:
         # Only needed for private caches
         #authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix flake check
-    - run: nix build --print-build-logs --rebuild '.#replay.deps'
+    - run: nix develop --command .github/update-hash replay.deps
+    - run: |
+        if ! git diff --exit-code flake.nix; then
+          echo "error: fixed output derivation hash changed" >&2
+          exit 1
+        fi
     - run: nix build --print-build-logs
     - run: nix run . -- --help
 
