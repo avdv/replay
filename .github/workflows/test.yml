@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4.1.6
+      with:
+        persist-credentials: false
     - uses: cachix/install-nix-action@v27
       with:
         nix_path: nixpkgs=./nix/nixpkgs.nix
@@ -24,11 +26,18 @@ jobs:
         #authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix flake check
     - run: nix develop --command .github/update-hash replay.deps
-    - run: |
-        if ! git diff --exit-code flake.nix; then
-          echo "error: fixed output derivation hash changed" >&2
-          exit 1
-        fi
+    - name: Update PR
+      id: update_pr
+      uses: gr2m/create-or-update-pull-request-action@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PR_TOKEN }}
+      with:
+        author: "bot <bot@users.noreply.github.com>"
+        commit-message: "Update replay.deps hash"
+        branch: ${{ github.head_ref }}
+        update-pull-request-title-and-body: false
+    - run: exit 1
+      if: ${{ steps.update_pr.outputs.result != 'unchanged' }}
     - run: nix build --print-build-logs
     - run: nix run . -- --help
 
