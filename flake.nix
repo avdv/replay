@@ -2,7 +2,7 @@
   description = "replay";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     nix-filter.url = "github:numtide/nix-filter";
     flake-compat = {
       url = "github:edolstra/flake-compat";
@@ -78,7 +78,7 @@
             nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
 
             fetchAttrs = {
-              sha256 = "sha256-NTxOMFbWiE6PUwNutI0ezrUhlWKL023MZhcL3LEnFuw=";
+              sha256 = "sha256-KGfRu7XrleiHGsVDZdhJHVgD91HN4ud4t19SFW3LjiM=";
             };
 
             buildAttrs = {
