@@ -47,6 +47,7 @@ haskell_library(
         ":text_pkg",
         ":unix_pkg",
         ":vty_pkg",
+        ":vty_unix_pkg",
     ],
 )
 
@@ -83,6 +84,11 @@ haskell_toolchain_library(
 haskell_toolchain_library(
     name = "vty_pkg",
     package = "vty",
+)
+
+haskell_toolchain_library(
+    name = "vty_unix_pkg",
+    package = "vty-unix",
 )
 
 haskell_toolchain_library(
