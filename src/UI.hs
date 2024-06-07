@@ -5,36 +5,45 @@
 module UI (run) where
 
 import           Control.Monad.Except
-import           Control.Monad.State   (gets, modify)
-import qualified Graphics.Vty          as V
+import           Control.Monad.State                 (gets, modify)
+import qualified Data.ByteString.Char8               as BS
+import           Data.Foldable                       (traverse_)
+import qualified Data.Text                           as DT
+import qualified Graphics.Vty                        as V
+import qualified Graphics.Vty.Config                 as Config
+import qualified Graphics.Vty.Platform.Unix          as V
+import qualified Graphics.Vty.Platform.Unix.Settings as Settings
 
-import qualified Data.ByteString.Char8 as BS
-import           Data.Foldable         (traverse_)
-import qualified Data.Text             as DT
-
-import           Lens.Micro            ((&), (.~), (?~), (^.))
+import           Lens.Micro                          ((&), (.~), (?~), (^.))
 import           Lens.Micro.TH
 
-import           Brick.AttrMap         (attrMap)
-import           Brick.BChan           (BChan, newBChan, writeBChan)
-import           Brick.Forms           (Form, editTextField, formState,
-                                        handleFormEvent, newForm, renderForm,
-                                        updateFormState, (@@=))
-import qualified Brick.Main            as M
-import           Brick.Types           (ViewportType (Vertical), Widget)
+import           Brick.AttrMap                       (attrMap)
+import           Brick.BChan                         (BChan, newBChan,
+                                                      writeBChan)
+import           Brick.Forms                         (Form, editTextField,
+                                                      formState,
+                                                      handleFormEvent, newForm,
+                                                      renderForm,
+                                                      updateFormState, (@@=))
+import qualified Brick.Main                          as M
+import           Brick.Types                         (ViewportType (Vertical),
+                                                      Widget)
 
-import qualified Brick.AttrMap         as A
-import qualified Brick.Types           as T
-import           Brick.Util            (fg, on)
-import qualified Brick.Widgets.Border  as B
-import qualified Brick.Widgets.Center  as C
-import           Brick.Widgets.Core    (cached, hBox, str, txt, updateAttrMap,
-                                        vBox, vLimit, viewport, withAttr, (<+>))
-import           Lib                   (Options (..), getOutput)
+import qualified Brick.AttrMap                       as A
+import qualified Brick.Types                         as T
+import           Brick.Util                          (fg, on)
+import qualified Brick.Widgets.Border                as B
+import qualified Brick.Widgets.Center                as C
+import           Brick.Widgets.Core                  (cached, hBox, str, txt,
+                                                      updateAttrMap, vBox,
+                                                      vLimit, viewport,
+                                                      withAttr, (<+>))
+import           Lib                                 (Options (..), getOutput)
 import           System.INotify
-import qualified System.Posix.IO       as IO (stdInput)
-import           System.Posix.IO       (OpenMode (..), defaultFileFlags, openFd)
-import           System.Posix.Terminal (queryTerminal)
+import qualified System.Posix.IO                     as IO (stdInput)
+import           System.Posix.IO                     (OpenMode (..),
+                                                      defaultFileFlags, openFd)
+import           System.Posix.Terminal               (queryTerminal)
 
 data Name = VP1
           | InputField
@@ -157,8 +166,10 @@ run opts@Options{useStdin} = do
       f = mkForm initialState
       buildVty = do
         tty <- openFd "/dev/tty" ReadWrite Nothing defaultFileFlags
-        config <- V.standardIOConfig
-        V.mkVty $ config { V.inputFd = Just tty, V.outputFd = Just tty }
+        def <- Settings.defaultSettings
+        V.mkVtyWithSettings Config.defaultConfig $ def {
+          Settings.settingInputFd = tty,
+          Settings.settingOutputFd = tty }
   initialVty <- buildVty
   notify <- watch $ watchFiles opts
   result <- M.customMain initialVty buildVty notify app f
