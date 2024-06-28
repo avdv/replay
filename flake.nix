@@ -37,6 +37,13 @@
           ];
           devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib; in
             [ bazel buildifier ghcWithHoogle haskell-language-server ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
+
+          registry = pkgs.fetchFromGitHub {
+            owner = "bazelbuild";
+            repo = "bazel-central-registry";
+            rev = "1c729c2775715fd98f0f948a512eb173213250da";
+            hash = "sha256-1iaDDM8/v8KCOUjPgLUtZVta7rMzwlIK//cCoLUrb/s=";
+          };
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
@@ -60,7 +67,11 @@
 
             removeRulesCC = false;
 
-            bazelFlags = [ "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain" ];
+            bazelFlags = [
+              "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain"
+              "--registry"
+              "file://${registry}"
+            ];
 
             bazelBuildFlags = [
               "--compilation_mode=opt" # optimize
