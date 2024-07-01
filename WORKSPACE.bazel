@@ -1,73 +1,13 @@
 # Give your project a name. :)
 workspace(name = "replay")
 
-load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@rules_nixpkgs_cc//:cc.bzl", "nixpkgs_cc_configure")
 
-bazel_skylib_workspace()
-
-[
-    http_archive(
-        name = "rules_nixpkgs_{}".format(name),
-        sha256 = "2a555348d7f8593fca2bf3fc6ce53c5d62929de81b6c292e23f16c557c0ae45a",
-        strip_prefix = "rules_nixpkgs-0.11.1/toolchains/{}".format(name),
-        urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v0.11.1/rules_nixpkgs-0.11.1.tar.gz"],
-    )
-    for name in [
-        "go",
-        "python",
-        "posix",
-    ]
-]
-
-# Add rules_nixpkgs toolchains
-load(
-    "@io_tweag_rules_nixpkgs//nixpkgs:repositories.bzl",
-    "rules_nixpkgs_dependencies",
-)
-
-rules_nixpkgs_dependencies(
-    toolchains = [
-        "cc",
-        "go",
-        "python",
-        "posix",
-    ],
-)
-
-load(
-    "@rules_nixpkgs_core//:nixpkgs.bzl",
-    "nixpkgs_local_repository",
-)
-load(
-    "@rules_nixpkgs_python//:python.bzl",
-    "nixpkgs_python_configure",
-)
-
+# TODO Use module extension once available.
 nixpkgs_cc_configure(
     name = "nixpkgs_cc",
     repository = "@nixpkgs",
-)
-
-nixpkgs_python_configure(
-    repository = "@nixpkgs",
-)
-
-nixpkgs_local_repository(
-    name = "nixpkgs",
-    nix_file = "//:nixpkgs.nix",
-    nix_file_deps = [
-        "//:flake.lock",
-    ],
-)
-
-load(
-    "@rules_haskell//haskell:nixpkgs.bzl",
-    "haskell_register_ghc_nixpkgs",
-)
-load(
-    "//:ghc.bzl",
-    "GHC_VERSION",
 )
 
 GHC_OPTS = [
@@ -82,26 +22,10 @@ GHC_OPTS = [
     "-XNamedFieldPuns",
 ]
 
-# Fetch a GHC binary distribution from nixpkgs and register it as a toolchain.
-# For more information:
-# https://api.haskell.build/haskell/nixpkgs.html#haskell_register_ghc_nixpkgs
-haskell_register_ghc_nixpkgs(
-    attribute_path = None,
-    ghcopts = GHC_OPTS,
-    nix_file = "//nix:ghc.nix",
-    nix_file_deps = [
-        "//:nixpkgs.nix",
-        "//:flake.lock",
-    ],
-    nixopts = [
-        "--argstr",
-        "ghcVersion",
-        GHC_VERSION,
-    ],
-    repository = "@nixpkgs",
-    version = GHC_VERSION,
+load(
+    "//:ghc.bzl",
+    "GHC_VERSION",
 )
-
 load("//:ghc_inside_nix.bzl", "register_ghc_in_nix")
 
 register_ghc_in_nix(

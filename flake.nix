@@ -89,12 +89,12 @@
             nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
 
             fetchAttrs = {
-              sha256 = "sha256-TfkXA+QRx2/EMzP/8LgIu9G2MUGwWkvX2nHhRyqaYhY=";
+              sha256 = "sha256-A3DM+leQiC58MyVIUPTQnpUh5mSJgd7AoztHT6/nIHM=";
             };
 
             buildAttrs = {
               preBuild = ''
-                patchShebangs $bazelOut/external/rules_haskell/haskell/private/ghc_wrapper.sh
+                patchShebangs $bazelOut/external/rules_haskell~0.19/haskell/private/ghc_wrapper.sh
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
