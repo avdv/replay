@@ -1,0 +1,20 @@
+diff --git a/rules_haskell_nix/extensions/nix_haskell_toolchains.bzl b/rules_haskell_nix/extensions/nix_haskell_toolchains.bzl
+index f8ee4a7b..447bfb23 100644
+--- a/rules_haskell_nix/extensions/nix_haskell_toolchains.bzl
++++ b/rules_haskell_nix/extensions/nix_haskell_toolchains.bzl
+@@ -184,6 +184,7 @@ def _nix_haskell_toolchains_impl(mctx):
+                 nixopts = new_tag.nixopts,
+                 repositories = new_tag.repositories,
+                 repository = new_tag.repository,
++                _bzlmod = True,
+             )
+ 
+             # Unix tools toolchain required for Cabal packages
+@@ -198,6 +199,7 @@ def _nix_haskell_toolchains_impl(mctx):
+             nixpkgs_sh_posix_configure(
+                 name = nixpkgs_sh_posix_repo_name,
+                 register = False,
++                _bzlmod = True,
+                 **sh_posix_nixpkgs_kwargs
+             )
+ 
