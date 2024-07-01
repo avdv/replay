@@ -4,8 +4,22 @@ module(
 )
 
 bazel_dep(name = "rules_nixpkgs_core", version = "0.11.1")
-bazel_dep(name = "rules_haskell", version = "0.18")
-
+bazel_dep(
+    name = "rules_haskell_nix",
+    version = "0.19",
+)
+bazel_dep(
+    name = "rules_haskell",
+    version = "0.19",
+)
+bazel_dep(
+    name = "rules_nixpkgs_cc",
+    version = "0.11.1",
+)
+bazel_dep(
+    name = "rules_nixpkgs_python",
+    version = "0.11.1",
+)
 bazel_dep(name = "platforms", version = "0.0.8")
 bazel_dep(name = "protobuf", version = "21.7")
 bazel_dep(name = "rules_proto", version = "5.3.0-21.7")  #, repo_name = "com_google_protobuf")
@@ -13,6 +27,52 @@ bazel_dep(name = "bazel_skylib", version = "1.5.0")
 bazel_dep(name = "rules_sh", version = "0.4.0")
 bazel_dep(name = "rules_python", version = "0.25.0")
 bazel_dep(name = "rules_cc", version = "0.0.9")
+bazel_dep(name = "rules_nixpkgs_go", version = "0.11.1")
+
+GHC_OPTS = [
+    "-Wall",
+    "-Wcompat",
+    "-Widentities",
+    "-Wincomplete-record-updates",
+    "-Wincomplete-uni-patterns",
+    "-Wpartial-fields",
+    "-Wredundant-constraints",
+    "-Werror",
+    "-XNamedFieldPuns",
+]
+
+GHC_VERSION = "9.4.8"
+
+nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
+nix_repo.file(
+    name = "nixpkgs",
+    file = "//:nixpkgs.nix",
+    file_deps = [
+    "//:flake.lock",
+    ]
+)
+use_repo(nix_repo, "nixpkgs")
+
+nix_haskell_toolchains = use_extension(
+    "@rules_haskell_nix//extensions:nix_haskell_toolchains.bzl",
+    "nix_haskell_toolchains",
+)
+nix_haskell_toolchains.new(
+    attribute_path = "",
+    ghcopts = GHC_OPTS,
+    nix_file = "//nix:ghc.nix",
+    nix_file_deps = [
+        "//:nixpkgs.nix",
+        "//:flake.lock",
+    ],
+    nixopts = [
+        "--argstr",
+        "ghcVersion",
+        GHC_VERSION,
+    ],
+    repository = "@nixpkgs",
+    version = GHC_VERSION,
+)
 
 sh_configure = use_extension("@rules_sh//bzlmod:extensions.bzl", "sh_configure")
 
