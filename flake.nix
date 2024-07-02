@@ -41,8 +41,8 @@
           registry = pkgs.fetchFromGitHub {
             owner = "bazelbuild";
             repo = "bazel-central-registry";
-            rev = "1c729c2775715fd98f0f948a512eb173213250da";
-            hash = "sha256-1iaDDM8/v8KCOUjPgLUtZVta7rMzwlIK//cCoLUrb/s=";
+            rev = "63e59351d9d3bb520c9db83529c9541a2b05c800";
+            hash = "sha256-azNXvy+vIUA0SCjZNcT9i117pCA0Xfc/NEzIGVNsZ/o=";
           };
         in
         rec {
