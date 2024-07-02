@@ -1,6 +1,9 @@
 common --enable_bzlmod
 
-common --registry=file:///%workspace%/registry
+# enable common config by default (needed for renovate to ignore the file: registry)
+common --config common
+
+common:common --registry=file:///%workspace%/registry
 
 build:ci --loading_phase_threads=1
 build:ci --jobs=2
