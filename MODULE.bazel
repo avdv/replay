@@ -20,7 +20,7 @@ bazel_dep(
     name = "rules_nixpkgs_python",
     version = "0.11.1",
 )
-bazel_dep(name = "platforms", version = "0.0.8")
+bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "protobuf", version = "21.7")
 bazel_dep(name = "rules_proto", version = "5.3.0-21.7")  #, repo_name = "com_google_protobuf")
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
