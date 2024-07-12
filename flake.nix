@@ -10,9 +10,13 @@
     };
     flake-utils.url = "github:numtide/flake-utils";
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+    bazel-central-registry = {
+      url = "github:bazelbuild/bazel-central-registry";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, nix-filter, flake-utils, pre-commit-hooks, ... }:
+  outputs = { self, nixpkgs, nix-filter, flake-utils, pre-commit-hooks, bazel-central-registry, ... }:
     with flake-utils.lib.system;
     flake-utils.lib.eachSystem [ aarch64-linux x86_64-darwin x86_64-linux ]
       (system:
@@ -37,13 +41,6 @@
           ];
           devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib; in
             [ bazel buildifier ghcWithHoogle haskell-language-server ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
-
-          registry = pkgs.fetchFromGitHub {
-            owner = "bazelbuild";
-            repo = "bazel-central-registry";
-            rev = "63e59351d9d3bb520c9db83529c9541a2b05c800";
-            hash = "sha256-azNXvy+vIUA0SCjZNcT9i117pCA0Xfc/NEzIGVNsZ/o=";
-          };
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
@@ -70,7 +67,7 @@
             bazelFlags = [
               "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain"
               "--registry"
-              "file://${registry}"
+              "file://${bazel-central-registry}"
             ];
 
             bazelBuildFlags = [
