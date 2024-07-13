@@ -86,7 +86,7 @@
             nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
 
             fetchAttrs = {
-              sha256 = "sha256-7ko81ciFlpkf4rHSOk82J9lToVndY20IfJY0tAJP0sE=";
+              sha256 = "sha256-XcwjUCb3DA4M0lU+S3kg4tAtr9GfHM+ZZF9HGd/YmgA=";
             };
 
             buildAttrs = {
