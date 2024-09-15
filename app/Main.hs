@@ -1,6 +1,9 @@
+{-# LANGUAGE ApplicativeDo   #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Main where
 
+import           Control.Applicative  ((<**>), (<|>))
 import           Control.Exception    (catchJust)
 import qualified Data.Attoparsec.Text as P (Parser, char, many', notChar, sepBy)
 import           Data.Bifunctor       (first)
@@ -11,7 +14,7 @@ import           Data.Ini             (Ini, keys, lookupValue, parseValue,
 import           Data.Text            (Text, pack, unpack)
 import           Lib                  (Options (Options))
 import qualified Lib                  as Options (Options (..))
-import           Options.Applicative
+import qualified Options.Applicative  as OA
 import           System.Directory     (XdgDirectory (XdgConfig),
                                        getXdgDirectory)
 import           System.Exit          (exitFailure)
@@ -21,56 +24,57 @@ import           System.IO.Error      (ioeGetErrorType, isDoesNotExistErrorType)
 import           UI                   (run)
 import qualified Version              (version)
 
-versionOption :: Parser (a -> a)
-versionOption = infoOption ("replay version " ++ Version.version)
-  (long "version" <> short 'v' <> help "output version information and exit")
+versionOption :: OA.Parser (a -> a)
+versionOption = OA.infoOption ("replay version " ++ Version.version)
+  (OA.long "version" <> OA.short 'v' <> OA.help "output version information and exit")
 
-options :: Parser Options
-options =
-  Options
-    <$> option
-      auto
-      ( long "var-name"
-          <> short 'n'
-          <> help "name of the variable to replace"
-          <> showDefault
-          <> value "input"
-          <> metavar "NAME"
+options :: OA.Parser Options
+options = do
+  varName <- OA.option
+      OA.auto
+      ( OA.long "var-name"
+          <> OA.short 'n'
+          <> OA.help "name of the variable to replace"
+          <> OA.showDefault
+          <> OA.value "input"
+          <> OA.metavar "NAME"
       )
-    <*> many
-      ( strOption
-          ( long "watch"
-              <> short 'w'
-              <> help "watch FILE and re-run command automatically if it changes"
-              <> action "file"
-              <> metavar "FILE"
+  watchFiles <- OA.many
+      ( OA.strOption
+          ( OA.long "watch"
+              <> OA.short 'w'
+              <> OA.help "watch FILE and re-run command automatically if it changes"
+              <> OA.action "file"
+              <> OA.metavar "FILE"
           )
       )
-    <*> strOption
-    ( long "prompt"
-        <> short 'p'
-        <> help "prompt to display before input"
-        <> showDefault
-        <> value ">"
-        <> metavar "PROMPT"
+  prompt <- OA.strOption
+    ( OA.long "prompt"
+        <> OA.short 'p'
+        <> OA.help "prompt to display before input"
+        <> OA.showDefault
+        <> OA.value ">"
+        <> OA.metavar "PROMPT"
     )
-    <*> strOption
-      ( long "input"
-          <> short 'I'
-          <> help "input to pass to command"
-          <> showDefault
-          <> value ""
-          <> metavar "INPUT"
+  input <- OA.strOption
+      ( OA.long "input"
+          <> OA.short 'I'
+          <> OA.help "input to pass to command"
+          <> OA.showDefault
+          <> OA.value ""
+          <> OA.metavar "INPUT"
       )
-    <*> switch
-      ( long "from-stdin"
-          <> short 'i'
-          <> help "read input from stdin, pipe into program continually"
+  useStdin <- OA.switch
+      ( OA.long "from-stdin"
+          <> OA.short 'i'
+          <> OA.help "read input from stdin, pipe into program continually"
       )
-    <*> argument str
-      ( metavar "COMMAND"
-          <> action "command" )
-    <*> many (argument str (metavar "ARGS"))
+  command <- OA.strArgument
+      ( OA.metavar "COMMAND"
+          <> OA.action "command" )
+  args <- OA.many (OA.strArgument (OA.metavar "ARGS" ))
+
+  return Options{..}
 
 parseConfig :: FilePath -> IO (Either String Ini)
 parseConfig configFile = do
@@ -88,7 +92,7 @@ shlex = arg `P.sepBy` space
 
 main :: IO ()
 main = do
-  parsedOptions <- execParser opts
+  parsedOptions <- OA.execParser opts
   configFile <- getXdgDirectory XdgConfig $ "replay" </> "config.ini"
   config <- parseConfig configFile
   let cmd = pack parsedOptions.command
@@ -119,12 +123,12 @@ main = do
     modifyOpt m f o = maybe o (f o) m
 
     opts =
-      info
-        (versionOption <*> options <**> helper)
-        ( fullDesc
-            <> noIntersperse
-            <> progDesc "Repeatedly run a command and display its output."
-            <> header "replay - interactive command line tool"
+      OA.info
+        (versionOption <*> options <**> OA.helper)
+        ( OA.fullDesc
+            <> OA.noIntersperse
+            <> OA.progDesc "Repeatedly run a command and display its output."
+            <> OA.header "replay - interactive command line tool"
         )
     runUI cmdOptions = do
       result <- run cmdOptions
