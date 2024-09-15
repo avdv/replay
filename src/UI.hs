@@ -115,8 +115,7 @@ drawUi f = [ui]
       hBox
         [ viewport VP1 Vertical $
             cached CachedText $
-              txt $
-                _output state
+              txt state._output
         ]
 
 vp1Scroll :: M.ViewportScroll Name
@@ -147,7 +146,7 @@ rerun =
   do
     state <- gets formState
     let text = state ^. input
-        opt = options state
+        opt = state.options
         cmdargs = opt.command : args opt
     out <- liftIO do
       let stdin = state ^. stdInput
