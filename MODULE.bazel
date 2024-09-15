@@ -39,6 +39,8 @@ GHC_OPTS = [
     "-Wredundant-constraints",
     "-Werror",
     "-XNamedFieldPuns",
+    "-XOverloadedRecordDot",
+    "-XOverloadedStrings",
 ]
 
 GHC_VERSION = "9.4.8"
