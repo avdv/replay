@@ -19,6 +19,8 @@ getOutput cmd_args input stdin = do
 data Options = Options
   { varName    :: String,
     watchFiles :: [String],
+    prompt     :: String,
+    input      :: String,
     useStdin   :: Bool,
     command    :: String,
     args       :: [String]

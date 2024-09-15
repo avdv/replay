@@ -38,7 +38,9 @@ import           Brick.Widgets.Core                  (cached, hBox, str, txt,
                                                       updateAttrMap, vBox,
                                                       vLimit, viewport,
                                                       withAttr, (<+>))
-import           Lib                                 (Options (..), getOutput)
+import           Lib                                 (Options (Options, args, command, prompt, useStdin, watchFiles),
+                                                      getOutput)
+import qualified Lib                                 as O (Options (input))
 import           System.INotify
 import qualified System.Posix.IO                     as IO (stdInput)
 import           System.Posix.IO                     (OpenMode (..),
@@ -94,8 +96,8 @@ drawUi f = [ui]
 vp1Scroll :: M.ViewportScroll Name
 vp1Scroll = M.viewportScroll VP1
 
-mkForm :: State -> Form State e Name
-mkForm = newForm [ (str "> " <+>) @@= editTextField currentInput InputField (Just 1) ]
+mkForm :: String -> State -> Form State e Name
+mkForm prompt = newForm [ (str prompt <+>) @@= editTextField currentInput InputField (Just 1) ]
 
 appEvent :: T.BrickEvent Name MyEvents -> T.EventM Name (Form State MyEvents Name) ()
 appEvent (T.AppEvent Rerun) =
@@ -121,7 +123,7 @@ rerun =
     state <- gets formState
     let text = state ^. input
         opt = options state
-        cmdargs = command opt : args opt
+        cmdargs = opt.command : args opt
     out <- liftIO do
       let stdin = state ^. stdInput
       runExceptT $ getOutput cmdargs (DT.unpack text) stdin
@@ -159,11 +161,12 @@ run opts@Options{useStdin} = do
   isTTY <- queryTerminal IO.stdInput
   when (isTTY && useStdin) $ error "cannot use --from-stdin option when stdin is a TTY"
   stdin <- if useStdin then getContents else pure ""
+  let initialInput = DT.pack $ O.input opts
   let initialState = State {
-        _input = "", _stdInput = stdin, options = opts, _output = "", _errorMessage = Nothing, -- _search = "",
-        _currentInput = ""
+        _input = initialInput, _stdInput = stdin, options = opts, _output = "", _errorMessage = Nothing, -- _search = "",
+        _currentInput = initialInput
         }
-      f = mkForm initialState
+      f = mkForm ( opts.prompt <> " ") initialState
       buildVty = do
         tty <- openFd "/dev/tty" ReadWrite Nothing defaultFileFlags
         def <- Settings.defaultSettings

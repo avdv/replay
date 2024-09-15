@@ -31,6 +31,22 @@ options =
               <> metavar "FILE"
           )
       )
+    <*> strOption
+    ( long "prompt"
+        <> short 'p'
+        <> help "prompt to display before input"
+        <> showDefault
+        <> value ">"
+        <> metavar "PROMPT"
+    )
+    <*> strOption
+      ( long "input"
+          <> short 'I'
+          <> help "input to pass to command"
+          <> showDefault
+          <> value ""
+          <> metavar "INPUT"
+      )
     <*> switch
       ( long "from-stdin"
           <> short 'i'
