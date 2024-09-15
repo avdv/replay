@@ -55,7 +55,7 @@ options =
     <*> argument str
       ( metavar "COMMAND"
           <> action "command" )
-    <*> some (argument str (metavar "[ARGS]"))
+    <*> many (argument str (metavar "ARGS"))
 
 main :: IO ()
 main = do
