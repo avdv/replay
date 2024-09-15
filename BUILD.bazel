@@ -46,100 +46,37 @@ haskell_library(
         ":process_pkg",
         ":text_pkg",
         ":unix_pkg",
+        ":vty-unix_pkg",
         ":vty_pkg",
-        ":vty_unix_pkg",
     ],
 )
 
-haskell_toolchain_library(
-    name = "base_pkg",
-    package = "base",
-)
-
-haskell_toolchain_library(
-    name = "optparse-applicative_pkg",
-    package = "optparse-applicative",
-)
-
-haskell_toolchain_library(
-    name = "text_pkg",
-    package = "text",
-)
-
-haskell_toolchain_library(
-    name = "brick_pkg",
-    package = "brick",
-)
-
-haskell_toolchain_library(
-    name = "directory_pkg",
-    package = "directory",
-)
-
-haskell_toolchain_library(
-    name = "bytestring_pkg",
-    package = "bytestring",
-)
-
-haskell_toolchain_library(
-    name = "process_pkg",
-    package = "process",
-)
-
-haskell_toolchain_library(
-    name = "attoparsec_pkg",
-    package = "attoparsec",
-)
-
-haskell_toolchain_library(
-    name = "vty_pkg",
-    package = "vty",
-)
-
-haskell_toolchain_library(
-    name = "vty_unix_pkg",
-    package = "vty-unix",
-)
-
-haskell_toolchain_library(
-    name = "microlens_pkg",
-    package = "microlens",
-)
-
-haskell_toolchain_library(
-    name = "microlens-th_pkg",
-    package = "microlens-th",
-)
-
-haskell_toolchain_library(
-    name = "mtl_pkg",
-    package = "mtl",
-)
-
-haskell_toolchain_library(
-    name = "unix_pkg",
-    package = "unix",
-)
-
-haskell_toolchain_library(
-    name = "hinotify_pkg",
-    package = "hinotify",
-)
-
-haskell_toolchain_library(
-    name = "filepath_pkg",
-    package = "filepath",
-)
-
-haskell_toolchain_library(
-    name = "ini_pkg",
-    package = "ini",
-)
-
-haskell_toolchain_library(
-    name = "template-haskell_pkg",
-    package = "template-haskell",
-)
+[
+    haskell_toolchain_library(
+        name = "{}_pkg".format(pkg),
+        package = pkg,
+    )
+    for pkg in [
+        "attoparsec",
+        "base",
+        "brick",
+        "bytestring",
+        "directory",
+        "filepath",
+        "hinotify",
+        "ini",
+        "microlens",
+        "microlens-th",
+        "mtl",
+        "optparse-applicative",
+        "process",
+        "template-haskell",
+        "text",
+        "unix",
+        "vty",
+        "vty-unix",
+    ]
+]
 
 haskell_binary(
     name = "replay",
