@@ -20,6 +20,8 @@ GHC_OPTS = [
     "-Wredundant-constraints",
     "-Werror",
     "-XNamedFieldPuns",
+    "-XOverloadedRecordDot",
+    "-XOverloadedStrings",
 ]
 
 load(
