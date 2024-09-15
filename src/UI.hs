@@ -1,65 +1,87 @@
-{-# LANGUAGE BlockArguments    #-}
-{-# LANGUAGE NamedFieldPuns    #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE TemplateHaskell #-}
+
 module UI (run) where
 
-import           Control.Monad.Except
-import           Control.Monad.State                 (gets, modify)
-import qualified Data.ByteString.Char8               as BS
-import           Data.Foldable                       (traverse_)
-import qualified Data.Text                           as DT
-import qualified Graphics.Vty                        as V
-import qualified Graphics.Vty.Config                 as Config
-import qualified Graphics.Vty.Platform.Unix          as V
+import Brick.AttrMap (attrMap)
+import qualified Brick.AttrMap as A
+import Brick.BChan
+  ( BChan,
+    newBChan,
+    writeBChan,
+  )
+import Brick.Forms
+  ( Form,
+    editTextField,
+    formState,
+    handleFormEvent,
+    newForm,
+    renderForm,
+    updateFormState,
+    (@@=),
+  )
+import qualified Brick.Main as M
+import Brick.Types
+  ( ViewportType (Vertical),
+    Widget,
+  )
+import qualified Brick.Types as T
+import Brick.Util (fg, on)
+import qualified Brick.Widgets.Border as B
+import qualified Brick.Widgets.Center as C
+import Brick.Widgets.Core
+  ( cached,
+    hBox,
+    str,
+    txt,
+    updateAttrMap,
+    vBox,
+    vLimit,
+    viewport,
+    withAttr,
+    (<+>),
+  )
+import Control.Monad.Except
+import Control.Monad.State (gets, modify)
+import qualified Data.ByteString.Char8 as BS
+import Data.Foldable (traverse_)
+import qualified Data.Text as DT
+import qualified Graphics.Vty as V
+import qualified Graphics.Vty.Config as Config
+import qualified Graphics.Vty.Platform.Unix as V
 import qualified Graphics.Vty.Platform.Unix.Settings as Settings
+import Lens.Micro ((&), (.~), (?~), (^.))
+import Lens.Micro.TH
+import Lib
+  ( Options (Options, args, command, prompt, useStdin, watchFiles),
+    getOutput,
+  )
+import qualified Lib as O (Options (input))
+import System.INotify
+import System.Posix.IO
+  ( OpenMode (..),
+    defaultFileFlags,
+    openFd,
+  )
+import qualified System.Posix.IO as IO (stdInput)
+import System.Posix.Terminal (queryTerminal)
 
-import           Lens.Micro                          ((&), (.~), (?~), (^.))
-import           Lens.Micro.TH
+data Name
+  = VP1
+  | InputField
+  | CachedText
+  deriving (Ord, Show, Eq)
 
-import           Brick.AttrMap                       (attrMap)
-import           Brick.BChan                         (BChan, newBChan,
-                                                      writeBChan)
-import           Brick.Forms                         (Form, editTextField,
-                                                      formState,
-                                                      handleFormEvent, newForm,
-                                                      renderForm,
-                                                      updateFormState, (@@=))
-import qualified Brick.Main                          as M
-import           Brick.Types                         (ViewportType (Vertical),
-                                                      Widget)
-
-import qualified Brick.AttrMap                       as A
-import qualified Brick.Types                         as T
-import           Brick.Util                          (fg, on)
-import qualified Brick.Widgets.Border                as B
-import qualified Brick.Widgets.Center                as C
-import           Brick.Widgets.Core                  (cached, hBox, str, txt,
-                                                      updateAttrMap, vBox,
-                                                      vLimit, viewport,
-                                                      withAttr, (<+>))
-import           Lib                                 (Options (Options, args, command, prompt, useStdin, watchFiles),
-                                                      getOutput)
-import qualified Lib                                 as O (Options (input))
-import           System.INotify
-import qualified System.Posix.IO                     as IO (stdInput)
-import           System.Posix.IO                     (OpenMode (..),
-                                                      defaultFileFlags, openFd)
-import           System.Posix.Terminal               (queryTerminal)
-
-data Name = VP1
-          | InputField
-          | CachedText
-          deriving (Ord, Show, Eq)
-
-data State = State {
-  _output       :: DT.Text,
-  options       :: Options,
-  _stdInput     :: String,
-  _errorMessage :: Maybe String,
-  _input        :: DT.Text,
---  _search       :: DT.Text,
-  _currentInput :: DT.Text
+data State = State
+  { _output :: DT.Text,
+    options :: Options,
+    _stdInput :: String,
+    _errorMessage :: Maybe String,
+    _input :: DT.Text,
+    --  _search       :: DT.Text,
+    _currentInput :: DT.Text
   }
 
 makeLenses ''State
@@ -69,45 +91,49 @@ errorAttr = A.attrName "error"
 
 borderMappings :: [(A.AttrName, V.Attr)]
 borderMappings =
-    [ (B.borderAttr,         V.yellow `on` V.black)
-    , (errorAttr,            fg V.red)
-    ]
+  [ (B.borderAttr, V.yellow `on` V.black),
+    (errorAttr, fg V.red)
+  ]
 
 errorWidget :: String -> Widget Name
 errorWidget msg =
-    updateAttrMap (A.applyAttrMappings borderMappings) $
+  updateAttrMap (A.applyAttrMappings borderMappings) $
     B.borderWithLabel (withAttr errorAttr $ str "Error") $
-    vLimit 5 $
-    C.center $
-    str msg
+      vLimit 5 $
+        C.center $
+          str msg
 
 drawUi :: Form State e Name -> [Widget Name]
 drawUi f = [ui]
-    where
-        ui = vBox $ pair : errorPane ++ [ B.hBorder, form ]
-        form = renderForm f
-        state = formState f
-        errorMsg = state^.errorMessage
-        errorPane = maybe [] (\m -> [errorWidget m]) errorMsg
-        pair = hBox [ viewport VP1 Vertical $
-                      cached CachedText $ txt $ _output state
-                    ]
+  where
+    ui = vBox $ pair : errorPane ++ [B.hBorder, form]
+    form = renderForm f
+    state = formState f
+    errorMsg = state ^. errorMessage
+    errorPane = maybe [] (\m -> [errorWidget m]) errorMsg
+    pair =
+      hBox
+        [ viewport VP1 Vertical $
+            cached CachedText $
+              txt $
+                _output state
+        ]
 
 vp1Scroll :: M.ViewportScroll Name
 vp1Scroll = M.viewportScroll VP1
 
 mkForm :: String -> State -> Form State e Name
-mkForm prompt = newForm [ (str prompt <+>) @@= editTextField currentInput InputField (Just 1) ]
+mkForm prompt = newForm [(str prompt <+>) @@= editTextField currentInput InputField (Just 1)]
 
 appEvent :: T.BrickEvent Name MyEvents -> T.EventM Name (Form State MyEvents Name) ()
 appEvent (T.AppEvent Rerun) =
   M.invalidateCacheEntry CachedText -- >> modify rerun
-appEvent (T.VtyEvent (V.EvKey V.KDown []))  = M.vScrollBy vp1Scroll 1
-appEvent (T.VtyEvent (V.EvKey V.KUp []))    = M.vScrollBy vp1Scroll (-1)
-appEvent (T.VtyEvent (V.EvKey V.KPageDown []))    = M.vScrollPage vp1Scroll T.Down
-appEvent (T.VtyEvent (V.EvKey V.KPageUp []))    = M.vScrollPage vp1Scroll T.Up
-appEvent (T.VtyEvent (V.EvKey V.KHome []))    = M.vScrollToBeginning vp1Scroll
-appEvent (T.VtyEvent (V.EvKey V.KEnd []))    = M.vScrollToEnd vp1Scroll
+appEvent (T.VtyEvent (V.EvKey V.KDown [])) = M.vScrollBy vp1Scroll 1
+appEvent (T.VtyEvent (V.EvKey V.KUp [])) = M.vScrollBy vp1Scroll (-1)
+appEvent (T.VtyEvent (V.EvKey V.KPageDown [])) = M.vScrollPage vp1Scroll T.Down
+appEvent (T.VtyEvent (V.EvKey V.KPageUp [])) = M.vScrollPage vp1Scroll T.Up
+appEvent (T.VtyEvent (V.EvKey V.KHome [])) = M.vScrollToBeginning vp1Scroll
+appEvent (T.VtyEvent (V.EvKey V.KEnd [])) = M.vScrollToEnd vp1Scroll
 appEvent (T.VtyEvent (V.EvKey V.KEsc [])) = M.halt
 appEvent (T.VtyEvent (V.EvKey V.KEnter [])) = do
   M.invalidateCacheEntry CachedText
@@ -115,7 +141,6 @@ appEvent (T.VtyEvent (V.EvKey V.KEnter [])) = do
   modify $ updateFormState (state & input .~ (state ^. currentInput))
   rerun
 appEvent ev = handleFormEvent ev
-
 
 rerun :: T.EventM Name (Form State e Name) ()
 rerun =
@@ -127,52 +152,63 @@ rerun =
     out <- liftIO do
       let stdin = state ^. stdInput
       runExceptT $ getOutput cmdargs (DT.unpack text) stdin
-    modify $ updateFormState (case out of
-      Right newOutput ->
-         state & output .~ DT.pack newOutput
-               & errorMessage .~ Nothing
-      Left msg -> state & errorMessage ?~ msg)
+    modify $
+      updateFormState
+        ( case out of
+            Right newOutput ->
+              state
+                & output .~ DT.pack newOutput
+                & errorMessage .~ Nothing
+            Left msg -> state & errorMessage ?~ msg
+        )
 
 -- custom event type
 data MyEvents = Rerun
 
 app :: M.App (Form State MyEvents Name) MyEvents Name
 app =
-    M.App { M.appDraw = drawUi
-          , M.appStartEvent = rerun
-          , M.appHandleEvent = appEvent
-          , M.appAttrMap = const $ attrMap V.defAttr []
-          , M.appChooseCursor = M.showFirstCursor
-          }
-
+  M.App
+    { M.appDraw = drawUi,
+      M.appStartEvent = rerun,
+      M.appHandleEvent = appEvent,
+      M.appAttrMap = const $ attrMap V.defAttr [],
+      M.appChooseCursor = M.showFirstCursor
+    }
 
 watch :: [String] -> IO (Maybe (BChan MyEvents))
 watch [] = pure Nothing
 watch files = do
-    inotify <- initINotify
-    bchan <- newBChan 10
-    print inotify
-    let paths = map BS.pack files
-    traverse_ (\file -> addWatch inotify [Modify] file (const $ writeBChan bchan Rerun)) paths
-    return $ Just bchan
+  inotify <- initINotify
+  bchan <- newBChan 10
+  print inotify
+  let paths = map BS.pack files
+  traverse_ (\file -> addWatch inotify [Modify] file (const $ writeBChan bchan Rerun)) paths
+  return $ Just bchan
 
 run :: Options -> IO DT.Text
-run opts@Options{useStdin} = do
+run opts@Options {useStdin} = do
   isTTY <- queryTerminal IO.stdInput
   when (isTTY && useStdin) $ error "cannot use --from-stdin option when stdin is a TTY"
   stdin <- if useStdin then getContents else pure ""
   let initialInput = DT.pack $ O.input opts
-  let initialState = State {
-        _input = initialInput, _stdInput = stdin, options = opts, _output = "", _errorMessage = Nothing, -- _search = "",
-        _currentInput = initialInput
-        }
-      f = mkForm ( opts.prompt <> " ") initialState
+  let initialState =
+        State
+          { _input = initialInput,
+            _stdInput = stdin,
+            options = opts,
+            _output = "",
+            _errorMessage = Nothing, -- _search = "",
+            _currentInput = initialInput
+          }
+      f = mkForm (opts.prompt <> " ") initialState
       buildVty = do
         tty <- openFd "/dev/tty" ReadWrite Nothing defaultFileFlags
         def <- Settings.defaultSettings
-        V.mkVtyWithSettings Config.defaultConfig $ def {
-          Settings.settingInputFd = tty,
-          Settings.settingOutputFd = tty }
+        V.mkVtyWithSettings Config.defaultConfig $
+          def
+            { Settings.settingInputFd = tty,
+              Settings.settingOutputFd = tty
+            }
   initialVty <- buildVty
   notify <- watch $ watchFiles opts
   result <- M.customMain initialVty buildVty notify app f
