@@ -9,6 +9,7 @@ withPackages (hs: with hs; [
   brick
   hinotify
   hspec
+  ini
   optparse-applicative
   process
   unix

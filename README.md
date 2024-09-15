@@ -37,10 +37,28 @@ Available options:
   -h,--help                Show this help text
 ```
 
+## Configuration
+
+`replay` reads a config file in `ini` format from `~/.config/replay/config.ini` when it exists. This can be used to define defaults for specific commands.
+
+Its format is like this:
+```ini
+; a section is matched from the command given on the command line
+[cmd]
+;; arguments that will be prepended to the arguments given on the command line
+args = --default --arguments --query={input}
+;; command to run instead of the command given on the command line
+command = foocmd
+;; the prompt to show before the text input
+prompt = $
+;; the default input of the command
+input = help
+```
+
 ## Example
 
 ```console
-$ replay jq --color-output input -r wikipedia.json 
+$ replay jq --color-output input -r wikipedia.json
 ```
 
 ![screenshot](images/shot1.png)
