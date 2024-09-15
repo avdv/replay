@@ -72,6 +72,11 @@ haskell_toolchain_library(
 )
 
 haskell_toolchain_library(
+    name = "directory_pkg",
+    package = "directory",
+)
+
+haskell_toolchain_library(
     name = "bytestring_pkg",
     package = "bytestring",
 )
@@ -79,6 +84,11 @@ haskell_toolchain_library(
 haskell_toolchain_library(
     name = "process_pkg",
     package = "process",
+)
+
+haskell_toolchain_library(
+    name = "attoparsec_pkg",
+    package = "attoparsec",
 )
 
 haskell_toolchain_library(
@@ -117,6 +127,16 @@ haskell_toolchain_library(
 )
 
 haskell_toolchain_library(
+    name = "filepath_pkg",
+    package = "filepath",
+)
+
+haskell_toolchain_library(
+    name = "ini_pkg",
+    package = "ini",
+)
+
+haskell_toolchain_library(
     name = "template-haskell_pkg",
     package = "template-haskell",
 )
@@ -138,7 +158,11 @@ haskell_binary(
     ],
     narrowed_deps = [":lib"],
     deps = [
+        ":attoparsec_pkg",
         ":base_pkg",
+        ":directory_pkg",
+        ":filepath_pkg",
+        ":ini_pkg",
         ":optparse-applicative_pkg",
         ":template-haskell_pkg",
         ":text_pkg",
