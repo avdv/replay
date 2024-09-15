@@ -39,8 +39,8 @@
             installShellFiles
             python3
           ];
-          devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib; in
-            [ bazel buildifier ghcWithHoogle haskell-language-server ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
+          devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib ormolu; in
+            [ bazel buildifier ghcWithHoogle haskell-language-server ormolu ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
@@ -113,8 +113,25 @@
               hooks = {
                 hlint.enable = true;
                 nixpkgs-fmt.enable = true;
+                ormolu = {
+                  enable = true;
+                  entry =
+                    let
+                      extensions = [
+                        "Haskell2010"
+                        "OverloadedRecordDot"
+                        "OverloadedStrings"
+                      ];
+                      packages = [ "microlens" ];
+                      args = pkgs.lib.escapeShellArgs
+                        (
+                          (pkgs.lib.concatMap (ext: [ "--ghc-opt" "-X${ext}" ]) extensions)
+                          ++ (pkgs.lib.concatMap (pkg: [ "--package" pkg ]) packages)
+                        );
+                    in
+                    "${pkgs.ormolu}/bin/ormolu --mode inplace ${args} --no-cabal --no-dot-ormolu --package microlens";
+                };
                 shellcheck.enable = true;
-                stylish-haskell.enable = true;
                 buildifier = {
                   enable = true;
                   name = "buildifier";
