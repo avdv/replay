@@ -91,7 +91,7 @@
 
             buildAttrs = {
               preBuild = ''
-                patchShebangs $bazelOut/external/rules_haskell~0.19/haskell/private/ghc_wrapper.sh
+                patchShebangs $bazelOut/external/rules_haskell~*/haskell/private/ghc_wrapper.sh
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
