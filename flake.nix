@@ -23,7 +23,7 @@
         let
           pkgs = import nixpkgs { inherit system; };
           filter = nix-filter.lib;
-          bazel = pkgs.bazel_6;
+          bazel = pkgs.bazel_7;
           ghcVersion = builtins.head (builtins.match ''.*[ \n]*GHC_VERSION *= *"([^ \n]+)".*'' (builtins.readFile ./ghc.bzl));
           ghc = import ./nix/ghc.nix
             {
@@ -39,8 +39,15 @@
             installShellFiles
             python3
           ];
+          # work around https://github.com/bazelbuild/bazel/issues/5900
+          # inside a nix shell, TMPDIR is set to /tmp/nix-shell.XXXXX but that interferes with
+          # incompatible_sandbox_hermetic_tmp being flipped in Bazel 7+
+          bazel-wrapper = pkgs.writeShellScriptBin "bazel" ''
+            unset TMPDIR TMP
+            exec ${bazel}/bin/bazel "$@"
+          '';
           devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib ormolu; in
-            [ bazel buildifier ghcWithHoogle haskell-language-server ormolu ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
+            [ bazel-wrapper buildifier ghcWithHoogle haskell-language-server ormolu ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
@@ -86,7 +93,7 @@
             nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
 
             fetchAttrs = {
-              sha256 = "sha256-cmFBXm4pGwz53uTxXocJpEoIM80NKtpXsxIvc216QoI=";
+              sha256 = "sha256-tlh1b8FNdpOzU763dIfsfDLsfw7svvtknyx+85wiBns=";
             };
 
             buildAttrs = {
