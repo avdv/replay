@@ -10,7 +10,7 @@ bazel_dep(
 )
 bazel_dep(
     name = "rules_haskell",
-    version = "0.19",
+    version = "1.0",
 )
 bazel_dep(
     name = "rules_nixpkgs_cc",
