@@ -30,7 +30,7 @@ jobs:
       id: update_pr
       uses: gr2m/create-or-update-pull-request-action@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.PR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PR_TOKEN || 'token-not-set' }}
       with:
         author: "bot <bot@users.noreply.github.com>"
         commit-message: "Update replay.deps hash"
