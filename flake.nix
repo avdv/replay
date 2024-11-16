@@ -94,6 +94,10 @@
 
             fetchAttrs = {
               sha256 = "sha256-5UWypKLfH82WkyeqzjhhLtWwnYIjR80gGqeY5XLrjXA=";
+              preInstall = ''
+                # make all directories writable
+                find $bazelOut/external/ -type d -exec chmod --changes +w '{}' ';'
+              '';
             };
 
             buildAttrs = {
