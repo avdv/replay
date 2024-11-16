@@ -13,6 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
       with:
+        fetch-depth: 2
         persist-credentials: false
     - uses: cachix/install-nix-action@v30
       with:
