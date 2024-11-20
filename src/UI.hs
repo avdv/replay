@@ -126,7 +126,7 @@ mkForm prompt = newForm [(str prompt <+>) @@= editTextField currentInput InputFi
 
 appEvent :: T.BrickEvent Name MyEvents -> T.EventM Name (Form State MyEvents Name) ()
 appEvent (T.AppEvent Rerun) =
-  M.invalidateCacheEntry CachedText -- >> modify rerun
+  M.invalidateCacheEntry CachedText >> rerun
 appEvent (T.VtyEvent (V.EvKey V.KDown [])) = M.vScrollBy vp1Scroll 1
 appEvent (T.VtyEvent (V.EvKey V.KUp [])) = M.vScrollBy vp1Scroll (-1)
 appEvent (T.VtyEvent (V.EvKey V.KPageDown [])) = M.vScrollPage vp1Scroll T.Down
