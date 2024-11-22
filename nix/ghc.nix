@@ -7,7 +7,7 @@ let
 in
 withPackages (hs: with hs; [
   brick
-  hinotify
+  fsnotify
   hspec
   ini
   optparse-applicative
