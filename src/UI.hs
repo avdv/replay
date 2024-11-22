@@ -45,6 +45,7 @@ import Brick.Widgets.Core
     (<+>),
   )
 import Control.Concurrent (forkIO, threadDelay)
+import Control.Debounce as Debounce
 import Control.Monad.Except
 import Control.Monad.State (gets, modify)
 import Data.Foldable (traverse_)
@@ -183,6 +184,11 @@ watch files = do
   bchan <- newBChan 10
   let grouped = NE.groupAllWith fst $ map splitFileName files
       groupedByDir = [(fst $ NE.head ne, NE.map snd ne) | ne <- grouped]
+  sendRerun <-
+    mkDebounce
+      defaultDebounceSettings
+        { debounceAction = writeBChan bchan Rerun
+        }
   _ <- forkIO $
     withManager $ \mgr -> do
       traverse_
@@ -192,7 +198,7 @@ watch files = do
                 let fileName = takeFileName f
                 putStrLn $ dir <> " ? " <> fileName
                 guard $ fileName `elem` NE.toList watchFiles
-                writeBChan bchan Rerun
+                sendRerun
             _ -> pure ()
         )
         groupedByDir
