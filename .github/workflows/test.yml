@@ -73,6 +73,11 @@ jobs:
         # Only needed for private caches
         #authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - run: nix build --print-build-logs
+    - name: Setup tmate session
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
     - run: nix run . -- --help
 
   test-shell:
