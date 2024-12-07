@@ -36,6 +36,8 @@ toolchain(
         python3 = python3_path,
         os = {
             "darwin": "osx",
+            "darwin_x86_64": "osx",
+            "darwin_arm64": "osx",
             "x64_windows": "windows",
         }.get(cpu, "linux"),
     ))
