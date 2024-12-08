@@ -80,6 +80,7 @@
             bazelBuildFlags = [
               "--compilation_mode=opt" # optimize
               "--verbose_failures"
+              "--toolchain_resolution_debug=.*haskell.*"
             ];
 
             passthru = {
@@ -103,6 +104,8 @@
             buildAttrs = {
               preBuild = ''
                 patchShebangs $bazelOut/external/rules_haskell~*/haskell/private/ghc_wrapper.sh
+                bazel query @rules_haskell_nix_ghc_in_nix_toolchain//:all --output build
+                bazel query @@rules_haskell_nix_ghc_in_nix_haskell_toolchain//:toolchain-impl --output build 
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
