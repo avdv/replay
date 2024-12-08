@@ -404,5 +404,5 @@ _ghc_nixpkgs_toolchain = repository_rule(
         "haskell_toolchain_repo_name": attr.string(),
     },
     configure = True,
-    # local = True,
+    local = True,
 )
