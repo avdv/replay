@@ -36,6 +36,8 @@ toolchain(
         python3 = python3_path,
         os = {
             "darwin": "osx",
+            "darwin_x86_64": "osx",
+            "darwin_arm64": "osx",
             "x64_windows": "windows",
         }.get(cpu, "linux"),
     ))
@@ -401,4 +403,6 @@ _ghc_nixpkgs_toolchain = repository_rule(
         "target_constraints": attr.string_list(),
         "haskell_toolchain_repo_name": attr.string(),
     },
+    configure = True,
+    local = True,
 )
