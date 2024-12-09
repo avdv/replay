@@ -177,6 +177,8 @@ _ghc_nixpkgs_haskell_toolchain = repository_rule(
             default = "C.UTF-8",
         ),
     },
+    configure = True,
+    local = True,
 )
 
 # copied from rules_haskel/haskell/private/pkgdb_to_bzl.bzl
