@@ -1,4 +1,5 @@
 {-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
@@ -43,10 +44,12 @@ import Brick.Widgets.Core
     withAttr,
     (<+>),
   )
+import Control.Concurrent (forkIO, threadDelay)
+import Control.Debounce as Debounce
 import Control.Monad.Except
 import Control.Monad.State (gets, modify)
-import qualified Data.ByteString.Char8 as BS
 import Data.Foldable (traverse_)
+import qualified Data.List.NonEmpty as NE
 import qualified Data.Text as DT
 import qualified Graphics.Vty as V
 import qualified Graphics.Vty.Config as Config
@@ -59,7 +62,8 @@ import Lib
     getOutput,
   )
 import qualified Lib as O (Options (input))
-import System.INotify
+import System.FSNotify
+import System.FilePath (splitFileName, takeFileName)
 import System.Posix.IO
   ( OpenMode (..),
     defaultFileFlags,
@@ -126,7 +130,7 @@ mkForm prompt = newForm [(str prompt <+>) @@= editTextField currentInput InputFi
 
 appEvent :: T.BrickEvent Name MyEvents -> T.EventM Name (Form State MyEvents Name) ()
 appEvent (T.AppEvent Rerun) =
-  M.invalidateCacheEntry CachedText -- >> modify rerun
+  M.invalidateCacheEntry CachedText >> rerun
 appEvent (T.VtyEvent (V.EvKey V.KDown [])) = M.vScrollBy vp1Scroll 1
 appEvent (T.VtyEvent (V.EvKey V.KUp [])) = M.vScrollBy vp1Scroll (-1)
 appEvent (T.VtyEvent (V.EvKey V.KPageDown [])) = M.vScrollPage vp1Scroll T.Down
@@ -177,11 +181,28 @@ app =
 watch :: [String] -> IO (Maybe (BChan MyEvents))
 watch [] = pure Nothing
 watch files = do
-  inotify <- initINotify
   bchan <- newBChan 10
-  print inotify
-  let paths = map BS.pack files
-  traverse_ (\file -> addWatch inotify [Modify] file (const $ writeBChan bchan Rerun)) paths
+  let grouped = NE.groupAllWith fst $ map splitFileName files
+      groupedByDir = [(fst $ NE.head ne, NE.map snd ne) | ne <- grouped]
+  sendRerun <-
+    mkDebounce
+      defaultDebounceSettings
+        { debounceAction = writeBChan bchan Rerun
+        }
+  _ <- forkIO $
+    withManager $ \mgr -> do
+      traverse_
+        ( \(dir, watchFiles) -> watchDir mgr dir (const True) \case
+            (Modified f _ IsFile) ->
+              do
+                let fileName = takeFileName f
+                putStrLn $ dir <> " ? " <> fileName
+                guard $ fileName `elem` NE.toList watchFiles
+                sendRerun
+            _ -> pure ()
+        )
+        groupedByDir
+      forever $ threadDelay 1000000
   return $ Just bchan
 
 run :: Options -> IO DT.Text

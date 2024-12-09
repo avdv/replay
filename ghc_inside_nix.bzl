@@ -36,6 +36,8 @@ toolchain(
         python3 = python3_path,
         os = {
             "darwin": "osx",
+            "darwin_x86_64": "osx",
+            "darwin_arm64": "osx",
             "x64_windows": "windows",
         }.get(cpu, "linux"),
     ))
@@ -175,6 +177,8 @@ _ghc_nixpkgs_haskell_toolchain = repository_rule(
             default = "C.UTF-8",
         ),
     },
+    configure = True,
+    local = True,
 )
 
 # copied from rules_haskel/haskell/private/pkgdb_to_bzl.bzl
@@ -401,4 +405,6 @@ _ghc_nixpkgs_toolchain = repository_rule(
         "target_constraints": attr.string_list(),
         "haskell_toolchain_repo_name": attr.string(),
     },
+    configure = True,
+    local = True,
 )

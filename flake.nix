@@ -18,7 +18,7 @@
 
   outputs = { self, nixpkgs, nix-filter, flake-utils, pre-commit-hooks, bazel-central-registry, ... }:
     with flake-utils.lib.system;
-    flake-utils.lib.eachSystem [ aarch64-linux x86_64-darwin x86_64-linux ]
+    flake-utils.lib.eachSystem [ aarch64-darwin aarch64-linux x86_64-darwin x86_64-linux ]
       (system:
         let
           pkgs = import nixpkgs { inherit system; };
@@ -80,6 +80,7 @@
             bazelBuildFlags = [
               "--compilation_mode=opt" # optimize
               "--verbose_failures"
+              "--toolchain_resolution_debug=.*haskell.*"
             ];
 
             passthru = {
@@ -97,12 +98,15 @@
                 # make all directories writable
                 find $bazelOut/external/ -type d -exec chmod --changes +w '{}' ';'
               '';
-              sha256 = "sha256-le2xulhKw2NJmsGKf/WMdCSio7Bn1SUGXWn6YlnhhvI=";
+              sha256 = "sha256-GgkQRiaH66rDLbSozTnkHzmoh5pgJgDHFx+UWXwqPY0=";
             };
 
             buildAttrs = {
               preBuild = ''
                 patchShebangs $bazelOut/external/rules_haskell~*/haskell/private/ghc_wrapper.sh
+                USER=homeless-shelter
+                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @rules_haskell_nix_ghc_in_nix_toolchain//:all --output build "--registry" "file://${bazel-central-registry}"
+                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_haskell_nix_ghc_in_nix_haskell_toolchain//:toolchain-impl --output build "--registry" "file://${bazel-central-registry}"
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
