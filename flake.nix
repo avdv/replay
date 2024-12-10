@@ -105,6 +105,8 @@
               preBuild = ''
                 patchShebangs $bazelOut/external/rules_haskell~*/haskell/private/ghc_wrapper.sh
                 USER=homeless-shelter
+                echo $NIX_CC
+                type $CC
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @rules_haskell_nix_ghc_in_nix_toolchain//:all --output build "--registry" "file://${bazel-central-registry}"
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_haskell_nix_ghc_in_nix_haskell_toolchain//:toolchain-impl --output build "--registry" "file://${bazel-central-registry}"
               '';
