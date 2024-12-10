@@ -45,6 +45,7 @@ toolchain(
 _config_python3_toolchain = repository_rule(
     _configure_python3_toolchain_impl,
     configure = True,
+    local = True,
     environ = ["PATH"],
 )
 
