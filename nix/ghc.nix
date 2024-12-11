@@ -6,8 +6,9 @@ let
   withPackages = if withHoogle then ghc.ghcWithHoogle else ghc.ghcWithPackages;
 in
 withPackages (hs: with hs; [
+  auto-update
   brick
-  hinotify
+  fsnotify
   hspec
   ini
   optparse-applicative
