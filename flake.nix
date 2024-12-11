@@ -112,7 +112,7 @@
                 type $CC
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @rules_haskell_nix_ghc_in_nix_toolchain//:all --output build "--registry" "file://${bazel-central-registry}"
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_haskell_nix_ghc_in_nix_haskell_toolchain//:toolchain-impl --output build "--registry" "file://${bazel-central-registry}"
-                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" fetch --configure "--registry" "file://${bazel-central-registry}"
+                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" fetch --configure --force "--registry" "file://${bazel-central-registry}"
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
