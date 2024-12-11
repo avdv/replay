@@ -38,6 +38,9 @@
             git
             installShellFiles
             python3
+          ] ++ lib.optionals stdenv.isDarwin [
+            stdenv.cc.bintools
+            darwin.cctools
           ];
           # work around https://github.com/bazelbuild/bazel/issues/5900
           # inside a nix shell, TMPDIR is set to /tmp/nix-shell.XXXXX but that interferes with
@@ -109,6 +112,7 @@
                 type $CC
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @rules_haskell_nix_ghc_in_nix_toolchain//:all --output build "--registry" "file://${bazel-central-registry}"
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_haskell_nix_ghc_in_nix_haskell_toolchain//:toolchain-impl --output build "--registry" "file://${bazel-central-registry}"
+                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" fetch --configure "--registry" "file://${bazel-central-registry}"
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
