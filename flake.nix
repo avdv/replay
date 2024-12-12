@@ -112,7 +112,12 @@
                 type $CC
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @rules_haskell_nix_ghc_in_nix_toolchain//:all --output build "--registry" "file://${bazel-central-registry}"
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_haskell_nix_ghc_in_nix_haskell_toolchain//:toolchain-impl --output build "--registry" "file://${bazel-central-registry}"
-                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" fetch --repo=@local_config_cc "--registry" "file://${bazel-central-registry}"
+                echo ============
+                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_cc~~cc_configure_extension~local_config_cc//:toolchain --output build "--registry" "file://${bazel-central-registry}"
+                echo ============
+                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" fetch --repo=@@rules_cc~~cc_configure_extension~local_config_cc "--registry" "file://${bazel-central-registry}"
+                echo ============
+                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_cc~~cc_configure_extension~local_config_cc//:toolchain --output build "--registry" "file://${bazel-central-registry}"
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
