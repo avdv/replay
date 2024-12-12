@@ -115,7 +115,7 @@
                 echo ============
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_cc~~cc_configure_extension~local_config_cc//:local --output build "--registry" "file://${bazel-central-registry}"
                 echo ============
-                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" fetch --force --repo=@@rules_cc~~cc_configure_extension~local_config_cc "--registry" "file://${bazel-central-registry}"
+                bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" fetch --force --repo=@@rules_cc~~cc_configure_extension~local_config_cc_toolchains --repo=@@rules_cc~~cc_configure_extension~local_config_cc "--registry" "file://${bazel-central-registry}"
                 echo ============
                 bazel --output_user_root="$bazelUserRoot" --output_base="$bazelOut" query @@rules_cc~~cc_configure_extension~local_config_cc//:local --output build "--registry" "file://${bazel-central-registry}"
               '';
