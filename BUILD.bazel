@@ -35,10 +35,12 @@ haskell_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
+        ":auto-update_pkg",
         ":base_pkg",
         ":brick_pkg",
         ":bytestring_pkg",
-        ":hinotify_pkg",
+        ":filepath_pkg",
+        ":fsnotify_pkg",
         ":microlens-th_pkg",
         ":microlens_pkg",
         ":mtl_pkg",
@@ -58,12 +60,13 @@ haskell_library(
     )
     for pkg in [
         "attoparsec",
+        "auto-update",
         "base",
         "brick",
         "bytestring",
         "directory",
         "filepath",
-        "hinotify",
+        "fsnotify",
         "ini",
         "microlens",
         "microlens-th",
