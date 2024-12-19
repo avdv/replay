@@ -97,7 +97,7 @@
                 # make all directories writable
                 find $bazelOut/external/ -type d -exec chmod --changes +w '{}' ';'
               '';
-              sha256 = "sha256-Nz8cc5p/MmbWNkjdX6ssYj8jHxKjRDax16hUnUkYq7c=";
+              sha256 = "sha256-2xUQOAXMgARKPCakWMJy1mcLPqml9ybfz8AmWxe0ZBM=";
             };
 
             buildAttrs = {
