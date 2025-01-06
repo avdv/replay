@@ -3,6 +3,7 @@
 module Lib (Options (..), getOutput) where
 
 import Control.Monad.Except
+import Control.Monad.IO.Class (liftIO)
 import Data.Text (pack, replace, unpack)
 import System.Exit (ExitCode (..))
 import System.Process
