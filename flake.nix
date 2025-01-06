@@ -107,6 +107,7 @@
               preBuild = ''
                 patchShebangs $bazelOut/external/rules_haskell~*/haskell/private/ghc_wrapper.sh
                 rm -rf "$bazelOut/external/"*[~+]{local_config_cc,local_config_cc.marker}
+                rm -rf "$bazelOut/external/"*[~+]{local_config_cc_toolchains,local_config_cc_toolchains.marker}
                 rm -rf "$bazelOut/external/"*[~+]{local_config_sh,local_config_sh.marker}
                 rm -rf "$bazelOut/external/"*[~+]{local_jdk,local_jdk.marker}
               '';
