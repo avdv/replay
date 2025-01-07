@@ -9,7 +9,7 @@
       flake = false;
     };
     flake-utils.url = "github:numtide/flake-utils";
-    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+    pre-commit-hooks.url = "github:cachix/git-hooks.nix";
     bazel-central-registry = {
       url = "github:bazelbuild/bazel-central-registry";
       flake = false;
