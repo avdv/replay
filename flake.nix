@@ -41,6 +41,7 @@
           ] ++ lib.optionals stdenv.isDarwin [
             stdenv.cc.bintools
             darwin.cctools
+            apple-sdk
           ];
           # work around https://github.com/bazelbuild/bazel/issues/5900
           # inside a nix shell, TMPDIR is set to /tmp/nix-shell.XXXXX but that interferes with
