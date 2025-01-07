@@ -15,142 +15,80 @@ import sys
 import textwrap
 import types
 import json
+from pathlib import Path
 
-#import package_configuration
+import package_configuration
 
-#!/usr/bin/env python3
-
-import collections
-import types
-
-def unfold_fields(lines):
-    """Unfold fields that were split over multiple lines.
-
-    Returns:
-        A list of strings. Each string represents one field (a name/value pair
-        separated by a colon).
-
-    >>> unfold_fields("foo  \n   bar  \n   baz  \nbiz   \nboz   ")
-    ['foo     bar     baz  ', 'biz   ', 'boz   ']
-    """
-    fields = []
-    for line in lines:
-        if line.startswith(" "):
-            fields[-1] += line
-        elif line.strip():
-            fields.append(line)
-    return fields
-
-PackageConfiguration = collections.namedtuple("PackageConfiguration", [
-    "name",
-    "version",
-    "id",
-    "include_dirs",
-    "library_dirs",
-    "dynamic_library_dirs",
-    "hs_libraries",
-    "depends",
-    "ld_options",
-    "extra_libraries",
-    "haddock_interfaces",
-    "haddock_html",
-])
-
-def parse_package_configuration(lines):
-    """Parses a single package configuration.
-
-    Returns:
-      An instance of `PackageConfiguration`.
-    """
-    pkg = types.SimpleNamespace(
-        include_dirs = [],
-        library_dirs = [],
-        dynamic_library_dirs = [],
-        depends = [],
-        hs_libraries = [],
-        ld_options = [],
-        extra_libraries = [],
-        haddock_interfaces = [],
-        haddock_html = None,
-    )
-    for field in unfold_fields(lines):
-        key, value = field.split(":", 1)
-        value = value.strip()
-        if key == "name":
-            pkg.name = value
-        elif key == "version":
-            pkg.version = value
-        elif key == "id":
-            pkg.id = value
-        elif key == "include-dirs":
-            pkg.include_dirs += value.split()
-        elif key == "library-dirs":
-            pkg.library_dirs += value.split()
-        elif key == "dynamic-library-dirs":
-            pkg.dynamic_library_dirs += value.split()
-        elif key == "hs-libraries":
-            pkg.hs_libraries += value.split()
-        elif key == "depends":
-            pkg.depends += value.split()
-        elif key == "ld-options":
-            pkg.ld_options += [opt.strip('"') for opt in value.split()]
-        elif key == "extra-libraries":
-            pkg.extra_libraries += value.split()
-        elif key == "haddock-interfaces":
-            pkg.haddock_interfaces += value.split()
-        elif key == "haddock-html":
-            pkg.haddock_html = value
-
-    return PackageConfiguration(**pkg.__dict__)
-
-def split_records(lines):
-    """Iterator over lists of lines separated by `---`.
-
-    Skips empty records.
-    """
-    separator = "---"
-    record = []
-    for line in lines:
-        if line.rstrip() == separator:
-            yield record
-            record = []
-        else:
-            record.append(line)
-    if record:
-        yield record
-
-def parse_package_database_dump(lines):
-    """Parse the output of ghc-pkg dump.
-
-    Assumes that records are separated by `---`.
-
-    Returns:
-      Iterable of `PackageConfiguration`.
-    """
-    return (
-        parse_package_configuration(record)
-        for record in split_records(lines)
-    )
+def match_glob(root_dir, pattern):
+    return sorted([p.relative_to(root_dir).as_posix() for p in Path(root_dir).glob(pattern)])
 
 if len(sys.argv) == 3:
     repo_dir = "external/" + sys.argv[1]
     topdir = sys.argv[2]
+
+    if os.path.exists(os.path.join(topdir, 'package.conf.d')):
+        package_conf_dir = os.path.join(topdir, 'package.conf.d')
+    elif os.path.exists(os.path.join(topdir, 'lib', 'package.conf.d')):
+        topdir = os.path.join(topdir, 'lib')
+        package_conf_dir = os.path.join(topdir, 'package.conf.d')
+    else:
+        sys.exit("could not find package.conf.d directory at {}".format(topdir))
+    repo_root = os.getcwd()
 else:
     sys.exit("Usage: pkgdb_to_bzl.py <REPO_NAME> <TOPDIR>")
 
-def path_to_label(path, pkgroot):
+def resolve(path, pkgroot):
+    """Resolve references to ${pkgroot} with the given value, resolve $topdir with `topdir`"""
+    if path.find("${pkgroot}") != -1:
+        norm_path = os.path.normpath(path.strip("\"").replace("${pkgroot}", pkgroot))
+        if not os.path.isabs(norm_path) and norm_path.startswith('..'):
+            return resolve(path, os.path.realpath(pkgroot))
+        else:
+            return norm_path
+    elif path.startswith("$topdir"):
+        return os.path.normpath(path.replace("$topdir", topdir)).replace('\\', '/')
+    else:
+        return path
+
+
+def join_paths(paths):
+    return ["/".join(ps) for ps in paths if not None in ps]
+
+
+symlinks = {}
+
+def path_to_label(path, pkgroot, output=None):
     """Substitute one pkgroot for another relative one to obtain a label."""
     if path.find("${pkgroot}") != -1:
-        return os.path.normpath(path.strip("\"").replace("${pkgroot}", topdir)).replace('\\', '/')
+        # determine if the given path is inside the repository root
+        # if it is not, return None to signal it needs to be symlinked into the
+        # repository
+        norm_path = os.path.normpath(resolve(path, pkgroot))
+        relative_path = os.path.relpath(norm_path, start=repo_root)
 
-    topdir_relative_path = path.replace(pkgroot, "$topdir")
-    if topdir_relative_path.find("$topdir") != -1:
+        return None if relative_path.startswith('..') else relative_path.replace('\\', '/')
+
+    topdir_relative_path = path.replace(os.path.realpath(pkgroot), "$topdir")
+    if topdir_relative_path.startswith("$topdir"):
         return os.path.normpath(topdir_relative_path.replace("$topdir", topdir)).replace('\\', '/')
 
-def hs_library_pattern(name, mode = "static", profiling = False):
+    if not output is None:
+        if os.path.isabs(path) and os.path.exists(path):
+            global symlinks
+            lnk = symlinks.get(path)
+            if not lnk:
+                lnk = "lnk_{}".format(len(symlinks))
+                symlinks[path] = lnk
+                output.append("#SYMLINK: {} {}".format(path.replace('\\', '/'), lnk))
+            return lnk
+        else:
+            print("WARN: could not handle", path, file=sys.stderr)
+
+def hs_library_pattern(package_name, name, mode = "static", profiling = False):
     """Convert hs-libraries entry to glob patterns.
 
     Args:
+        package_name: The name of the package.
         name: The library name. E.g. HSrts or Cffi.
         mode: The linking mode. Either "static" or "dynamic".
         profiling: Look for profiling mode libraries.
@@ -159,30 +97,43 @@ def hs_library_pattern(name, mode = "static", profiling = False):
         List of globbing patterns for the library file.
 
     """
+    configs = ["_p"] if profiling else [""]
+
+    # Library names must either be prefixed with "HS" or "C" and corresponding
+    # library file names must match:
+    # - Libraries with name "HS<library-name>":
+    #    - `libHS<library-name>.a`
+    #    - `libHS<library-name>-ghc<ghc-flavour><ghc-version>.<dyn-library-extension>*`
+    # - Libraries with name "C<library-name>":
+    #    - `libC<library-name>.a`
+    #    - `lib<library-name>.<dyn-library-extension>*`
+    if name.startswith("C"):
+        libname = name[1:] if mode == "dynamic" else name
+        dyn_suffix = ""
+    elif name.startswith("HS"):
+        libname = name
+        dyn_suffix = "-ghc*"
+    else:
+        sys.error("do not know how to handle hs-library `{}` in package {}".format(name, package_name))
+
     # The RTS configuration suffix.
     # See https://gitlab.haskell.org/ghc/ghc/wikis/commentary/rts/config#rts-configurations
-    configs = ["_p"] if profiling else [""]
-    # Special case HSrts or Cffi - include both libXYZ and libXYZ_thr.
-    if name == "HSrts" or name == "Cffi":
+    # Special case for rts - include multi threaded and single threaded, and debug / non-debug variants
+    if package_name == "rts":
         configs = [
             prefix + config
             for config in configs
-            for prefix in ["", "_thr"]
+            for prefix in ["", "_thr", "_debug", "_thr_debug"]
         ]
-    # Special case libCffi - dynamic lib has no configs and is called libffi.
-    if name == "Cffi" and mode == "dynamic":
-        libname = "ffi"
-        configs = [""]
-    else:
-        libname = name
+
     libnames = [libname + config for config in configs]
-    # Special case libCffi - dynamic lib has no version suffix.
-    if mode == "dynamic" and name != "Cffi":
-        libnames = [libname + "-ghc*" for libname in libnames]
+
     if mode == "dynamic":
+        libnames = [libname + dyn_suffix for libname in libnames]
         exts = ["so", "so.*", "dylib", "dll"]
     else:
         exts = ["a"]
+
     return [
         "lib{}.{}".format(libname, ext)
         for libname in libnames
@@ -193,14 +144,15 @@ output = []
 
 # Accumulate package id to package name mappings.
 pkg_id_map = []
-for conf in sorted(glob.glob(os.path.join(topdir, "package.conf.d", "*.conf"))):
+
+for conf in glob.glob(os.path.join(package_conf_dir, '*.conf')):
     with open(conf, 'r') as f:
-        pkg = parse_package_configuration(f)
+        pkg = package_configuration.parse_package_configuration(f)
 
     # pkgroot is not part of .conf files. It's a computed value. It is
     # defined to be the directory enclosing the package database
     # directory.
-    pkgroot = os.path.dirname(os.path.dirname(os.path.realpath(conf)))
+    pkgroot = os.path.dirname(os.path.dirname(conf))
 
     pkg_id_map.append((pkg.name, pkg.id))
 
@@ -216,27 +168,48 @@ for conf in sorted(glob.glob(os.path.join(topdir, "package.conf.d", "*.conf"))):
     # output a SYMLINK information for the parent process
 
     # first, try to get a path within the package
-    # We check if the file exists because cabal will unconditionally
-    # generate the database entry even if no haddock was generated.
     haddock_html = None
+
     if pkg.haddock_html:
-        haddock_html = path_to_label(pkg.haddock_html, pkgroot)
-        if not haddock_html:
-            haddock_html = os.path.join("haddock", "html", pkg.name)
-            output.append("#SYMLINK: {} {}".format(pkg.haddock_html, haddock_html))
+        # We check if the file exists because cabal will unconditionally
+        # generate the database entry even if no haddock was generated.
+        resolved_haddock_html = resolve(pkg.haddock_html, pkgroot)
+
+        if not os.path.exists(resolved_haddock_html):
+            # try to resolve relative to the package.conf.d dir
+            # see https://gitlab.haskell.org/ghc/ghc/-/issues/23476
+            resolved_haddock_html = resolve(pkg.haddock_html, package_conf_dir)
+
+        if os.path.exists(resolved_haddock_html):
+            haddock_html = path_to_label(pkg.haddock_html, pkgroot)
+            if not haddock_html:
+                haddock_html = os.path.join("haddock", "html", pkg.name)
+                output.append("#SYMLINK: {} {}".format(resolved_haddock_html.replace('\\', '/'), haddock_html))
 
     # If there is many interfaces, we give them a number
     interface_id = 0
     haddock_interfaces = []
     for interface_path in pkg.haddock_interfaces:
+        resolved_path = resolve(interface_path, pkgroot).replace('\\', '/')
+
+        if not os.path.exists(resolved_path):
+            # try to resolve relative to the package.conf.d dir
+            # see https://gitlab.haskell.org/ghc/ghc/-/issues/23476
+            resolved_path = resolve(interface_path, package_conf_dir)
+
+        # We check if the file exists because cabal will unconditionally
+        # generate the database entry even if no haddock was generated.
+        if not os.path.exists(resolved_path): continue
+
         interface = path_to_label(interface_path, pkgroot)
+
         if not interface:
             interface = os.path.join(
                 "haddock",
                 "interfaces",
                 pkg.name + "_" + str(interface_id) + ".haddock",
             )
-            output.append("#SYMLINK: {} {}".format(interface_path, interface))
+            output.append("#SYMLINK: {} {}".format(resolved_path, interface))
             interface_id += 1
         haddock_interfaces.append(interface)
 
@@ -264,36 +237,35 @@ for conf in sorted(glob.glob(os.path.join(topdir, "package.conf.d", "*.conf"))):
                 name = pkg.name,
                 id = pkg.id,
                 version = pkg.version,
-                hdrs = "glob({}, allow_empty = True)".format([
-                    path_to_label("{}/**/*.h".format(include_dir), pkgroot)
+                hdrs = join_paths([
+                    [path_to_label(include_dir, pkgroot, output), header]
                     for include_dir in pkg.include_dirs
-                    if path_to_label(include_dir, pkgroot)
+                    for header in match_glob(resolve(include_dir, pkgroot), "**/*.h")
                 ]),
-                includes = [
-                    "/".join([repo_dir, path_to_label(include_dir, pkgroot)])
+                includes = join_paths([
+                    [repo_dir, path_to_label(include_dir, pkgroot, output)]
                     for include_dir in pkg.include_dirs
-                    if path_to_label(include_dir, pkgroot)
-                ],
-                static_libraries = "glob({}, allow_empty = True)".format([
-                    path_to_label("{}/{}".format(library_dir, pattern), pkgroot)
-                    for hs_library in pkg.hs_libraries
-                    for pattern in hs_library_pattern(hs_library, mode = "static", profiling = False)
-                    for library_dir in pkg.library_dirs
-                    if path_to_label(library_dir, pkgroot)
                 ]),
-                static_profiling_libraries = "glob({}, allow_empty = True)".format([
-                    path_to_label("{}/{}".format(library_dir, pattern), pkgroot)
+                static_libraries = join_paths([
+                    [path_to_label(library_dir, pkgroot, output), library]
                     for hs_library in pkg.hs_libraries
-                    for pattern in hs_library_pattern(hs_library, mode = "static", profiling = True)
+                    for pattern in hs_library_pattern(pkg.name, hs_library, mode = "static", profiling = False)
                     for library_dir in pkg.library_dirs
-                    if path_to_label(library_dir, pkgroot)
+                    for library in match_glob(resolve(library_dir, pkgroot), pattern)
                 ]),
-                shared_libraries = "glob({}, allow_empty = True)".format([
-                    path_to_label("{}/{}".format(dynamic_library_dir, pattern), pkgroot)
+                static_profiling_libraries = join_paths([
+                    [path_to_label(library_dir, pkgroot, output), library]
                     for hs_library in pkg.hs_libraries
-                    for pattern in hs_library_pattern(hs_library, mode = "dynamic", profiling = False)
-                    for dynamic_library_dir in pkg.dynamic_library_dirs + pkg.library_dirs
-                    if path_to_label(dynamic_library_dir, pkgroot)
+                    for pattern in hs_library_pattern(pkg.name, hs_library, mode = "static", profiling = True)
+                    for library_dir in pkg.library_dirs
+                    for library in match_glob(resolve(library_dir, pkgroot), pattern)
+                ]),
+                shared_libraries = join_paths([
+                    [path_to_label(dynamic_library_dir, pkgroot, output), library]
+                    for hs_library in pkg.hs_libraries
+                    for pattern in hs_library_pattern(pkg.name, hs_library, mode = "dynamic", profiling = False)
+                    for dynamic_library_dir in set(pkg.dynamic_library_dirs + pkg.library_dirs)
+                    for library in match_glob(resolve(dynamic_library_dir, pkgroot), pattern)
                 ]),
                 haddock_html = repr(haddock_html),
                 haddock_interfaces = repr(haddock_interfaces),
@@ -309,8 +281,6 @@ for conf in sorted(glob.glob(os.path.join(topdir, "package.conf.d", "*.conf"))):
             )
         )
     ]
-
-pkg_id_map.sort()
 
 for pkg_name, pkg_id in pkg_id_map:
     if pkg_id != pkg_name:
