@@ -1,5 +1,10 @@
 {
     "integrity": "sha256-GtsE3AQWkV/vQndX9CcsT32s7+zu78UPaDrsf36beHo=",
     "strip_prefix": "rules_nixpkgs-0.12.0/toolchains/cc",
-    "url": "https://github.com/tweag/rules_nixpkgs/releases/download/v0.12.0/rules_nixpkgs-0.12.0.tar.gz"
+    "url": "https://github.com/tweag/rules_nixpkgs/releases/download/v0.12.0/rules_nixpkgs-0.12.0.tar.gz",
+    "patch_strip": 3,
+    "patches": {
+        "extra_flags_per_feature.patch": "sha256-576dBOkky5p+LmRvl9uF+SOZ09Wzu0md7LETX8Oi0CI=",
+        "postLinkSignHook.patch": "sha256-IHlLw3z0xklLUU3ZwSLyzi2zR8LvITTxQQGKz5k7D3k="
+    }
 }
