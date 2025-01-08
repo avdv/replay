@@ -2,7 +2,7 @@
   description = "replay";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nix-filter.url = "github:numtide/nix-filter";
     flake-compat = {
       url = "github:edolstra/flake-compat";
@@ -41,6 +41,7 @@
           ] ++ lib.optionals stdenv.isDarwin [
             stdenv.cc.bintools
             darwin.cctools
+            apple-sdk
           ];
           # work around https://github.com/bazelbuild/bazel/issues/5900
           # inside a nix shell, TMPDIR is set to /tmp/nix-shell.XXXXX but that interferes with
@@ -100,7 +101,7 @@
                 # make all directories writable
                 find $bazelOut/external/ -type d -exec chmod --changes +w '{}' ';'
               '';
-              sha256 = "sha256-gbHWPBfrQr7gSCnkmeCx0GXepWm2vZYF3qJ4D3AkobU=";
+              sha256 = "sha256-TcsuwlbrAHrONVq6WZ/MBlfbMDJSYMyyOADDSjDQl5c=";
             };
 
             buildAttrs = {
