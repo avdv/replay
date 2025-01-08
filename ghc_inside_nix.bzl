@@ -24,11 +24,11 @@ toolchain(
     toolchain = ":py_runtime_pair",
     toolchain_type = "@bazel_tools//tools/python:toolchain_type",
     exec_compatible_with = [
-        "@platforms//cpu:x86_64",
+        "@platforms//cpu:{arch}",
         "@platforms//os:{os}",
     ],
     target_compatible_with = [
-        "@platforms//cpu:x86_64",
+        "@platforms//cpu:{arch}",
         "@platforms//os:{os}",
     ],
 )
@@ -40,6 +40,10 @@ toolchain(
             "darwin_arm64": "osx",
             "x64_windows": "windows",
         }.get(cpu, "linux"),
+        arch = {
+            "darwin_arm64": "arm64",
+            "aarch64": "arm64",
+        }.get(cpu, "x86_64"),
     ))
 
 _config_python3_toolchain = repository_rule(
@@ -369,11 +373,20 @@ def _ghc_nixpkgs_toolchain_impl(repository_ctx):
     # toolchain resolution prefers other toolchains with more specific
     # constraints otherwise.
     if repository_ctx.attr.target_constraints == [] and repository_ctx.attr.exec_constraints == []:
-        target_constraints = ["@platforms//cpu:x86_64"]
-        if repository_ctx.os.name == "linux":
+        arch = repository_ctx.os.arch
+        os = repository_ctx.os.name
+        if arch in ["x86_64", "amd64", "x64"]:
+            target_constraints = ["@platforms//cpu:x86_64"]
+        elif arch == "aarch64":
+            target_constraints = ["@platforms//cpu:aarch64"]
+        else:
+            fail("unknown arch: " + arch)
+        if os == "linux":
             target_constraints.append("@platforms//os:linux")
-        elif repository_ctx.os.name == "mac os x":
-            target_constraints.append("@platforms//os:osx")
+        elif os.startswith("mac os"):
+            target_constraints.append("@platforms//os:macos")
+        else:
+            fail("unknown os: " + os)
         exec_constraints = list(target_constraints)
     else:
         target_constraints = repository_ctx.attr.target_constraints
