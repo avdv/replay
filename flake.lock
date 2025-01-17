@@ -3,11 +3,11 @@
     "bazel-central-registry": {
       "flake": false,
       "locked": {
-        "lastModified": 1736540126,
-        "narHash": "sha256-lFBw1HkHs173bSTmPahHvKSi4Hh4+hRuHEYPkZeEuXE=",
+        "lastModified": 1737078700,
+        "narHash": "sha256-4HIhb3mVLOEjm2hierV0aBOMffvt8HkHUX+yRBaMt2k=",
         "owner": "bazelbuild",
         "repo": "bazel-central-registry",
-        "rev": "1db91d294609ff258adeea1f50d5c91b050651fd",
+        "rev": "208703ba9a068171450318f7bde3479bfc59c271",
         "type": "github"
       },
       "original": {
