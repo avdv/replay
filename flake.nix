@@ -129,6 +129,7 @@
             pre-commit-check = pre-commit-hooks.lib.${system}.run {
               src = ./.;
               hooks = {
+                actionlint.enable = true;
                 hlint.enable = true;
                 nixpkgs-fmt.enable = true;
                 ormolu = {
