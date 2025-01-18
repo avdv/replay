@@ -40,12 +40,14 @@ jobs:
       if: github.event_name == 'pull_request' && github.repository == 'avdv/replay'
       run: |-
         nix develop --command .github/update-hash replay.deps
-        echo exit=$( git diff --quiet flake.nix ; echo $? ) >> "$GITHUB_OUTPUT"
+        echo exit="$( git diff --quiet flake.nix ; echo $? )" >> "$GITHUB_OUTPUT"
     - name: Push changes to PR
       if: steps.hash-update.outputs.exit != '0'
+      env:
+        GH_HEAD_REF: ${{ github.head_ref }}
       run: |-
         git commit -m 'Update replay.deps hash' flake.nix
-        git push origin HEAD:${{ github.head_ref }}
+        git push origin "HEAD:$GH_HEAD_REF"
         exit 1
 
   test-package:
