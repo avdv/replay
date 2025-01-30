@@ -2,7 +2,7 @@
   description = "replay";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nix-filter.url = "github:numtide/nix-filter";
     flake-compat = {
       url = "github:edolstra/flake-compat";
@@ -100,7 +100,7 @@
                 # make all directories writable
                 find $bazelOut/external/ -type d -exec chmod --changes +w '{}' ';'
               '';
-              sha256 = "sha256-lmj8O0rBSgqkLHD4yrcEjb6vNNDaZZtvIpVB06UzB98=";
+              sha256 = "sha256-CMYnQ5OmCEFbQYrw6oG40cmuEK12oxFMpnxUpNgGevA=";
             };
 
             buildAttrs = {
