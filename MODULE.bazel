@@ -3,7 +3,7 @@ module(
     version = "0.2",
 )
 
-bazel_dep(name = "rules_nixpkgs_core", version = "0.12.0")
+bazel_dep(name = "rules_nixpkgs_core", version = "0.13.0")
 bazel_dep(
     name = "rules_haskell_nix",
     version = "0.19",
