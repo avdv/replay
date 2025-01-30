@@ -50,8 +50,8 @@ nix_repo.file(
     name = "nixpkgs",
     file = "//:nixpkgs.nix",
     file_deps = [
-    "//:flake.lock",
-    ]
+        "//:flake.lock",
+    ],
 )
 use_repo(nix_repo, "nixpkgs")
 
@@ -77,13 +77,9 @@ nix_haskell_toolchains.new(
 )
 
 sh_configure = use_extension("@rules_sh//bzlmod:extensions.bzl", "sh_configure")
-
 use_repo(sh_configure, "local_posix_config")
 
 stack = use_extension("@rules_haskell//extensions:stack_snapshot.bzl", "stack_snapshot")
-
 stack.snapshot(name = "lts-18.28")
-
 stack.package(name = "json")
-
 use_repo(stack, "stackage")
