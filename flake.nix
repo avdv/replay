@@ -155,7 +155,7 @@
                   enable = true;
                   name = "buildifier";
                   entry = "${pkgs.buildifier}/bin/buildifier -mode=fix -lint=fix";
-                  files = "^((WORKSPACE|BUILD)([.]bazel)?|.+[.]bzl)$";
+                  files = "^((WORKSPACE|BUILD)([.]bazel)?|.+[.]bzl|(MODULE|REPO)[.]bazel)$";
 
                   # List of file types to run on (default: [ "file" ] (all files))
                   # see also https://pre-commit.com/#filtering-files-with-types
