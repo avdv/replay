@@ -1,0 +1,12 @@
+diff --git a/tools/osx/xcode_configure.bzl b/tools/osx/xcode_configure.bzl
+index 0461ad88b2..201332b229 100644
+--- a/tools/osx/xcode_configure.bzl
++++ b/tools/osx/xcode_configure.bzl
+@@ -301,6 +301,7 @@ xcode_autoconf = repository_rule(
+     ],
+     implementation = _impl,
+     configure = True,
++    local = True,
+     attrs = {
+         "xcode_locator": attr.string(),
+         "remote_xcode": attr.string(),
