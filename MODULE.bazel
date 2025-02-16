@@ -83,3 +83,5 @@ stack = use_extension("@rules_haskell//extensions:stack_snapshot.bzl", "stack_sn
 stack.snapshot(name = "lts-18.28")
 stack.package(name = "json")
 use_repo(stack, "stackage")
+
+register_toolchains("@rules_python//python/runtime_env_toolchains:all")
