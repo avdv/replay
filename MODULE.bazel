@@ -131,3 +131,5 @@ use_repo(
     "org_golang_x_net",
     "org_golang_x_tools",
 )
+
+register_toolchains("@rules_python//python/runtime_env_toolchains:all")
