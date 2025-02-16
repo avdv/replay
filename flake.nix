@@ -89,7 +89,13 @@
               exePath = "/bin/replay";
             };
 
-            inherit bazel;
+            bazel =
+              if pkgs.stdenv.isDarwin then
+                bazel.overrideAttrs
+                  (final: prev: {
+                    patches = prev.patches ++ [ ./bazel_xcode_local.diff ];
+                  }) else
+                bazel;
 
             bazelTargets = [ "//:replay" ];
 
