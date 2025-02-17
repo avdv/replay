@@ -1,0 +1,18 @@
+load("@rules_python//python:py_runtime.bzl", "py_runtime")
+load("@rules_python//python:py_runtime_pair.bzl", "py_runtime_pair")
+
+py_runtime(
+    name = "runtime",
+    interpreter_path = "/nix/store/kjgslpdqchx1sm7a5h9xibi5rrqcqfnl-python3-3.12.8/bin/python3",
+    # interpreter_version_info = {
+    #     "major": str(MAJOR),
+    #     "minor": str(MINOR),
+    #     "micro": str(MICRO),
+    # }
+    #implementation = "cpython",
+)
+
+py_runtime_pair(
+    name = "py_runtime_pair",
+    py3_runtime = ":runtime",
+)
