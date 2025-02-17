@@ -78,6 +78,7 @@
               "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain"
               "--registry"
               "file://${bazel-central-registry}"
+              "--toolchain_resolution_debug=.*python.*"
             ];
 
             bazelBuildFlags = [
@@ -106,7 +107,7 @@
                 # make all directories writable
                 find $bazelOut/external/ -type d -exec chmod --changes +w '{}' ';'
               '';
-              sha256 = "sha256-l33PrK/wSs+h07uX8qZZvToL6Nt1nueChMK8q/K6OTc=";
+              sha256 = "sha256-pEwQjZbfWC/PspUixHOb89Mk2X5LE7rWcO6nQWsc4RY=";
             };
 
             buildAttrs = {
