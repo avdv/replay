@@ -78,6 +78,7 @@
               "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain"
               "--registry"
               "file://${bazel-central-registry}"
+              "--toolchain_resolution_debug=.*python.*"
             ];
 
             bazelBuildFlags = [

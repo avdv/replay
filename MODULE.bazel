@@ -132,4 +132,10 @@ use_repo(
     "org_golang_x_tools",
 )
 
-register_toolchains("@rules_python//python/runtime_env_toolchains:all")
+nix_python_config = use_extension("//:extensions.bzl", "nix_python_config")
+nix_python_config.nixpkgs(repository = "@nixpkgs")
+use_repo(nix_python_config, "nixpkgs_python_toolchain")
+
+register_toolchains("@nixpkgs_python_toolchain//:all")
+
+register_toolchains("//py_toolchain:all")
