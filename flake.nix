@@ -118,6 +118,7 @@
                 rm -rf "$bazelOut/external/"*[~+]{local_config_sh,local_config_sh.marker}
                 rm -rf "$bazelOut/external/"*[~+]{local_jdk,local_jdk.marker}
                 rm -rf "$bazelOut/external/"*[~+]{local_config_xcode,local_config_xcode.marker}
+                set -x
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay
