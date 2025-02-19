@@ -21,6 +21,7 @@
     flake-utils.lib.eachSystem [ aarch64-darwin aarch64-linux x86_64-darwin x86_64-linux ]
       (system:
         let
+          inherit (nixpkgs) lib;
           pkgs = import nixpkgs { inherit system; };
           filter = nix-filter.lib;
           bazel = pkgs.bazel_7;
@@ -51,6 +52,41 @@
           '';
           devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib ormolu; in
             [ bazel-wrapper buildifier ghcWithHoogle haskell-language-server ormolu ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
+
+          nixpkgs_python3_toolchain = pkgs.stdenvNoCC.mkDerivation {
+            name = "python3-toolchain";
+            dontUnpack = true;
+            dontPatch = true;
+            installPhase = ''
+              mkdir -p $out/{runtime,toolchains}
+              touch $out/WORKSPACE.bazel $out/BUILD.bazel
+              cat >$out/toolchains/BUILD.bazel <<'EOF'
+              load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
+              toolchain(
+                  name = "runtime_toolchain",
+                  toolchain = "//runtime:py_runtime_pair",
+                  toolchain_type = "@rules_python//python:toolchain_type",
+                  target_compatible_with = HOST_CONSTRAINTS,
+              )
+              EOF
+
+              cat >$out/runtime/BUILD.bazel <<'EOF'
+              load("@rules_python//python:py_runtime.bzl", "py_runtime")
+              load("@rules_python//python:py_runtime_pair.bzl", "py_runtime_pair")
+
+              py_runtime(
+                  name = "runtime",
+                  interpreter_path = "${lib.getExe pkgs.python3}",
+                  stub_shebang = "#!/${lib.getExe pkgs.python3}",
+              )
+
+              py_runtime_pair(
+                  name = "py_runtime_pair",
+                  py3_runtime = ":runtime",
+              )
+              EOF
+            '';
+          };
         in
         rec {
           packages.replay = pkgs.buildBazelPackage {
@@ -75,10 +111,11 @@
             removeRulesCC = false;
 
             bazelFlags = [
+              "--override_repository=_main~_repo_rules~nixpkgs_python3_toolchain=${nixpkgs_python3_toolchain}"
+              "--extra_toolchains=@nixpkgs_python3_toolchain//toolchains:all"
               "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain"
               "--registry"
               "file://${bazel-central-registry}"
-              "--toolchain_resolution_debug=.*python.*"
             ];
 
             bazelBuildFlags = [
@@ -118,7 +155,6 @@
                 rm -rf "$bazelOut/external/"*[~+]{local_config_sh,local_config_sh.marker}
                 rm -rf "$bazelOut/external/"*[~+]{local_jdk,local_jdk.marker}
                 rm -rf "$bazelOut/external/"*[~+]{local_config_xcode,local_config_xcode.marker}
-                set -x
               '';
               installPhase = ''
                 install -D -t $out/bin bazel-bin/replay

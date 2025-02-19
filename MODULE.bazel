@@ -138,4 +138,6 @@ use_repo(nix_python_config, "nixpkgs_python_toolchain")
 
 register_toolchains("@nixpkgs_python_toolchain//:all")
 
-register_toolchains("//py_toolchain:all")
+empty_repo = use_repo_rule("//:utils.bzl", "empty_repo")
+
+empty_repo(name = "nixpkgs_python3_toolchain")
