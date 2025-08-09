@@ -1,0 +1,13 @@
+diff --git a/core/util.bzl b/core/util.bzl
+index 87cf8a4..6961403 100644
+--- a/core/util.bzl
++++ b/core/util.bzl
+@@ -41,6 +41,8 @@ def _is_executable(repository_ctx, path):
+ 
+     arguments = [stat_exe] + stat_args
+     exec_result = repository_ctx.execute(arguments)
++    if exec_result.return_code != 0:
++        fail("cmd `{}` failed with exit code {}: {}".format(arguments, exec_result.return_code, exec_result.stderr))
+     stdout = exec_result.stdout.strip()
+     mode = int(stdout, 8)
+     return mode & 0o100 != 0
