@@ -4,6 +4,12 @@ module(
 )
 
 bazel_dep(name = "rules_nixpkgs_core", version = "0.13.0")
+single_version_override(
+    module_name = "rules_nixpkgs_core",
+    patch_strip = 2,
+    patches = ["rules_nixpkgs_stat_fail.diff"],
+)
+
 bazel_dep(
     name = "rules_haskell_nix",
     version = "0.19",
