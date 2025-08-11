@@ -1,16 +1,24 @@
 load("@rules_nixpkgs_cc//:cc.bzl", "nixpkgs_cc_configure")
+load(
+    "@rules_nixpkgs_go//:go.bzl",
+    "nixpkgs_go_configure",
+)
 
-_nix_cc = tag_class(
+_nix_toolchains = tag_class(
     attrs = {"repository": attr.label()},
 )
 
 def _init_impl(mctx):
     for mod in mctx.modules:
-        for nix_cc in mod.tags.nix_cc:
-            print("calling nixpkgs_cc_configure", nix_cc.repository)
+        for nix_toolchains in mod.tags.nix_toolchains:
             nixpkgs_cc_configure(
                 name = "nixpkgs_cc",
-                repository = nix_cc.repository,
+                repository = nix_toolchains.repository,
+                register = False,
+            )
+            nixpkgs_go_configure(
+                repository = nix_toolchains.repository,
+                #rules_go_repo_name = "io_bazel_rules_go",
                 register = False,
             )
             break
@@ -18,6 +26,6 @@ def _init_impl(mctx):
 init = module_extension(
     implementation = _init_impl,
     tag_classes = {
-        "nix_cc": _nix_cc,
+        "nix_toolchains": _nix_toolchains,
     },
 )
