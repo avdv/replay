@@ -81,11 +81,6 @@ nix_haskell_toolchains.new(
 sh_configure = use_extension("@rules_sh//bzlmod:extensions.bzl", "sh_configure")
 use_repo(sh_configure, "local_posix_config")
 
-stack = use_extension("@rules_haskell//extensions:stack_snapshot.bzl", "stack_snapshot")
-stack.snapshot(name = "lts-18.28")
-stack.package(name = "json")
-use_repo(stack, "stackage")
-
 init = use_extension(":repos.bzl", "init")
 init.nix_toolchains(repository = "@nixpkgs")
 use_repo(
@@ -107,7 +102,7 @@ register_toolchains("@go_sdk_toolchains//:all")
 register_toolchains("@nixpkgs_python_toolchain//:toolchain")
 
 gazelle_haskell = use_extension(":init_gazelle_haskell.bzl", "gazelle_haskell")
-gazelle_haskell.init(json = "@stackage//:json")
+gazelle_haskell.init(json = "//:json_pkg")
 use_repo(gazelle_haskell, "io_tweag_gazelle_haskell_modules_deps")
 
 go_deps = use_extension("@bazel_gazelle//:extensions.bzl", "go_deps")
