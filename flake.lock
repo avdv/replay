@@ -3,11 +3,11 @@
     "bazel-central-registry": {
       "flake": false,
       "locked": {
-        "lastModified": 1756589990,
-        "narHash": "sha256-Tu2aK70MBEyeSy7VgTZ6RY6bH7hQJUyHo/v8ANZ4ZrE=",
+        "lastModified": 1757200103,
+        "narHash": "sha256-v+MjbK2h5rFNcOL6U2IZoTkT5OjZ04L96OULTdX1V34=",
         "owner": "bazelbuild",
         "repo": "bazel-central-registry",
-        "rev": "25740a960d8756d384180a8ab4d25f220996c9e5",
+        "rev": "53fac614513c1df684fbc0c066257e7203a04290",
         "type": "github"
       },
       "original": {
@@ -141,11 +141,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1754416808,
-        "narHash": "sha256-c6yg0EQ9xVESx6HGDOCMcyRSjaTpNJP10ef+6fRcofA=",
+        "lastModified": 1755960406,
+        "narHash": "sha256-RF7j6C1TmSTK9tYWO6CdEMtg6XZaUKcvZwOCD2SICZs=",
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "rev": "9c52372878df6911f9afc1e2a1391f55e4dfc864",
+        "rev": "e891a93b193fcaf2fc8012d890dc7f0befe86ec2",
         "type": "github"
       },
       "original": {
