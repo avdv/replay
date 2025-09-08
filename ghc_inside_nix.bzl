@@ -84,7 +84,6 @@ def _configure_python3_toolchain(name):
     sandboxed.
     """
     _config_python3_toolchain(name = name)
-    native.register_toolchains("@{}//:toolchain".format(name))
 
 def _ghc_nixpkgs_haskell_toolchain_impl(repository_ctx):
     paths = {"@rules_haskell//haskell:private/pkgdb_to_bzl.py": repository_ctx.path(Label("//:pkgdb_to_bzl.py"))}
