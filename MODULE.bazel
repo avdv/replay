@@ -83,6 +83,10 @@ use_repo(sh_configure, "local_posix_config")
 
 init = use_extension(":repos.bzl", "init")
 init.nix_toolchains(repository = "@nixpkgs")
+init.ghc_in_nix(
+    ghc_opts = GHC_OPTS,
+    version = GHC_VERSION,
+)
 use_repo(
     init,
     "go_sdk",
@@ -93,6 +97,8 @@ use_repo(
     "nixpkgs_cc_info",
     "nixpkgs_cc_toolchains",
     "nixpkgs_python_toolchain",
+    "rules_haskell_python_local",
+    "rules_haskell_nix_ghc_in_nix_toolchain",
 )
 
 register_toolchains("@nixpkgs_cc_toolchains//:all")
@@ -101,6 +107,9 @@ register_toolchains("@go_sdk_toolchains//:all")
 
 register_toolchains("@nixpkgs_python_toolchain//:toolchain")
 
+register_toolchains("@rules_haskell_python_local//:toolchain")
+
+go_sdk = use_extension("//go:extensions.bzl", "go_sdk")
 gazelle_haskell = use_extension(":init_gazelle_haskell.bzl", "gazelle_haskell")
 gazelle_haskell.init(json = "//:json_pkg")
 use_repo(gazelle_haskell, "io_tweag_gazelle_haskell_modules_deps")

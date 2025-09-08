@@ -2,13 +2,6 @@
 workspace(name = "replay")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("@rules_nixpkgs_cc//:cc.bzl", "nixpkgs_cc_configure")
-
-# TODO Use module extension once available.
-nixpkgs_cc_configure(
-    name = "nixpkgs_cc",
-    repository = "@nixpkgs",
-)
 
 GHC_OPTS = [
     "-Wall",
@@ -50,46 +43,12 @@ register_ghc_in_nix(
 # gazelle
 ###
 
-http_archive(
-    name = "io_bazel_rules_go",
-    sha256 = "89d2050410602142c9acafd01c95baf48b65f8dd16f4771d37c89f82f5e147f2",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.56.1/rules_go-v0.56.1.zip",
-        "https://github.com/bazelbuild/rules_go/releases/download/v0.56.1/rules_go-v0.56.1.zip",
-    ],
-)
-
-http_archive(
-    name = "bazel_gazelle",
-    sha256 = "e467b801046b6598c657309b45d2426dc03513777bd1092af2c62eebf990aca5",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/v0.45.0/bazel-gazelle-v0.45.0.tar.gz",
-        "https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.45.0/bazel-gazelle-v0.45.0.tar.gz",
-    ],
-)
-
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-load("@io_bazel_rules_go//go:deps.bzl", "go_rules_dependencies")
-
 ############################################################
 # Define your own dependencies here using go_repository.
 # Else, dependencies declared by rules_go/gazelle will be used.
 # The first declaration of an external repository "wins".
 ############################################################
 
-go_rules_dependencies()
-
-load(
-    "@rules_nixpkgs_go//:go.bzl",
-    "nixpkgs_go_configure",
-)
-
-nixpkgs_go_configure(
-    repository = "@nixpkgs",
-    rules_go_repo_name = "io_bazel_rules_go",
-)
-
-gazelle_dependencies(go_repository_default_config = "//:WORKSPACE.bazel")
 
 http_archive(
     name = "io_tweag_gazelle_haskell_modules",
