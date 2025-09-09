@@ -49,7 +49,6 @@ register_ghc_in_nix(
 # The first declaration of an external repository "wins".
 ############################################################
 
-
 http_archive(
     name = "io_tweag_gazelle_haskell_modules",
     sha256 = "6f763feca1a7526f30177a7a685b9c24beee5ca6df9c47358e885b02e50ffe61",
