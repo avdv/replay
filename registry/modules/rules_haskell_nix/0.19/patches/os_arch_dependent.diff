@@ -1,0 +1,11 @@
+diff --git a/rules_haskell_nix/private/declare_toolchains.bzl b/rules_haskell_nix/private/declare_toolchains.bzl
+index aa129b48..14fd05bb 100644
+--- a/rules_haskell_nix/private/declare_toolchains.bzl
++++ b/rules_haskell_nix/private/declare_toolchains.bzl
+@@ -58,4 +58,6 @@ def _declare_nix_toolchains_impl(mctx):
+ declare_nix_toolchains = module_extension(
+     implementation = _declare_nix_toolchains_impl,
+     doc = "This module extension creates the haskell toolchains required by the `rules_haskell_toolchains` extension",
++    os_dependent = True,
++    arch_dependent = True,
+ )

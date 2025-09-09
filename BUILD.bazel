@@ -47,6 +47,12 @@ haskell_library(
     ],
 )
 
+haskell_toolchain_library(
+    name = "json_pkg",
+    package = "json",
+    visibility = ["//visibility:public"],
+)
+
 [
     haskell_toolchain_library(
         name = "{}_pkg".format(pkg),

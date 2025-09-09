@@ -11,7 +11,9 @@ withPackages (hs: with hs; [
   fsnotify
   hspec
   ini
+  json
   optparse-applicative
   process
   unix
+  vty-unix
 ])

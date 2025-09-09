@@ -1,9 +1,10 @@
 {
-    "integrity": "sha256-NHQoSKiILZSgQ3s7GRfepvWMgv5XYq/o0knTo25Rk10=",
-    "strip_prefix": "rules_haskell-0.19/rules_haskell_nix",
-    "url": "https://github.com/tweag/rules_haskell/releases/download/v0.19/rules_haskell-0.19.tar.gz",
-    "patch_strip": 2,
-    "patches": {
-      "set-bzlmod-true.diff": "sha256-SjTVWlrWrr1//l9FazYTz2yaq8Q4iqYlyByim9GC9oA="
-    }
+  "integrity": "sha256-NHQoSKiILZSgQ3s7GRfepvWMgv5XYq/o0knTo25Rk10=",
+  "strip_prefix": "rules_haskell-0.19/rules_haskell_nix",
+  "url": "https://github.com/tweag/rules_haskell/releases/download/v0.19/rules_haskell-0.19.tar.gz",
+  "patch_strip": 2,
+  "patches": {
+    "set-bzlmod-true.diff": "sha256-SjTVWlrWrr1//l9FazYTz2yaq8Q4iqYlyByim9GC9oA=",
+    "os_arch_dependent.diff": "sha256-G/+5P3yUNC8LvLdAWMXzunTTt0Whu3HcwuQ//16a85E="
+  }
 }
