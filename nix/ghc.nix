@@ -15,4 +15,5 @@ withPackages (hs: with hs; [
   optparse-applicative
   process
   unix
+  vty-unix
 ])
