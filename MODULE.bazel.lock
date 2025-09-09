@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 6,
-  "moduleFileHash": "ad14af06d6a408befaae943d41fc1e0c5a96ba49882c984c711e186a9876d0a2",
+  "moduleFileHash": "a9684651cc8a1b5220a456bfbc6095043f08fcba3335810b028af6fc771af717",
   "flags": {
     "cmdRegistries": [
       "file:///%workspace%/registry",
@@ -152,8 +152,8 @@
             "nixpkgs_cc_info": "nixpkgs_cc_info",
             "nixpkgs_cc_toolchains": "nixpkgs_cc_toolchains",
             "nixpkgs_python_toolchain": "nixpkgs_python_toolchain",
-            "rules_haskell_python_local": "rules_haskell_python_local",
-            "rules_haskell_nix_ghc_in_nix_toolchain": "rules_haskell_nix_ghc_in_nix_toolchain"
+            "rules_haskell_nix_ghc_in_nix_toolchain": "rules_haskell_nix_ghc_in_nix_toolchain",
+            "rules_haskell_python_local": "rules_haskell_python_local"
           },
           "devImports": [],
           "tags": [
@@ -209,20 +209,7 @@
           },
           "imports": {},
           "devImports": [],
-          "tags": [
-            {
-              "tagName": "host",
-              "attributeValues": {
-                "version": "1.23"
-              },
-              "devDependency": false,
-              "location": {
-                "file": "@@//:MODULE.bazel",
-                "line": 113,
-                "column": 12
-              }
-            }
-          ],
+          "tags": [],
           "hasDevUseExtension": false,
           "hasNonDevUseExtension": true
         },
@@ -232,7 +219,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 116,
+            "line": 114,
             "column": 32
           },
           "imports": {
@@ -248,7 +235,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 117,
+                "line": 115,
                 "column": 21
               }
             }
@@ -262,7 +249,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 120,
+            "line": 118,
             "column": 24
           },
           "imports": {
@@ -279,7 +266,20 @@
             "org_golang_x_tools": "org_golang_x_tools"
           },
           "devImports": [],
-          "tags": [],
+          "tags": [
+            {
+              "tagName": "from_file",
+              "attributeValues": {
+                "go_mod": "@io_bazel_rules_go//:go.mod"
+              },
+              "devDependency": false,
+              "location": {
+                "file": "@@//:MODULE.bazel",
+                "line": 119,
+                "column": 18
+              }
+            }
+          ],
           "hasDevUseExtension": false,
           "hasNonDevUseExtension": true
         }
@@ -295,7 +295,7 @@
         "rules_proto": "rules_proto@7.1.0",
         "bazel_skylib": "bazel_skylib@1.8.1",
         "rules_sh": "rules_sh@0.5.0",
-        "rules_python": "rules_python@1.5.3",
+        "rules_python": "rules_python@1.6.0",
         "rules_cc": "rules_cc@0.2.1",
         "rules_nixpkgs_go": "rules_nixpkgs_go@0.13.0",
         "io_bazel_rules_go": "rules_go@0.55.1",
@@ -656,7 +656,7 @@
         "com_google_protobuf": "protobuf@32.0",
         "rules_cc": "rules_cc@0.2.1",
         "rules_nodejs": "rules_nodejs@5.8.3",
-        "rules_python": "rules_python@1.5.3",
+        "rules_python": "rules_python@1.6.0",
         "bazel_skylib": "bazel_skylib@1.8.1",
         "rules_proto": "rules_proto@7.1.0",
         "aspect_rules_js": "aspect_rules_js@1.34.0",
@@ -941,7 +941,7 @@
         "rules_kotlin": "rules_kotlin@1.9.6",
         "rules_license": "rules_license@1.0.0",
         "rules_pkg": "rules_pkg@1.0.1",
-        "rules_python": "rules_python@1.5.3",
+        "rules_python": "rules_python@1.6.0",
         "rules_proto": "rules_proto@7.1.0",
         "rules_shell": "rules_shell@0.3.0",
         "platforms": "platforms@1.0.0",
@@ -1079,10 +1079,10 @@
         }
       }
     },
-    "rules_python@1.5.3": {
+    "rules_python@1.6.0": {
       "name": "rules_python",
-      "version": "1.5.3",
-      "key": "rules_python@1.5.3",
+      "version": "1.6.0",
+      "key": "rules_python@1.6.0",
       "repoName": "rules_python",
       "executionPlatformsToRegister": [],
       "toolchainsToRegister": [
@@ -1093,9 +1093,9 @@
         {
           "extensionBzlFile": "@rules_python//python/private:internal_deps.bzl",
           "extensionName": "internal_deps",
-          "usingModule": "rules_python@1.5.3",
+          "usingModule": "rules_python@1.6.0",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
+            "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
             "line": 16,
             "column": 30
           },
@@ -1125,9 +1125,9 @@
         {
           "extensionBzlFile": "@rules_python//python/extensions:python.bzl",
           "extensionName": "python",
-          "usingModule": "rules_python@1.5.3",
+          "usingModule": "rules_python@1.6.0",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
+            "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
             "line": 39,
             "column": 23
           },
@@ -1146,7 +1146,7 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
                 "line": 45,
                 "column": 17
               }
@@ -1158,9 +1158,9 @@
         {
           "extensionBzlFile": "@rules_python//python/extensions:pip.bzl",
           "extensionName": "pip",
-          "usingModule": "rules_python@1.5.3",
+          "usingModule": "rules_python@1.6.0",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
+            "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
             "line": 62,
             "column": 20
           },
@@ -1169,6 +1169,309 @@
           },
           "devImports": [],
           "tags": [
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "x86_64",
+                "config_settings": [
+                  "@platforms//cpu:x86_64",
+                  "@platforms//os:linux",
+                  "//python/config_settings:_is_py_freethreaded_no"
+                ],
+                "env": {
+                  "platform_version": "0"
+                },
+                "marker": "",
+                "os_name": "linux",
+                "platform": "linux_x86_64",
+                "whl_abi_tags": [
+                  "abi3",
+                  "cp{major}{minor}"
+                ],
+                "whl_platform_tags": [
+                  "linux_x86_64",
+                  "manylinux_*_x86_64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 68,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "x86_64",
+                "config_settings": [
+                  "@platforms//cpu:x86_64",
+                  "@platforms//os:linux",
+                  "//python/config_settings:_is_py_freethreaded_yes"
+                ],
+                "env": {
+                  "platform_version": "0"
+                },
+                "marker": "python_version >= '3.13'",
+                "os_name": "linux",
+                "platform": "linux_x86_64_freethreaded",
+                "whl_abi_tags": [
+                  "cp{major}{minor}t"
+                ],
+                "whl_platform_tags": [
+                  "linux_x86_64",
+                  "manylinux_*_x86_64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 68,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "aarch64",
+                "config_settings": [
+                  "@platforms//cpu:aarch64",
+                  "@platforms//os:linux",
+                  "//python/config_settings:_is_py_freethreaded_no"
+                ],
+                "env": {
+                  "platform_version": "0"
+                },
+                "marker": "",
+                "os_name": "linux",
+                "platform": "linux_aarch64",
+                "whl_abi_tags": [
+                  "abi3",
+                  "cp{major}{minor}"
+                ],
+                "whl_platform_tags": [
+                  "linux_aarch64",
+                  "manylinux_*_aarch64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 68,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "aarch64",
+                "config_settings": [
+                  "@platforms//cpu:aarch64",
+                  "@platforms//os:linux",
+                  "//python/config_settings:_is_py_freethreaded_yes"
+                ],
+                "env": {
+                  "platform_version": "0"
+                },
+                "marker": "python_version >= '3.13'",
+                "os_name": "linux",
+                "platform": "linux_aarch64_freethreaded",
+                "whl_abi_tags": [
+                  "cp{major}{minor}t"
+                ],
+                "whl_platform_tags": [
+                  "linux_aarch64",
+                  "manylinux_*_aarch64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 68,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "aarch64",
+                "config_settings": [
+                  "@platforms//cpu:aarch64",
+                  "@platforms//os:osx",
+                  "//python/config_settings:_is_py_freethreaded_no"
+                ],
+                "env": {
+                  "platform_version": "14.0"
+                },
+                "marker": "",
+                "os_name": "osx",
+                "platform": "osx_aarch64",
+                "whl_abi_tags": [
+                  "abi3",
+                  "cp{major}{minor}"
+                ],
+                "whl_platform_tags": [
+                  "macosx_*_universal2",
+                  "macosx_*_arm64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 101,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "aarch64",
+                "config_settings": [
+                  "@platforms//cpu:aarch64",
+                  "@platforms//os:osx",
+                  "//python/config_settings:_is_py_freethreaded_yes"
+                ],
+                "env": {
+                  "platform_version": "14.0"
+                },
+                "marker": "python_version >= '3.13'",
+                "os_name": "osx",
+                "platform": "osx_aarch64_freethreaded",
+                "whl_abi_tags": [
+                  "cp{major}{minor}t"
+                ],
+                "whl_platform_tags": [
+                  "macosx_*_universal2",
+                  "macosx_*_arm64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 101,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "x86_64",
+                "config_settings": [
+                  "@platforms//cpu:x86_64",
+                  "@platforms//os:osx",
+                  "//python/config_settings:_is_py_freethreaded_no"
+                ],
+                "env": {
+                  "platform_version": "14.0"
+                },
+                "marker": "",
+                "os_name": "osx",
+                "platform": "osx_x86_64",
+                "whl_abi_tags": [
+                  "abi3",
+                  "cp{major}{minor}"
+                ],
+                "whl_platform_tags": [
+                  "macosx_*_universal2",
+                  "macosx_*_x86_64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 101,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "x86_64",
+                "config_settings": [
+                  "@platforms//cpu:x86_64",
+                  "@platforms//os:osx",
+                  "//python/config_settings:_is_py_freethreaded_yes"
+                ],
+                "env": {
+                  "platform_version": "14.0"
+                },
+                "marker": "python_version >= '3.13'",
+                "os_name": "osx",
+                "platform": "osx_x86_64_freethreaded",
+                "whl_abi_tags": [
+                  "cp{major}{minor}t"
+                ],
+                "whl_platform_tags": [
+                  "macosx_*_universal2",
+                  "macosx_*_x86_64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 101,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "x86_64",
+                "config_settings": [
+                  "@platforms//cpu:x86_64",
+                  "@platforms//os:windows",
+                  "//python/config_settings:_is_py_freethreaded_no"
+                ],
+                "env": {
+                  "platform_version": "0"
+                },
+                "marker": "",
+                "os_name": "windows",
+                "platform": "windows_x86_64",
+                "whl_abi_tags": [
+                  "abi3",
+                  "cp{major}{minor}"
+                ],
+                "whl_platform_tags": [
+                  "win_amd64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 142,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "arch_name": "x86_64",
+                "config_settings": [
+                  "@platforms//cpu:x86_64",
+                  "@platforms//os:windows",
+                  "//python/config_settings:_is_py_freethreaded_yes"
+                ],
+                "env": {
+                  "platform_version": "0"
+                },
+                "marker": "python_version >= '3.13'",
+                "os_name": "windows",
+                "platform": "windows_x86_64_freethreaded",
+                "whl_abi_tags": [
+                  "cp{major}{minor}t"
+                ],
+                "whl_platform_tags": [
+                  "win_amd64"
+                ]
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 142,
+                "column": 16
+              }
+            },
             {
               "tagName": "parse",
               "attributeValues": {
@@ -1184,8 +1487,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 63,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 170,
                 "column": 10
               }
             }
@@ -1196,10 +1499,10 @@
         {
           "extensionBzlFile": "@rules_python//python/uv:uv.bzl",
           "extensionName": "uv",
-          "usingModule": "rules_python@1.5.3",
+          "usingModule": "rules_python@1.6.0",
           "location": {
-            "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-            "line": 212,
+            "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+            "line": 329,
             "column": 19
           },
           "imports": {
@@ -1216,8 +1519,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 217,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 334,
                 "column": 11
               }
             },
@@ -1232,8 +1535,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 222,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 339,
                 "column": 11
               }
             },
@@ -1248,8 +1551,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 229,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 346,
                 "column": 11
               }
             },
@@ -1264,8 +1567,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 236,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 353,
                 "column": 11
               }
             },
@@ -1280,8 +1583,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 243,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 360,
                 "column": 11
               }
             },
@@ -1296,8 +1599,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 250,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 367,
                 "column": 11
               }
             },
@@ -1312,8 +1615,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 257,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 374,
                 "column": 11
               }
             },
@@ -1328,8 +1631,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 264,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 381,
                 "column": 11
               }
             },
@@ -1344,8 +1647,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 271,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 388,
                 "column": 11
               }
             },
@@ -1360,8 +1663,8 @@
               },
               "devDependency": false,
               "location": {
-                "file": "https://bcr.bazel.build/modules/rules_python/1.5.3/MODULE.bazel",
-                "line": 278,
+                "file": "https://bcr.bazel.build/modules/rules_python/1.6.0/MODULE.bazel",
+                "line": 395,
                 "column": 11
               }
             }
@@ -1385,12 +1688,12 @@
         "ruleClassName": "http_archive",
         "attributes": {
           "urls": [
-            "https://github.com/bazel-contrib/rules_python/releases/download/1.5.3/rules_python-1.5.3.tar.gz"
+            "https://github.com/bazel-contrib/rules_python/releases/download/1.6.0/rules_python-1.6.0.tar.gz"
           ],
-          "integrity": "sha256-Chzv77SntVD7C0P1TfZ9balbe6NSY3Zp5GyYf2mYb2o=",
-          "strip_prefix": "rules_python-1.5.3",
+          "integrity": "sha256-+n3SxrfWOzWFAo3YqQps+duDwzslCVnC7ntYOmwTDhI=",
+          "strip_prefix": "rules_python-1.6.0",
           "remote_patches": {
-            "https://bcr.bazel.build/modules/rules_python/1.5.3/patches/module_dot_bazel_version.patch": "sha256-jo/Cyz5Xby2PFO5B8+N+5ALISy+YugcxuwTs9fcQNgs="
+            "https://bcr.bazel.build/modules/rules_python/1.6.0/patches/module_dot_bazel_version.patch": "sha256-CiTntaCaGEk51xdy5/zDV5iK0Q6GiNk5ZctRyiH+m9g="
           },
           "remote_patch_strip": 1
         }
@@ -1865,7 +2168,7 @@
         "rules_java": "rules_java@8.6.1",
         "rules_license": "rules_license@1.0.0",
         "rules_proto": "rules_proto@7.1.0",
-        "rules_python": "rules_python@1.5.3",
+        "rules_python": "rules_python@1.6.0",
         "buildozer": "buildozer@6.4.0.2",
         "platforms": "platforms@1.0.0",
         "com_google_protobuf": "protobuf@32.0",
@@ -2925,7 +3228,7 @@
         "platforms": "platforms@1.0.0",
         "bazel_skylib": "bazel_skylib@1.8.1",
         "rules_java": "rules_java@8.6.1",
-        "rules_python": "rules_python@1.5.3",
+        "rules_python": "rules_python@1.6.0",
         "rules_cc": "rules_cc@0.2.1",
         "rules_proto": "rules_proto@7.1.0",
         "bazel_tools": "bazel_tools@_",
@@ -2957,7 +3260,7 @@
       "extensionUsages": [],
       "deps": {
         "rules_license": "rules_license@1.0.0",
-        "rules_python": "rules_python@1.5.3",
+        "rules_python": "rules_python@1.6.0",
         "bazel_skylib": "bazel_skylib@1.8.1",
         "bazel_tools": "bazel_tools@_",
         "local_config_platform": "local_config_platform@_"
@@ -3040,7 +3343,7 @@
         "apple_support": "apple_support@1.15.1",
         "rules_cc": "rules_cc@0.2.1",
         "abseil-cpp": "abseil-cpp@20250512.1",
-        "rules_python": "rules_python@1.5.3",
+        "rules_python": "rules_python@1.6.0",
         "pybind11_bazel": "pybind11_bazel@2.12.0",
         "bazel_tools": "bazel_tools@_",
         "local_config_platform": "local_config_platform@_"
@@ -3548,7 +3851,7 @@
         "bazel_skylib": "bazel_skylib@1.8.1",
         "platforms": "platforms@1.0.0",
         "rules_cc": "rules_cc@0.2.1",
-        "rules_python": "rules_python@1.5.3",
+        "rules_python": "rules_python@1.6.0",
         "bazel_tools": "bazel_tools@_",
         "local_config_platform": "local_config_platform@_"
       },
@@ -3654,7 +3957,7 @@
     },
     "//:repos.bzl%init": {
       "general": {
-        "bzlTransitiveDigest": "vlmZEZ5I8aavR6wl+W0oeVROrhyDnCEhsJEG6asHqfI=",
+        "bzlTransitiveDigest": "G58K3vpA4WF9NmsJb+j1av4tjsI2wKXZxFx5HmWDd6U=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
