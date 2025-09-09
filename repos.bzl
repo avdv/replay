@@ -15,7 +15,7 @@ _ghc_in_nix = tag_class(
     attrs = {
         "ghc_opts": attr.string_list(),
         "version": attr.string(),
-    }
+    },
 )
 
 def _handle_ghc_in_nix(mctx, attrs):
@@ -48,7 +48,7 @@ def _init_impl(mctx):
 
     for mod in mctx.modules:
         for ghc_in_nix in mod.tags.ghc_in_nix:
-           _handle_ghc_in_nix(mctx, ghc_in_nix)
+            _handle_ghc_in_nix(mctx, ghc_in_nix)
 
     nixpkgs_cc_configure(
         name = "nixpkgs_cc",
@@ -70,7 +70,7 @@ def _init_impl(mctx):
         sha256 = "6f763feca1a7526f30177a7a685b9c24beee5ca6df9c47358e885b02e50ffe61",
         strip_prefix = "gazelle_haskell_modules-f28c6c7c1f2e154dbeb67956f97220e4359a6b59",
         url = "https://github.com/tweag/gazelle_haskell_modules/archive/f28c6c7c1f2e154dbeb67956f97220e4359a6b59.tar.gz",
-    )            
+    )
 
 init = module_extension(
     implementation = _init_impl,
