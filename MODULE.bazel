@@ -45,7 +45,7 @@ GHC_OPTS = [
     "-XOverloadedStrings",
 ]
 
-GHC_VERSION = "9.4.8"
+GHC_VERSION = "9.8.4"
 
 nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
 nix_repo.file(
@@ -131,3 +131,7 @@ use_repo(
     "org_golang_x_net",
     "org_golang_x_tools",
 )
+
+empty_repo = use_repo_rule("//:utils.bzl", "empty_repo")
+
+empty_repo(name = "nixpkgs_python3_toolchain")
