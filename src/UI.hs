@@ -153,10 +153,9 @@ rerun =
     state <- gets formState
     let text = state ^. input
         opt = state.options
-        cmdargs = opt.command : args opt
     out <- liftIO do
       let stdin = state ^. stdInput
-      runExceptT $ getOutput cmdargs (DT.unpack text) stdin
+      runExceptT $ getOutput opt.command (args opt) (DT.unpack text) stdin
     modify $
       updateFormState
         ( case out of
