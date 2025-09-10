@@ -2,7 +2,7 @@
   description = "replay";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nix-filter.url = "github:numtide/nix-filter";
     flake-compat = {
       url = "github:edolstra/flake-compat";
