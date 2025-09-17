@@ -1,0 +1,37 @@
+RULES_NIXPKGS_VER = "0.13.0"
+
+RULES_NIXPKGS_INTEGRITY = "sha256-MCcfe9OA5OIOTXEywySUbE/bwx6+C7tmOKD2GjfnQ5c="
+
+bazel_dep(name = "rules_nixpkgs_core", version = RULES_NIXPKGS_VER)
+bazel_dep(name = "rules_nixpkgs_cc")
+bazel_dep(name = "rules_nixpkgs_python")
+bazel_dep(name = "rules_nixpkgs_posix")
+bazel_dep(name = "rules_nixpkgs_go")
+
+archive_override(
+    module_name = "rules_nixpkgs_cc",
+    integrity = RULES_NIXPKGS_INTEGRITY,
+    strip_prefix = "rules_nixpkgs-%s/toolchains/cc" % RULES_NIXPKGS_VER,
+    urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{VER}/rules_nixpkgs-{VER}.tar.gz".format(VER = RULES_NIXPKGS_VER)],
+)
+
+archive_override(
+    module_name = "rules_nixpkgs_go",
+    integrity = RULES_NIXPKGS_INTEGRITY,
+    strip_prefix = "rules_nixpkgs-%s/toolchains/go" % RULES_NIXPKGS_VER,
+    urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{VER}/rules_nixpkgs-{VER}.tar.gz".format(VER = RULES_NIXPKGS_VER)],
+)
+
+archive_override(
+    module_name = "rules_nixpkgs_python",
+    integrity = RULES_NIXPKGS_INTEGRITY,
+    strip_prefix = "rules_nixpkgs-%s/toolchains/python" % RULES_NIXPKGS_VER,
+    urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{VER}/rules_nixpkgs-{VER}.tar.gz".format(VER = RULES_NIXPKGS_VER)],
+)
+
+archive_override(
+    module_name = "rules_nixpkgs_posix",
+    integrity = RULES_NIXPKGS_INTEGRITY,
+    strip_prefix = "rules_nixpkgs-%s/toolchains/posix" % RULES_NIXPKGS_VER,
+    urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{VER}/rules_nixpkgs-{VER}.tar.gz".format(VER = RULES_NIXPKGS_VER)],
+)

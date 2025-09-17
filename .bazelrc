@@ -2,9 +2,8 @@ common --enable_bzlmod
 
 # enable common config by default (needed for renovate to ignore the file: registry)
 common --config common
-common:common --registry=file:///%workspace%/registry
 
-common --enable_platform_specific_config
+common:common --enable_platform_specific_config
 
 common:macos --repo_env=BAZEL_USE_CPP_ONLY_TOOLCHAIN=1
 
