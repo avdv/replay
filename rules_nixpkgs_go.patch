@@ -1,0 +1,20 @@
+diff --git a/toolchains/go/go.bzl b/toolchains/go/go.bzl
+index a40c2ac..33f84fd 100644
+--- a/toolchains/go/go.bzl
++++ b/toolchains/go/go.bzl
+@@ -143,6 +143,7 @@ def declare_toolchains(host_goos, host_goarch):
+             goarch = p.goarch,
+             sdk = "@{sdk_repo}//:go_sdk",
+             builder = "@{sdk_repo}//:builder",
++            pack = "@{sdk_repo}//:pack",
+             link_flags = link_flags,
+             cgo_link_flags = cgo_link_flags,
+             visibility = ["//visibility:public"],
+@@ -249,6 +250,7 @@ go_tool_binary(
+     srcs = ["@{rules_go}//go/tools/builders:builder_srcs"],
+     ldflags = "-X main.rulesGoStdlibPrefix=@{rules_go}//stdlib:" if TOOL_BINARY_NEEDS_STDLIB_PREFIX else None,
+     sdk = ":go_sdk",
++    out_pack = "pack",
+ )
+ 
+ package_list(
