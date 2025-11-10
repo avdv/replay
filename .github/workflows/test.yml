@@ -58,8 +58,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macos-13
           - macos-14
+          - macos-15-intel
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -82,8 +82,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macos-13
           - macos-14
+          - macos-15-intel
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0

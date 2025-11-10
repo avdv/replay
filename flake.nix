@@ -129,7 +129,7 @@
             pre-commit-check = pre-commit-hooks.lib.${system}.run {
               src = ./.;
               hooks = {
-                actionlint.enable = true;
+                actionlint.enable = false; # FIXME needs actionlint >= 1.7.8 to accept macos-15-intel
                 hlint.enable = true;
                 nixpkgs-fmt.enable = true;
                 ormolu = {
