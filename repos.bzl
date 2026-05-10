@@ -58,6 +58,7 @@ def _init_impl(mctx):
     nixpkgs_go_configure(
         repository = nix_toolchains.repository,
         rules_go_repo_name = "io_bazel_rules_go",
+        attribute_path = "go_1_24",
         register = False,
     )
     nixpkgs_python_configure(
