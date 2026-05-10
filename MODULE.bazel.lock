@@ -248,8 +248,8 @@
     },
     "//:repos.bzl%init": {
       "general": {
-        "bzlTransitiveDigest": "uo5ZZ2PQLQAgbu594kOER8ubjDjC5R6NxNKBA1dD3ms=",
-        "usagesDigest": "BY5AKzkFQlBqvsLQrUJJ/gEEaIGQZNwH7r/KJADpv/M=",
+        "bzlTransitiveDigest": "YH0D2V5RrIVTdyH4UqMAIvFi4GD9WSgJgtkJ4m1bVXg=",
+        "usagesDigest": "R7iqkSwF8WGNEzC2cqYy+DIIIDARczfOok5YGTb0VOE=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -258,7 +258,7 @@
             "bzlFile": "@@//:ghc_inside_nix.bzl",
             "ruleClassName": "_ghc_nixpkgs_haskell_toolchain",
             "attributes": {
-              "version": "9.8.4",
+              "version": "9.10.3",
               "static_runtime": false,
               "fully_static_link": false,
               "ghcopts": [
@@ -364,7 +364,7 @@
               "nixopts": [
                 "--argstr",
                 "goAttrPath",
-                "go"
+                "go_1_24"
               ],
               "quiet": false,
               "fail_not_supported": true
@@ -9667,7 +9667,7 @@
     "@@rules_haskell_nix~//extensions:nix_haskell_toolchains.bzl%nix_haskell_toolchains": {
       "general": {
         "bzlTransitiveDigest": "I9s1ySBuUbmWYoQktkUpEpbxgk3/vVyiW435FMRBLwk=",
-        "usagesDigest": "hRl6slPYSHCQI26ZXG0Fm8QKdKbAM/8YdHn6LYYPYs0=",
+        "usagesDigest": "dW+yoGoLVzt+rYxW5SLLa9S4Gr5y5U1YXW94lhil+K0=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -9687,7 +9687,7 @@
               "nixopts": [
                 "--argstr",
                 "ghcVersion",
-                "9.8.4"
+                "9.10.3"
               ],
               "quiet": false,
               "fail_not_supported": true
@@ -9707,7 +9707,7 @@
               "nixopts": [
                 "--argstr",
                 "ghcVersion",
-                "9.8.4"
+                "9.10.3"
               ],
               "quiet": false,
               "fail_not_supported": true
@@ -9767,7 +9767,7 @@
                 "(\"replay\", \"0.2\", 0)": "str(Label(\"@replay_0.2_0_ghc_nixpkgs//:bin/ghc\"))",
                 "(\"rules_haskell_nix\", \"1.0\", 0)": "str(Label(\"@rules_haskell_nix_1.0_0_ghc_nixpkgs//:bin/ghc\"))"
               },
-              "toolchains": "{(\"replay\", \"0.2\", 0): {\"version\": \"9.8.4\", \"name\": \"replay_0.2_0\", \"static_runtime\": False, \"fully_static_link\": False, \"ghcopts\": [\"-Wall\", \"-Wcompat\", \"-Widentities\", \"-Wincomplete-record-updates\", \"-Wincomplete-uni-patterns\", \"-Wpartial-fields\", \"-Wredundant-constraints\", \"-Werror\", \"-XNamedFieldPuns\", \"-XOverloadedRecordDot\", \"-XOverloadedStrings\"], \"compiler_flags_select\": {}, \"haddock_flags\": [], \"repl_ghci_args\": [], \"cabalopts\": [], \"locale_archive\": \"\", \"locale\": \"C.UTF-8\", \"exec_constraints\": [], \"target_constraints\": []}, (\"rules_haskell_nix\", \"1.0\", 0): {\"version\": \"9.4.6\", \"name\": \"rules_haskell_nix_1.0_0\", \"static_runtime\": False, \"fully_static_link\": False, \"ghcopts\": [], \"compiler_flags_select\": {}, \"haddock_flags\": [], \"repl_ghci_args\": [], \"cabalopts\": [], \"locale_archive\": \"\", \"locale\": \"C.UTF-8\", \"exec_constraints\": [], \"target_constraints\": []}}",
+              "toolchains": "{(\"replay\", \"0.2\", 0): {\"version\": \"9.10.3\", \"name\": \"replay_0.2_0\", \"static_runtime\": False, \"fully_static_link\": False, \"ghcopts\": [\"-Wall\", \"-Wcompat\", \"-Widentities\", \"-Wincomplete-record-updates\", \"-Wincomplete-uni-patterns\", \"-Wpartial-fields\", \"-Wredundant-constraints\", \"-Werror\", \"-XNamedFieldPuns\", \"-XOverloadedRecordDot\", \"-XOverloadedStrings\"], \"compiler_flags_select\": {}, \"haddock_flags\": [], \"repl_ghci_args\": [], \"cabalopts\": [], \"locale_archive\": \"\", \"locale\": \"C.UTF-8\", \"exec_constraints\": [], \"target_constraints\": []}, (\"rules_haskell_nix\", \"1.0\", 0): {\"version\": \"9.4.6\", \"name\": \"rules_haskell_nix_1.0_0\", \"static_runtime\": False, \"fully_static_link\": False, \"ghcopts\": [], \"compiler_flags_select\": {}, \"haddock_flags\": [], \"repl_ghci_args\": [], \"cabalopts\": [], \"locale_archive\": \"\", \"locale\": \"C.UTF-8\", \"exec_constraints\": [], \"target_constraints\": []}}",
               "toolchain_ids": "[(\"replay\", \"0.2\", 0), (\"rules_haskell_nix\", \"1.0\", 0)]"
             }
           },
@@ -9873,7 +9873,7 @@
     },
     "@@rules_haskell_nix~//private:declare_toolchains.bzl%declare_nix_toolchains": {
       "general": {
-        "bzlTransitiveDigest": "JypmDiuU7nSmKDA4TPfOu+H4dnU0KsiDJ1JsABFdlXU=",
+        "bzlTransitiveDigest": "Sx7iPSeq4ng4+VAiZUfN0iZiAiGQ+XZWktFC9L/xCNo=",
         "usagesDigest": "hMmmqf6+56HtNs5iOEHiJ1sT4uTYTS2jbhGDM8Obrh4=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -9883,7 +9883,7 @@
             "bzlFile": "@@rules_haskell_nix~//:nixpkgs.bzl",
             "ruleClassName": "_ghc_nixpkgs_haskell_toolchain",
             "attributes": {
-              "version": "9.8.4",
+              "version": "9.10.3",
               "static_runtime": false,
               "fully_static_link": false,
               "ghcopts": [
