@@ -9,7 +9,7 @@ on:
 jobs:
   check-and-update:
     name: "🔍 Check and update hash"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -57,7 +57,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-26.04
           - macos-14
           - macos-15-intel
     runs-on: ${{ matrix.os }}
@@ -81,7 +81,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-26.04
           - macos-14
           - macos-15-intel
     runs-on: ${{ matrix.os }}
