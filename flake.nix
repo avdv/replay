@@ -176,7 +176,7 @@
               hooks = {
                 actionlint.enable = false; # FIXME needs actionlint >= 1.7.8 to accept macos-15-intel
                 hlint.enable = true;
-                nixpkgs-fmt.enable = true;
+                nixfmt.enable = true;
                 ormolu = {
                   enable = true;
                   entry =
