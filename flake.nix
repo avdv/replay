@@ -16,214 +16,249 @@
     };
   };
 
-  outputs = { self, nixpkgs, nix-filter, flake-utils, pre-commit-hooks, bazel-central-registry, ... }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nix-filter,
+      flake-utils,
+      pre-commit-hooks,
+      bazel-central-registry,
+      ...
+    }:
     with flake-utils.lib.system;
-    flake-utils.lib.eachSystem [ aarch64-darwin aarch64-linux x86_64-darwin x86_64-linux ]
-      (system:
-        let
-          inherit (nixpkgs) lib;
-          pkgs = import nixpkgs { inherit system; };
-          filter = nix-filter.lib;
-          bazel = pkgs.bazel_7;
-          ghcVersion = builtins.head (builtins.match ''.*[ \n]*GHC_VERSION *= *"([^ \n]+)".*'' (builtins.readFile ./ghc.bzl));
-          ghc = import ./nix/ghc.nix
-            {
-              inherit ghcVersion pkgs;
-            };
-          ghcWithHoogle = import ./nix/ghc.nix
-            {
-              inherit ghcVersion pkgs;
-              withHoogle = true;
-            };
-          nativeBuildInputs = with pkgs; [
+    flake-utils.lib.eachSystem [ aarch64-darwin aarch64-linux x86_64-darwin x86_64-linux ] (
+      system:
+      let
+        inherit (nixpkgs) lib;
+        pkgs = import nixpkgs { inherit system; };
+        filter = nix-filter.lib;
+        bazel = pkgs.bazel_7;
+        ghcVersion = builtins.head (
+          builtins.match ''.*[ \n]*GHC_VERSION *= *"([^ \n]+)".*'' (builtins.readFile ./ghc.bzl)
+        );
+        ghc = import ./nix/ghc.nix {
+          inherit ghcVersion pkgs;
+        };
+        ghcWithHoogle = import ./nix/ghc.nix {
+          inherit ghcVersion pkgs;
+          withHoogle = true;
+        };
+        nativeBuildInputs =
+          with pkgs;
+          [
             git
             installShellFiles
             python3
-          ] ++ lib.optionals stdenv.isDarwin [
+          ]
+          ++ lib.optionals stdenv.isDarwin [
             stdenv.cc.bintools
             darwin.cctools
           ];
-          # work around https://github.com/bazelbuild/bazel/issues/5900
-          # inside a nix shell, TMPDIR is set to /tmp/nix-shell.XXXXX but that interferes with
-          # incompatible_sandbox_hermetic_tmp being flipped in Bazel 7+
-          bazel-wrapper = pkgs.writeShellScriptBin "bazel" ''
-            unset TMPDIR TMP
-            exec ${bazel}/bin/bazel "$@"
+        # work around https://github.com/bazelbuild/bazel/issues/5900
+        # inside a nix shell, TMPDIR is set to /tmp/nix-shell.XXXXX but that interferes with
+        # incompatible_sandbox_hermetic_tmp being flipped in Bazel 7+
+        bazel-wrapper = pkgs.writeShellScriptBin "bazel" ''
+          unset TMPDIR TMP
+          exec ${bazel}/bin/bazel "$@"
+        '';
+        devTools =
+          let
+            inherit (pkgs)
+              bazel-watcher
+              buildifier
+              haskell-language-server
+              lib
+              ormolu
+              ;
+          in
+          [
+            bazel-wrapper
+            buildifier
+            ghcWithHoogle
+            haskell-language-server
+            ormolu
+          ]
+          ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
+
+        nixpkgs_python3_toolchain = pkgs.stdenvNoCC.mkDerivation {
+          name = "python3-toolchain";
+          dontUnpack = true;
+          dontPatch = true;
+          installPhase = ''
+            mkdir -p $out/{runtime,toolchains}
+            touch $out/WORKSPACE.bazel $out/BUILD.bazel
+            cat >$out/toolchains/BUILD.bazel <<'EOF'
+            load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
+            toolchain(
+                name = "runtime_toolchain",
+                toolchain = "//runtime:py_runtime_pair",
+                toolchain_type = "@rules_python//python:toolchain_type",
+                target_compatible_with = HOST_CONSTRAINTS,
+            )
+            EOF
+
+            cat >$out/runtime/BUILD.bazel <<'EOF'
+            load("@rules_python//python:py_runtime.bzl", "py_runtime")
+            load("@rules_python//python:py_runtime_pair.bzl", "py_runtime_pair")
+
+            py_runtime(
+                name = "runtime",
+                interpreter_path = "${lib.getExe pkgs.python3}",
+                stub_shebang = "#!/${lib.getExe pkgs.python3}",
+            )
+
+            py_runtime_pair(
+                name = "py_runtime_pair",
+                py3_runtime = ":runtime",
+            )
+            EOF
           '';
-          devTools = let inherit (pkgs) bazel-watcher buildifier haskell-language-server lib ormolu; in
-            [ bazel-wrapper buildifier ghcWithHoogle haskell-language-server ormolu ] ++ lib.optional (!bazel-watcher.meta.broken) bazel-watcher;
+        };
+      in
+      rec {
+        packages.replay = pkgs.buildBazelPackage {
+          pname = "replay";
+          version = with builtins; head (split "\n" (readFile ./VERSION));
+          src = filter {
+            root = self;
+            exclude = [
+              (filter.matchExt ".md")
+              ./.bazel-nix.rc # disable the nixpkgs toolchain inside nix
+              ./.envrc
+              ./.github
+              ./.hie-bios
+              ./flake.nix
+              ./flake.lock
+              ./hie.yaml
+              ./images
+              ./shell.nix
+            ];
+          };
 
-          nixpkgs_python3_toolchain = pkgs.stdenvNoCC.mkDerivation {
-            name = "python3-toolchain";
-            dontUnpack = true;
-            dontPatch = true;
+          removeRulesCC = false;
+
+          bazelFlags = [
+            "--override_repository=_main~_repo_rules~nixpkgs_python3_toolchain=${nixpkgs_python3_toolchain}"
+            "--extra_toolchains=@nixpkgs_python3_toolchain//toolchains:all"
+            "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain"
+            "--registry"
+            "file://${bazel-central-registry}"
+          ];
+
+          bazelBuildFlags = [
+            "--compilation_mode=opt" # optimize
+            "--verbose_failures"
+          ];
+
+          passthru = {
+            exePath = "/bin/replay";
+          };
+
+          bazel =
+            if pkgs.stdenv.isDarwin then
+              bazel.overrideAttrs (
+                final: prev: {
+                  patches = prev.patches ++ [ ./bazel_xcode_local.diff ];
+                }
+              )
+            else
+              bazel;
+
+          bazelTargets = [ "//:replay" ];
+
+          nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
+
+          fetchAttrs = {
+            preInstall = ''
+              # make all directories writable
+              find $bazelOut/external/ -type d -exec chmod --changes +w '{}' ';'
+            '';
+            sha256 = "sha256-G5DQNynJ3YQVNkxUBf0cHTyl34+SrT8ukYkJZC9lTQo=";
+          };
+
+          buildAttrs = {
+            preBuild = ''
+              patchShebangs $bazelOut/external/rules_haskell~*/haskell/private/ghc_wrapper.sh
+              rm -rf "$bazelOut/external/"*[~+]{local_config_cc,local_config_cc.marker}
+              rm -rf "$bazelOut/external/"*[~+]{local_config_cc_toolchains,local_config_cc_toolchains.marker}
+              rm -rf "$bazelOut/external/"*[~+]{local_config_sh,local_config_sh.marker}
+              rm -rf "$bazelOut/external/"*[~+]{local_jdk,local_jdk.marker}
+              rm -rf "$bazelOut/external/"*[~+]{local_config_xcode,local_config_xcode.marker}
+            '';
             installPhase = ''
-              mkdir -p $out/{runtime,toolchains}
-              touch $out/WORKSPACE.bazel $out/BUILD.bazel
-              cat >$out/toolchains/BUILD.bazel <<'EOF'
-              load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
-              toolchain(
-                  name = "runtime_toolchain",
-                  toolchain = "//runtime:py_runtime_pair",
-                  toolchain_type = "@rules_python//python:toolchain_type",
-                  target_compatible_with = HOST_CONSTRAINTS,
-              )
-              EOF
+              install -D -t $out/bin bazel-bin/replay
 
-              cat >$out/runtime/BUILD.bazel <<'EOF'
-              load("@rules_python//python:py_runtime.bzl", "py_runtime")
-              load("@rules_python//python:py_runtime_pair.bzl", "py_runtime_pair")
-
-              py_runtime(
-                  name = "runtime",
-                  interpreter_path = "${lib.getExe pkgs.python3}",
-                  stub_shebang = "#!/${lib.getExe pkgs.python3}",
-              )
-
-              py_runtime_pair(
-                  name = "py_runtime_pair",
-                  py3_runtime = ":runtime",
-              )
-              EOF
+              installShellCompletion --cmd replay \
+                 --bash <( bazel-bin/replay --bash-completion-script $out/bin/replay ) \
+                 --fish <( bazel-bin/replay --fish-completion-script $out/bin/replay ) \
+                 --zsh <( bazel-bin/replay --zsh-completion-script $out/bin/replay )
             '';
           };
-        in
-        rec {
-          packages.replay = pkgs.buildBazelPackage {
-            pname = "replay";
-            version = with builtins; head (split "\n" (readFile ./VERSION));
-            src = filter {
-              root = self;
-              exclude = [
-                (filter.matchExt ".md")
-                ./.bazel-nix.rc # disable the nixpkgs toolchain inside nix
-                ./.envrc
-                ./.github
-                ./.hie-bios
-                ./flake.nix
-                ./flake.lock
-                ./hie.yaml
-                ./images
-                ./shell.nix
-              ];
-            };
+        };
+        packages.default = packages.replay;
 
-            removeRulesCC = false;
+        apps.default = flake-utils.lib.mkApp { drv = defaultPackage; };
 
-            bazelFlags = [
-              "--override_repository=_main~_repo_rules~nixpkgs_python3_toolchain=${nixpkgs_python3_toolchain}"
-              "--extra_toolchains=@nixpkgs_python3_toolchain//toolchains:all"
-              "--extra_toolchains=@rules_haskell_nix_ghc_in_nix_toolchain//:toolchain"
-              "--registry"
-              "file://${bazel-central-registry}"
-            ];
-
-            bazelBuildFlags = [
-              "--compilation_mode=opt" # optimize
-              "--verbose_failures"
-            ];
-
-            passthru = {
-              exePath = "/bin/replay";
-            };
-
-            bazel =
-              if pkgs.stdenv.isDarwin then
-                bazel.overrideAttrs
-                  (final: prev: {
-                    patches = prev.patches ++ [ ./bazel_xcode_local.diff ];
-                  }) else
-                bazel;
-
-            bazelTargets = [ "//:replay" ];
-
-            nativeBuildInputs = nativeBuildInputs ++ [ ghc ];
-
-            fetchAttrs = {
-              preInstall = ''
-                # make all directories writable
-                find $bazelOut/external/ -type d -exec chmod --changes +w '{}' ';'
-              '';
-              sha256 = "sha256-G5DQNynJ3YQVNkxUBf0cHTyl34+SrT8ukYkJZC9lTQo=";
-            };
-
-            buildAttrs = {
-              preBuild = ''
-                patchShebangs $bazelOut/external/rules_haskell~*/haskell/private/ghc_wrapper.sh
-                rm -rf "$bazelOut/external/"*[~+]{local_config_cc,local_config_cc.marker}
-                rm -rf "$bazelOut/external/"*[~+]{local_config_cc_toolchains,local_config_cc_toolchains.marker}
-                rm -rf "$bazelOut/external/"*[~+]{local_config_sh,local_config_sh.marker}
-                rm -rf "$bazelOut/external/"*[~+]{local_jdk,local_jdk.marker}
-                rm -rf "$bazelOut/external/"*[~+]{local_config_xcode,local_config_xcode.marker}
-              '';
-              installPhase = ''
-                install -D -t $out/bin bazel-bin/replay
-
-                installShellCompletion --cmd replay \
-                   --bash <( bazel-bin/replay --bash-completion-script $out/bin/replay ) \
-                   --fish <( bazel-bin/replay --fish-completion-script $out/bin/replay ) \
-                   --zsh <( bazel-bin/replay --zsh-completion-script $out/bin/replay )
-              '';
-            };
-          };
-          packages.default = packages.replay;
-
-          apps.default = flake-utils.lib.mkApp { drv = defaultPackage; };
-
-          checks = {
-            pre-commit-check = pre-commit-hooks.lib.${system}.run {
-              src = ./.;
-              hooks = {
-                actionlint.enable = false; # FIXME needs actionlint >= 1.7.8 to accept macos-15-intel
-                hlint.enable = true;
-                nixfmt.enable = true;
-                ormolu = {
-                  enable = true;
-                  entry =
-                    let
-                      extensions = [
-                        "Haskell2010"
-                        "OverloadedRecordDot"
-                        "OverloadedStrings"
-                      ];
-                      packages = [ "microlens" ];
-                      args = pkgs.lib.escapeShellArgs
-                        (
-                          (pkgs.lib.concatMap (ext: [ "--ghc-opt" "-X${ext}" ]) extensions)
-                          ++ (pkgs.lib.concatMap (pkg: [ "--package" pkg ]) packages)
-                        );
-                    in
-                    "${pkgs.ormolu}/bin/ormolu --mode inplace ${args} --no-cabal --no-dot-ormolu --package microlens";
-                };
-                shellcheck.enable = true;
-                buildifier = {
-                  enable = true;
-                  name = "buildifier";
-                  entry = "${pkgs.buildifier}/bin/buildifier -mode=fix -lint=fix";
-                  files = "^((WORKSPACE|BUILD)([.]bazel)?|.+[.]bzl|((.*[.])?MODULE|REPO)[.]bazel)$";
-
-                  # List of file types to run on (default: [ "file" ] (all files))
-                  # see also https://pre-commit.com/#filtering-files-with-types
-                  # You probably only need to specify one of `files` or `types`:
-                  #types = [ "text" "c" ];
-                };
+        checks = {
+          pre-commit-check = pre-commit-hooks.lib.${system}.run {
+            src = ./.;
+            hooks = {
+              actionlint.enable = false; # FIXME needs actionlint >= 1.7.8 to accept macos-15-intel
+              hlint.enable = true;
+              nixfmt.enable = true;
+              ormolu = {
+                enable = true;
+                entry =
+                  let
+                    extensions = [
+                      "Haskell2010"
+                      "OverloadedRecordDot"
+                      "OverloadedStrings"
+                    ];
+                    packages = [ "microlens" ];
+                    args = pkgs.lib.escapeShellArgs (
+                      (pkgs.lib.concatMap (ext: [
+                        "--ghc-opt"
+                        "-X${ext}"
+                      ]) extensions)
+                      ++ (pkgs.lib.concatMap (pkg: [
+                        "--package"
+                        pkg
+                      ]) packages)
+                    );
+                  in
+                  "${pkgs.ormolu}/bin/ormolu --mode inplace ${args} --no-cabal --no-dot-ormolu --package microlens";
               };
-              package = pkgs.prek;
+              shellcheck.enable = true;
+              buildifier = {
+                enable = true;
+                name = "buildifier";
+                entry = "${pkgs.buildifier}/bin/buildifier -mode=fix -lint=fix";
+                files = "^((WORKSPACE|BUILD)([.]bazel)?|.+[.]bzl|((.*[.])?MODULE|REPO)[.]bazel)$";
+
+                # List of file types to run on (default: [ "file" ] (all files))
+                # see also https://pre-commit.com/#filtering-files-with-types
+                # You probably only need to specify one of `files` or `types`:
+                #types = [ "text" "c" ];
+              };
             };
+            package = pkgs.prek;
           };
+        };
 
-          devShells.default = pkgs.mkShellNoCC {
-            shellHook = ''
-              ${checks.pre-commit-check.shellHook}
-            '';
-            inherit nativeBuildInputs;
-            packages = devTools;
-          };
+        devShells.default = pkgs.mkShellNoCC {
+          shellHook = ''
+            ${checks.pre-commit-check.shellHook}
+          '';
+          inherit nativeBuildInputs;
+          packages = devTools;
+        };
 
-          # compatibility for nix < 2.7.0
-          defaultApp = apps.default;
-          defaultPackage = packages.default;
-          devShell = devShells.default;
-        }
-      );
+        # compatibility for nix < 2.7.0
+        defaultApp = apps.default;
+        defaultPackage = packages.default;
+        devShell = devShells.default;
+      }
+    );
 }
