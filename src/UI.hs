@@ -46,7 +46,9 @@ import Brick.Widgets.Core
   )
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Debounce as Debounce
+import Control.Monad (forever, guard, when)
 import Control.Monad.Except
+import Control.Monad.IO.Class (liftIO)
 import Control.Monad.State (gets, modify)
 import Data.Foldable (traverse_)
 import qualified Data.List.NonEmpty as NE
@@ -151,10 +153,9 @@ rerun =
     state <- gets formState
     let text = state ^. input
         opt = state.options
-        cmdargs = opt.command : args opt
     out <- liftIO do
       let stdin = state ^. stdInput
-      runExceptT $ getOutput cmdargs (DT.unpack text) stdin
+      runExceptT $ getOutput opt.command (args opt) (DT.unpack text) stdin
     modify $
       updateFormState
         ( case out of
@@ -222,7 +223,7 @@ run opts@Options {useStdin} = do
           }
       f = mkForm (opts.prompt <> " ") initialState
       buildVty = do
-        tty <- openFd "/dev/tty" ReadWrite Nothing defaultFileFlags
+        tty <- openFd "/dev/tty" ReadWrite defaultFileFlags
         def <- Settings.defaultSettings
         V.mkVtyWithSettings Config.defaultConfig $
           def
