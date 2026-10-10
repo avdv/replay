@@ -18,8 +18,8 @@ archive_override(
 archive_override(
     module_name = "rules_nixpkgs_go",
     integrity = RULES_NIXPKGS_INTEGRITY,
-    patches = ["//:rules_nixpkgs_go-nixpkgs.patch"],
     patch_strip = 3,
+    patches = ["//:rules_nixpkgs_go-nixpkgs.patch"],
     strip_prefix = "rules_nixpkgs-%s/toolchains/go" % RULES_NIXPKGS_VER,
     urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{VER}/rules_nixpkgs-{VER}.tar.gz".format(VER = RULES_NIXPKGS_VER)],
 )
