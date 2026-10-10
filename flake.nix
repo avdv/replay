@@ -9,7 +9,10 @@
       flake = false;
     };
     flake-utils.url = "github:numtide/flake-utils";
-    pre-commit-hooks.url = "github:cachix/git-hooks.nix";
+    git-hooks = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:cachix/git-hooks.nix";
+    };
     bazel-central-registry = {
       url = "github:bazelbuild/bazel-central-registry";
       flake = false;
@@ -22,7 +25,7 @@
       nixpkgs,
       nix-filter,
       flake-utils,
-      pre-commit-hooks,
+      git-hooks,
       bazel-central-registry,
       ...
     }:
@@ -201,7 +204,7 @@
         apps.default = flake-utils.lib.mkApp { drv = defaultPackage; };
 
         checks = {
-          pre-commit-check = pre-commit-hooks.lib.${system}.run {
+          pre-commit-check = git-hooks.lib.${system}.run {
             src = ./.;
             hooks = {
               actionlint.enable = false; # FIXME needs actionlint >= 1.7.8 to accept macos-15-intel
