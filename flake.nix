@@ -9,7 +9,10 @@
       flake = false;
     };
     flake-utils.url = "github:numtide/flake-utils";
-    git-hooks.url = "github:cachix/git-hooks.nix";
+    git-hooks = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:cachix/git-hooks.nix";
+    };
     bazel-central-registry = {
       url = "github:bazelbuild/bazel-central-registry";
       flake = false;
