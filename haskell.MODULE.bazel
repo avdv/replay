@@ -13,6 +13,10 @@ bazel_dep(
 archive_override(
     module_name = "rules_haskell_nix",
     integrity = RULES_HASKELL_INTEGRITY,
+    patch_strip = 2,
+    # rules_nixpkgs_core generates a build file loading @rules_license when used in rules_haskell_nix, we need to add
+    # a dependency in rules_haskell_nix to make rules_license visible
+    patches = ["//:rules_haskell_nix-rules_license.patch"],
     strip_prefix = "rules_haskell-%s/rules_haskell_nix" % RULES_HASKELL_VER,
     urls = ["https://github.com/tweag/rules_haskell/releases/download/v{VER}/rules_haskell-{VER}.tar.gz".format(VER = RULES_HASKELL_VER)],
 )

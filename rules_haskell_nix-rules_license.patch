@@ -1,0 +1,12 @@
+diff '--color=auto' -ur a/rules_haskell_nix/MODULE.bazel b/rules_haskell_nix/MODULE.bazel
+--- a/rules_haskell_nix/MODULE.bazel	2026-10-10 18:53:07.840641744 +0200
++++ b/rules_haskell_nix/MODULE.bazel	2026-10-10 18:54:37.644654117 +0200
+@@ -24,7 +24,7 @@
+     version = "0.0.8",
+ )
+ bazel_dep(name = "bazel_skylib", version = "1.5.0")
+-
++bazel_dep(name = "rules_license", version = "0.0.7")
+ bazel_dep(name = "rules_go", version = "0.41.0", dev_dependency = True, repo_name = "io_bazel_rules_go")
+ 
+ non_module_deps = use_extension("//:non_module_deps.bzl", "non_module_deps")

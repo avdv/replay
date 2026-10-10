@@ -33,6 +33,7 @@
     "https://bcr.bazel.build/modules/bazel_features/1.28.0/MODULE.bazel": "4b4200e6cbf8fa335b2c3f43e1d6ef3e240319c33d43d60cc0fbd4b87ece299d",
     "https://bcr.bazel.build/modules/bazel_features/1.3.0/MODULE.bazel": "cdcafe83ec318cda34e02948e81d790aab8df7a929cec6f6969f13a489ccecd9",
     "https://bcr.bazel.build/modules/bazel_features/1.33.0/MODULE.bazel": "8b8dc9d2a4c88609409c3191165bccec0e4cb044cd7a72ccbe826583303459f6",
+    "https://bcr.bazel.build/modules/bazel_features/1.36.0/MODULE.bazel": "596cb62090b039caf1cad1d52a8bc35cf188ca9a4e279a828005e7ee49a1bec3",
     "https://bcr.bazel.build/modules/bazel_features/1.4.1/MODULE.bazel": "e45b6bb2350aff3e442ae1111c555e27eac1d915e77775f6fdc4b351b758b5d7",
     "https://bcr.bazel.build/modules/bazel_features/1.43.0/MODULE.bazel": "defa2226f06ba20550d6548c3a2ea2a7929634437a52973869c20c225450eb91",
     "https://bcr.bazel.build/modules/bazel_features/1.43.0/source.json": "1c4207dc858d6de0eecef30026793616bbf420c74aac27b6bad212534a730437",
@@ -167,8 +168,8 @@
     "https://bcr.bazel.build/modules/rules_license/1.0.0/MODULE.bazel": "a7fda60eefdf3d8c827262ba499957e4df06f659330bbe6cdbdb975b768bb65c",
     "https://bcr.bazel.build/modules/rules_license/1.0.0/source.json": "a52c89e54cc311196e478f8382df91c15f7a2bfdf4c6cd0e2675cc2ff0b56efb",
     "https://bcr.bazel.build/modules/rules_nixpkgs_core/0.12.0/MODULE.bazel": "28394dcd0494c82c587df6788fa3e34c3fa05b724993a5ed54b6f4a28d846808",
-    "https://bcr.bazel.build/modules/rules_nixpkgs_core/0.13.0/MODULE.bazel": "b826d994220017d44c8a4e55435c2c2e6b4733eaaff69fff65232e0010afcb7b",
-    "https://bcr.bazel.build/modules/rules_nixpkgs_core/0.13.0/source.json": "c542b96a9d6ab189bd1a65da43e6c7b8be5f1099876ffba35cd9d2275f82740e",
+    "https://bcr.bazel.build/modules/rules_nixpkgs_core/0.14.0/MODULE.bazel": "2ea6ec9bb89a76f2176161b83c471c63adebc8bd712fdd470d7848f55b016e0b",
+    "https://bcr.bazel.build/modules/rules_nixpkgs_core/0.14.0/source.json": "4278cc6a5dd983cddae852ab7ecad80240f4b8dd2dc1e49c8e6978df2e35a6ac",
     "https://bcr.bazel.build/modules/rules_nodejs/5.8.2/MODULE.bazel": "6bc03c8f37f69401b888023bf511cb6ee4781433b0cb56236b2e55a21e3a026a",
     "https://bcr.bazel.build/modules/rules_nodejs/5.8.3/MODULE.bazel": "9fac1897d2067a37693e47f48e11cdb386a455902313c85e9e46fe0aaaa2e4e1",
     "https://bcr.bazel.build/modules/rules_nodejs/5.8.3/source.json": "adc580471187345e43dd874d951a84d2256455fbeaedca539174f1e4ab49f9a4",
@@ -250,7 +251,7 @@
     },
     "//:repos.bzl%init": {
       "general": {
-        "bzlTransitiveDigest": "qviH4sqUx243QiQ+ejPdXFEmDJABHhkAYFnmjic+9mE=",
+        "bzlTransitiveDigest": "tFphTjxgFisTVuKtUQbXDE/7q7i7aUxhnRTZ6nfjETQ=",
         "usagesDigest": "R7iqkSwF8WGNEzC2cqYy+DIIIDARczfOok5YGTb0VOE=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -307,6 +308,7 @@
               "nix_file": "@@rules_nixpkgs_cc~//:cc.nix",
               "nix_file_deps": {},
               "nix_file_content": "",
+              "nix_license_path": "",
               "repository": "@@rules_nixpkgs_core~~nix_repo~nixpkgs//:nixpkgs",
               "repositories": {},
               "build_file_content": "exports_files(['CC_TOOLCHAIN_INFO'])",
@@ -360,6 +362,7 @@
               "nix_file": "@@rules_nixpkgs_go~//:go.nix",
               "nix_file_deps": {},
               "nix_file_content": "",
+              "nix_license_path": "",
               "repository": "@@rules_nixpkgs_core~~nix_repo~nixpkgs//:nixpkgs",
               "repositories": {},
               "build_file_content": "\nload(\"@io_bazel_rules_go//go/private/rules:binary.bzl\", \"go_tool_binary\")\nload(\"@io_bazel_rules_go//go/private/rules:sdk.bzl\", \"package_list\")\nload(\"@io_bazel_rules_go//go:def.bzl\", \"go_sdk\", \"RULES_GO_VERSION\")\nload(\"@go_sdk_helpers//:go_sdk.bzl\", \"go_sdk_for_arch\")\nload(\":go_version.bzl\", \"go_version\")\n\npackage(default_visibility = [\"//visibility:public\"])\n\ngo_sdk_for_arch(go_version)\n\n# rules_go >= 0.42.0 requires a stdlib prefix\nTOOL_BINARY_NEEDS_STDLIB_PREFIX = (int(RULES_GO_VERSION.split(\".\")[0]) > 0) or (int(RULES_GO_VERSION.split(\".\")[1]) >= 42)\nNone if TOOL_BINARY_NEEDS_STDLIB_PREFIX else     print(\"WARNING: rules_go %s is deprecated and support will soon be removed. Upgrade to rules_go >= 0.42.0. See https://github.com/tweag/rules_nixpkgs/issues/421 for more information.\" % (RULES_GO_VERSION))\n\nfilegroup(\n    name = \"headers\",\n    srcs = glob([\"pkg/include/*.h\"]),\n)\n\nfilegroup(\n    name = \"srcs\",\n    srcs = glob([\"src/**\"]),\n)\n\nfilegroup(\n    name = \"tools\",\n    srcs = glob([\"pkg/tool/**\", \"bin/gofmt*\"])\n)\n\ngo_tool_binary(\n    name = \"builder\",\n    srcs = [\"@io_bazel_rules_go//go/tools/builders:builder_srcs\"],\n    ldflags = \"-X main.rulesGoStdlibPrefix=@io_bazel_rules_go//stdlib:\" if TOOL_BINARY_NEEDS_STDLIB_PREFIX else None,\n    sdk = \":go_sdk\",\n    out_pack = \"_pack\",\n)\n\n[\n    config_setting(\n        name = \"is_{os}_{arch}\".format(os = os, arch = arch),\n        constraint_values = [\n            \"@platforms//os:{os}\".format(os = os),\n            \"@platforms//cpu:{arch}\".format(arch = arch),\n        ],\n    )\n    for os, arch in [(\"linux\", \"x86_64\"), (\"macos\", \"x86_64\"), (\"macos\", \"aarch64\")]\n]\n\nfilegroup(\n    name = \"pack_exe\",\n    srcs =\n      select({\n        \":is_linux_x86_64\": [\"pkg/tool/linux_amd64/pack\"],\n        \":is_macos_x86_64\": [\"pkg/tool/darwin_amd64/pack\"],\n        \":is_macos_aarch64\": [\"pkg/tool/darwin_arm64/pack\"],\n      }),\n)\n\npackage_list(\n    name = \"package_list\",\n    srcs = [\":srcs\"],\n    root_file = \"ROOT\",\n    out = \"packages.txt\",\n)\n\nfilegroup(\n    name = \"files\",\n    srcs = glob([\n        \"bin/go*\",\n        \"src/**\",\n        \"pkg/**\",\n    ]),\n)\n\nexports_files(\n    [\"lib/time/zoneinfo.zip\"],\n    visibility = [\"//visibility:public\"],\n)\n",
@@ -388,6 +391,7 @@
               "attribute_path": "",
               "nix_file_deps": {},
               "nix_file_content": "\nwith import <nixpkgs> { config = {}; overlays = []; };\nlet\n  addShebang = true;\n  interpreterPath = \"${python3}/bin/python\";\n  shebangLine = interpreter: writers.makeScriptWriter { inherit interpreter; } \"shebang\" \"\";\nin\nrunCommand \"bazel-nixpkgs-python-toolchain\"\n  { executable = false;\n    # Pointless to do this on a remote machine.\n    preferLocalBuild = true;\n    allowSubstitutes = false;\n  }\n  ''\n    n=$out/BUILD.bazel\n    mkdir -p \"$(dirname \"$n\")/bin\"\n    ln -s ${interpreterPath} $out/bin/python\n\n    cat >>$n <<EOF\n    py_runtime(\n        name = \"runtime\",\n        interpreter_path = \"${interpreterPath}\",\n        python_version = \"PY3\",\n        ${lib.optionalString addShebang ''\n          stub_shebang = \"$(cat ${shebangLine interpreterPath})\",\n        ''}\n        visibility = [\"//visibility:public\"],\n    )\n    exports_files([\"bin/python\"])\n    EOF\n  ''\n",
+              "nix_license_path": "",
               "repository": "@@rules_nixpkgs_core~~nix_repo~nixpkgs//:nixpkgs",
               "repositories": {},
               "build_file_content": "",
@@ -848,7 +852,7 @@
     },
     "@@aspect_rules_js~//npm:extensions.bzl%npm": {
       "general": {
-        "bzlTransitiveDigest": "B22AwjmUe8X0poHNbZrIkeuU/1ecvz7BELVd2yfcxg8=",
+        "bzlTransitiveDigest": "1x+GntLzSXNjYVT5vLxLNqjP+mc7EOAtq8cWjZzSAXo=",
         "usagesDigest": "NhXDF2IWoWH5xRdiiY7fL5ZdqNvoI8bMEK3lmw/AeJY=",
         "recordedFileInputs": {
           "@@rules_haskell~//haskell/asterius/npm/pnpm-lock.yaml": "a3afe4cae2d9d052ea54c036bd05214695f0686448bf9775e5532c2bfa1836a1"
@@ -9395,7 +9399,7 @@
     },
     "@@aspect_rules_js~//npm:extensions.bzl%pnpm": {
       "general": {
-        "bzlTransitiveDigest": "B22AwjmUe8X0poHNbZrIkeuU/1ecvz7BELVd2yfcxg8=",
+        "bzlTransitiveDigest": "1x+GntLzSXNjYVT5vLxLNqjP+mc7EOAtq8cWjZzSAXo=",
         "usagesDigest": "XMTQ1uilTFo4IMIPCJPyd4vKfVrCXrVd23JoC81YlUk=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -9523,7 +9527,7 @@
     },
     "@@rules_apple~//apple:apple.bzl%provisioning_profile_repository_extension": {
       "general": {
-        "bzlTransitiveDigest": "r1hbe5mpK+axSfhxJ5nE304g8f0cw/bK2a9uwlMVhRk=",
+        "bzlTransitiveDigest": "8TvISLo2P2RhkI0rK/tzEkqIqvZIjXqy13otGeUjCiI=",
         "usagesDigest": "cLx5XGjlbSDOpyA053y/jlr4GcaXFVTeHQic6eyG38E=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -9620,8 +9624,8 @@
     },
     "@@rules_haskell_nix~//:non_module_deps.bzl%non_module_deps": {
       "general": {
-        "bzlTransitiveDigest": "f5OUzEV/QkPPgPjv3H7o/YWTgfTS7/qs8khuu/+Z8WM=",
-        "usagesDigest": "uFklI0TRXr9gVx7d9jfkbhNfXGLBlPBEiVMbbMiOL+0=",
+        "bzlTransitiveDigest": "P88r2VDlK+83lMr9alGINUG1F5JyJWPR14cT55r41bY=",
+        "usagesDigest": "MiuKNjju1Hjw16YIMxTko+Lf1TFRee4DkaO5cHvygeQ=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -9668,7 +9672,7 @@
     },
     "@@rules_haskell_nix~//extensions:nix_haskell_toolchains.bzl%nix_haskell_toolchains": {
       "general": {
-        "bzlTransitiveDigest": "I9s1ySBuUbmWYoQktkUpEpbxgk3/vVyiW435FMRBLwk=",
+        "bzlTransitiveDigest": "7wbWPkHNOrrIPRYQGetgR/atKdDIpLWJ16hSDpmqb9M=",
         "usagesDigest": "dW+yoGoLVzt+rYxW5SLLa9S4Gr5y5U1YXW94lhil+K0=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -9683,6 +9687,7 @@
               "nix_file": "@@//nix:ghc.nix",
               "nix_file_deps": {},
               "nix_file_content": "",
+              "nix_license_path": "",
               "repository": "@@rules_nixpkgs_core~~nix_repo~nixpkgs//:nixpkgs",
               "repositories": {},
               "build_file_content": "",
@@ -9703,6 +9708,7 @@
               "attribute_path": "",
               "nix_file_deps": {},
               "nix_file_content": "\nwith import <nixpkgs> { config = {}; overlays = []; };\n\nlet\n  # `packages` might include lists, e.g. `stdenv.initialPath` is a list itself,\n  # so we need to flatten `packages`.\n  flatten = builtins.concatMap (x: if builtins.isList x then x else [x]);\n  env = buildEnv {\n    name = \"posix-toolchain\";\n    paths = flatten [ stdenv.initialPath ];\n  };\n  cmd_glob = \"${env}/bin/*\";\n  os = if stdenv.isDarwin then \"osx\" else \"linux\";\nin\n\nrunCommand \"bazel-nixpkgs-posix-toolchain\"\n  { executable = false;\n    # Pointless to do this on a remote machine.\n    preferLocalBuild = true;\n    allowSubstitutes = false;\n  }\n  ''\n    n=$out/nixpkgs_sh_posix.bzl\n    mkdir -p \"$(dirname \"$n\")\"\n\n    cat >>$n <<EOF\n    load(\"@rules_sh//sh:posix.bzl\", \"posix\", \"sh_posix_toolchain\")\n    discovered = {\n    EOF\n    for cmd in ${cmd_glob}; do\n        if [[ -x $cmd ]]; then\n            echo \"    '$(basename $cmd)': '$cmd',\" >>$n\n        fi\n    done\n    cat >>$n <<EOF\n    }\n    def create_posix_toolchain():\n        sh_posix_toolchain(\n            name = \"nixpkgs_sh_posix\",\n            cmds = {\n                cmd: discovered[cmd]\n                for cmd in posix.commands\n                if cmd in discovered\n            }\n        )\n    EOF\n  ''\n",
+              "nix_license_path": "",
               "repository": "@@rules_nixpkgs_core~~nix_repo~nixpkgs//:nixpkgs",
               "repositories": {},
               "build_file_content": "\nload(\"//:nixpkgs_sh_posix.bzl\", \"create_posix_toolchain\")\ncreate_posix_toolchain()\n",
@@ -9730,6 +9736,7 @@
               "attribute_path": "",
               "nix_file_deps": {},
               "nix_file_content": "with import <nixpkgs> {}; haskell.packages.ghc946.ghc",
+              "nix_license_path": "",
               "repository": "@@rules_haskell_nix~~non_module_deps~nixpkgs_default//:nixpkgs_default",
               "repositories": {},
               "build_file_content": "",
@@ -9746,6 +9753,7 @@
               "attribute_path": "",
               "nix_file_deps": {},
               "nix_file_content": "\nwith import <nixpkgs> { config = {}; overlays = []; };\n\nlet\n  # `packages` might include lists, e.g. `stdenv.initialPath` is a list itself,\n  # so we need to flatten `packages`.\n  flatten = builtins.concatMap (x: if builtins.isList x then x else [x]);\n  env = buildEnv {\n    name = \"posix-toolchain\";\n    paths = flatten [ stdenv.initialPath ];\n  };\n  cmd_glob = \"${env}/bin/*\";\n  os = if stdenv.isDarwin then \"osx\" else \"linux\";\nin\n\nrunCommand \"bazel-nixpkgs-posix-toolchain\"\n  { executable = false;\n    # Pointless to do this on a remote machine.\n    preferLocalBuild = true;\n    allowSubstitutes = false;\n  }\n  ''\n    n=$out/nixpkgs_sh_posix.bzl\n    mkdir -p \"$(dirname \"$n\")\"\n\n    cat >>$n <<EOF\n    load(\"@rules_sh//sh:posix.bzl\", \"posix\", \"sh_posix_toolchain\")\n    discovered = {\n    EOF\n    for cmd in ${cmd_glob}; do\n        if [[ -x $cmd ]]; then\n            echo \"    '$(basename $cmd)': '$cmd',\" >>$n\n        fi\n    done\n    cat >>$n <<EOF\n    }\n    def create_posix_toolchain():\n        sh_posix_toolchain(\n            name = \"nixpkgs_sh_posix\",\n            cmds = {\n                cmd: discovered[cmd]\n                for cmd in posix.commands\n                if cmd in discovered\n            }\n        )\n    EOF\n  ''\n",
+              "nix_license_path": "",
               "repository": "@@rules_haskell_nix~~non_module_deps~nixpkgs_default//:nixpkgs_default",
               "repositories": {},
               "build_file_content": "\nload(\"//:nixpkgs_sh_posix.bzl\", \"create_posix_toolchain\")\ncreate_posix_toolchain()\n",
@@ -9875,7 +9883,7 @@
     },
     "@@rules_haskell_nix~//private:declare_toolchains.bzl%declare_nix_toolchains": {
       "general": {
-        "bzlTransitiveDigest": "Sx7iPSeq4ng4+VAiZUfN0iZiAiGQ+XZWktFC9L/xCNo=",
+        "bzlTransitiveDigest": "cByCXrL5dqVYX0PuXnEBORFOvNoO5uko94LJVmo8Eqw=",
         "usagesDigest": "hMmmqf6+56HtNs5iOEHiJ1sT4uTYTS2jbhGDM8Obrh4=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -10287,7 +10295,7 @@
     },
     "@@rules_haskell~//extensions:rules_haskell_dependencies.bzl%rules_haskell_dependencies": {
       "general": {
-        "bzlTransitiveDigest": "0ohkyPrIqz5E4BfCjCxThwSGcc7Ooid2D1iUIsF3PxE=",
+        "bzlTransitiveDigest": "+O/NvXpJm2SHon/fF0ZNejxo5NezaaeuP5iNrV4bxWs=",
         "usagesDigest": "+YkgTrqm3VGr41/QlmunHpNs530+M/EVfn+AlUb8LiI=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -10420,6 +10428,16 @@
           ],
           [
             "rules_cc~",
+            "cc_compatibility_proxy",
+            "rules_cc~~compatibility_proxy~cc_compatibility_proxy"
+          ],
+          [
+            "rules_cc~",
+            "rules_cc",
+            "rules_cc~"
+          ],
+          [
+            "rules_cc~~compatibility_proxy~cc_compatibility_proxy",
             "rules_cc",
             "rules_cc~"
           ],
@@ -10468,7 +10486,7 @@
     },
     "@@rules_haskell~//extensions:stack_snapshot.bzl%stack_snapshot": {
       "general": {
-        "bzlTransitiveDigest": "tG0Tj9grPZGp8dap4NAmdiFq1VQu0WoSem7/l78M63E=",
+        "bzlTransitiveDigest": "fWST9xyKxnGGBZXmIvySaOrqgeNlB+DvUufZ26dpBM0=",
         "usagesDigest": "8KrECdea3S+/CFluGgYU0VyhvbydV/HZavjsEdP6NAU=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -10541,6 +10559,16 @@
           ],
           [
             "rules_cc~",
+            "cc_compatibility_proxy",
+            "rules_cc~~compatibility_proxy~cc_compatibility_proxy"
+          ],
+          [
+            "rules_cc~",
+            "rules_cc",
+            "rules_cc~"
+          ],
+          [
+            "rules_cc~~compatibility_proxy~cc_compatibility_proxy",
             "rules_cc",
             "rules_cc~"
           ],
@@ -10584,7 +10612,7 @@
     },
     "@@rules_haskell~//haskell/asterius:extension.bzl%rules_haskell_asterius": {
       "general": {
-        "bzlTransitiveDigest": "+flqI9qTOfNqMMrAP6hrJXoe9rx6J8g7QKpbUynEOnA=",
+        "bzlTransitiveDigest": "ddt7lg4m60xq5ZdztOnr8RAwVbsEDTOe0XD3e1YWVes=",
         "usagesDigest": "Qe17m3VndgQvwDbLrcuntfFTYKpF1WUOO3OSQ6C3K9Q=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -10751,8 +10779,8 @@
     },
     "@@rules_nixpkgs_core~//extensions:repository.bzl%nix_repo": {
       "general": {
-        "bzlTransitiveDigest": "dTTtWNdwe7E4j77oKh1mHI1qtdxfaVSGSZa1oPf2QjU=",
-        "usagesDigest": "ROtY/ou1XtRSXrrN4OSz6xBI+Vv0sSi0Sx2UXfG02BU=",
+        "bzlTransitiveDigest": "b8aBhrmRe3WiFZX+KAHyYDNt0l41nDsBWf/fs0VDhv0=",
+        "usagesDigest": "XYlPQBuj6LVLtcxC10axQ5FZX7HInnNh3BDlDkEroN0=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},

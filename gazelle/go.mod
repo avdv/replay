@@ -5,9 +5,9 @@ go 1.22.9
 toolchain go1.24.6
 
 require (
-	github.com/bazelbuild/bazel-gazelle v0.45.0
-	github.com/bazelbuild/buildtools v0.0.0-20240918101019-be1c24cc9a44
-	github.com/bazelbuild/rules_go v0.55.1
+	github.com/bazelbuild/bazel-gazelle v0.47.0
+	github.com/bazelbuild/buildtools v0.0.0-20250930140053-2eb4fccefb52
+	github.com/bazelbuild/rules_go v0.58.3
 )
 
 require (

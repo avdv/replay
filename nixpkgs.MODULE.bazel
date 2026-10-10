@@ -1,6 +1,6 @@
-RULES_NIXPKGS_VER = "0.13.0"
+RULES_NIXPKGS_VER = "0.14.0"
 
-RULES_NIXPKGS_INTEGRITY = "sha256-MCcfe9OA5OIOTXEywySUbE/bwx6+C7tmOKD2GjfnQ5c="
+RULES_NIXPKGS_INTEGRITY = "sha256-/XnW6Botm848+R+rEzCK3wvhlZ1sZ2oXxwmvmLyoAec="
 
 bazel_dep(name = "rules_nixpkgs_core", version = RULES_NIXPKGS_VER)
 bazel_dep(name = "rules_nixpkgs_cc")
@@ -18,8 +18,8 @@ archive_override(
 archive_override(
     module_name = "rules_nixpkgs_go",
     integrity = RULES_NIXPKGS_INTEGRITY,
-    patches = ["//:rules_nixpkgs_go-nixpkgs.patch"],
     patch_strip = 3,
+    patches = ["//:rules_nixpkgs_go-nixpkgs.patch"],
     strip_prefix = "rules_nixpkgs-%s/toolchains/go" % RULES_NIXPKGS_VER,
     urls = ["https://github.com/tweag/rules_nixpkgs/releases/download/v{VER}/rules_nixpkgs-{VER}.tar.gz".format(VER = RULES_NIXPKGS_VER)],
 )
