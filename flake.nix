@@ -208,6 +208,7 @@
                   #types = [ "text" "c" ];
                 };
               };
+              package = pkgs.prek;
             };
           };
 
