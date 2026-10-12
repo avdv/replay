@@ -7,6 +7,7 @@ common:common --enable_platform_specific_config
 
 common:macos --repo_env=BAZEL_USE_CPP_ONLY_TOOLCHAIN=1
 
+build:ci --lockfile_mode=error
 build:ci --loading_phase_threads=1
 build:ci --jobs=2
 build:ci --verbose_failures
