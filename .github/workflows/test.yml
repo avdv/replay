@@ -40,13 +40,24 @@ jobs:
       if: github.event_name == 'pull_request' && github.repository == 'avdv/replay'
       run: |-
         nix develop --command .github/update-hash replay.deps
-        echo exit="$( git diff --quiet flake.nix ; echo $? )" >> "$GITHUB_OUTPUT"
+        if ! git diff --quiet flake.nix; then
+          git commit -m 'Update replay.deps hash' flake.nix
+          echo exit=1 >> "$GITHUB_OUTPUT"
+        else
+          echo exit=0 >> "$GITHUB_OUTPUT"
+        fi
+    - name: Update Bazel Lockfile
+      run: |-
+        nix develop --command bazel mod tidy
+        nix develop --command buildifier MODULE.bazel
+        if ! git diff --quiet MODULE.bazel.lock; then
+          git commit -m 'Update Bazel Lockfile' MODULE.bazel.lock
+        fi
     - name: Push changes to PR
       if: steps.hash-update.outputs.exit != '0'
       env:
         GH_HEAD_REF: ${{ github.head_ref }}
       run: |-
-        git commit -m 'Update replay.deps hash' flake.nix
         git push origin "HEAD:$GH_HEAD_REF"
         exit 1
 
