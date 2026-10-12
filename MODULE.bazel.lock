@@ -486,34 +486,6 @@
         ]
       }
     },
-    "@@apple_support~//crosstool:setup.bzl%apple_cc_configure_extension": {
-      "general": {
-        "bzlTransitiveDigest": "ltCGFbl/LQQZXn/LEMXfKX7pGwyqNiOCHcmiQW0tmjM=",
-        "usagesDigest": "0sv83SRsyI6lGvOdlpRn0tc9RjvaEXPpa1yYtUlWLWk=",
-        "recordedFileInputs": {},
-        "recordedDirentsInputs": {},
-        "envVariables": {},
-        "generatedRepoSpecs": {
-          "local_config_apple_cc_toolchains": {
-            "bzlFile": "@@apple_support~//crosstool:setup.bzl",
-            "ruleClassName": "_apple_cc_autoconf_toolchains",
-            "attributes": {}
-          },
-          "local_config_apple_cc": {
-            "bzlFile": "@@apple_support~//crosstool:setup.bzl",
-            "ruleClassName": "_apple_cc_autoconf",
-            "attributes": {}
-          }
-        },
-        "recordedRepoMappingEntries": [
-          [
-            "apple_support~",
-            "bazel_tools",
-            "bazel_tools"
-          ]
-        ]
-      }
-    },
     "@@aspect_bazel_lib~//lib:extensions.bzl%toolchains": {
       "general": {
         "bzlTransitiveDigest": "gjCsK2GBUbEU490/bhz9SKb61sQQufl4Sg/q9zwxkzY=",
@@ -850,7 +822,7 @@
     },
     "@@aspect_rules_js~//npm:extensions.bzl%npm": {
       "general": {
-        "bzlTransitiveDigest": "1x+GntLzSXNjYVT5vLxLNqjP+mc7EOAtq8cWjZzSAXo=",
+        "bzlTransitiveDigest": "OysIWKrntbMca1m3BgQAboy0tIpbOYbs/ewmDYwIGRs=",
         "usagesDigest": "NhXDF2IWoWH5xRdiiY7fL5ZdqNvoI8bMEK3lmw/AeJY=",
         "recordedFileInputs": {
           "@@rules_haskell~//haskell/asterius/npm/pnpm-lock.yaml": "a3afe4cae2d9d052ea54c036bd05214695f0686448bf9775e5532c2bfa1836a1"
@@ -9397,7 +9369,7 @@
     },
     "@@aspect_rules_js~//npm:extensions.bzl%pnpm": {
       "general": {
-        "bzlTransitiveDigest": "1x+GntLzSXNjYVT5vLxLNqjP+mc7EOAtq8cWjZzSAXo=",
+        "bzlTransitiveDigest": "OysIWKrntbMca1m3BgQAboy0tIpbOYbs/ewmDYwIGRs=",
         "usagesDigest": "XMTQ1uilTFo4IMIPCJPyd4vKfVrCXrVd23JoC81YlUk=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -9525,7 +9497,7 @@
     },
     "@@rules_apple~//apple:apple.bzl%provisioning_profile_repository_extension": {
       "general": {
-        "bzlTransitiveDigest": "8TvISLo2P2RhkI0rK/tzEkqIqvZIjXqy13otGeUjCiI=",
+        "bzlTransitiveDigest": "mkI7Zp4VbAxr+OhrdfZJtI51IdWrX6ZQ9GI95Cm7DnE=",
         "usagesDigest": "cLx5XGjlbSDOpyA053y/jlr4GcaXFVTeHQic6eyG38E=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -10293,7 +10265,7 @@
     },
     "@@rules_haskell~//extensions:rules_haskell_dependencies.bzl%rules_haskell_dependencies": {
       "general": {
-        "bzlTransitiveDigest": "+O/NvXpJm2SHon/fF0ZNejxo5NezaaeuP5iNrV4bxWs=",
+        "bzlTransitiveDigest": "aSb9hgup5wsJnK1dBovCNojW2PzS2OPGONz9js0kbho=",
         "usagesDigest": "+YkgTrqm3VGr41/QlmunHpNs530+M/EVfn+AlUb8LiI=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -10484,7 +10456,7 @@
     },
     "@@rules_haskell~//extensions:stack_snapshot.bzl%stack_snapshot": {
       "general": {
-        "bzlTransitiveDigest": "fWST9xyKxnGGBZXmIvySaOrqgeNlB+DvUufZ26dpBM0=",
+        "bzlTransitiveDigest": "rfYW831jHLiGLuXsSCl9KA5iRGS849saQPE/1Y9cV+E=",
         "usagesDigest": "8KrECdea3S+/CFluGgYU0VyhvbydV/HZavjsEdP6NAU=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -10610,7 +10582,7 @@
     },
     "@@rules_haskell~//haskell/asterius:extension.bzl%rules_haskell_asterius": {
       "general": {
-        "bzlTransitiveDigest": "ddt7lg4m60xq5ZdztOnr8RAwVbsEDTOe0XD3e1YWVes=",
+        "bzlTransitiveDigest": "wiKOHqwq5Tnkdab8EqXzwBaTUt1NwfuKyIuGZByhE58=",
         "usagesDigest": "Qe17m3VndgQvwDbLrcuntfFTYKpF1WUOO3OSQ6C3K9Q=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
