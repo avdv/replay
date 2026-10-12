@@ -48,8 +48,7 @@ jobs:
         fi
     - name: Update Bazel Lockfile
       run: |-
-        nix develop --command bazel mod tidy
-        nix develop --command buildifier MODULE.bazel
+        nix develop --command bazel mod deps --lockfile_mode=update
         if ! git diff --quiet MODULE.bazel.lock; then
           git commit -m 'Update Bazel Lockfile' MODULE.bazel.lock
         fi
