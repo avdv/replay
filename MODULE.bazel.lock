@@ -10884,7 +10884,7 @@
     "@@rules_python~//python/uv:uv.bzl%uv": {
       "general": {
         "bzlTransitiveDigest": "S+xBgikGrbBoyB7HlR3JhfOc0nzM0SmeCF2hRCHcTXQ=",
-        "usagesDigest": "vvFdc2yyJRs5CHilSlzdnFRS5rhjTulQe7lF/l7yNi0=",
+        "usagesDigest": "xDVT2banDcBPBpig7ZtTBJIPKURrtHJrh/16FcLO2BI=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
