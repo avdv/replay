@@ -2,7 +2,7 @@ module github.com/tweag/gazelle_haskell_modules
 
 go 1.24.12
 
-toolchain go1.24.13
+toolchain go1.27.2
 
 require (
 	github.com/bazelbuild/bazel-gazelle v0.54.0
