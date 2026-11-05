@@ -68,9 +68,9 @@ def _init_impl(mctx):
 
     http_archive(
         name = "io_tweag_gazelle_haskell_modules",
-        sha256 = "9b2a789fe67f812ec65796a356ca6d441dde328d9699928f37b2da5529b14cc2",
-        strip_prefix = "gazelle_haskell_modules-54699c8a9e4b488fab2f38cd7d960a43cc25a05c",
-        url = "https://github.com/tweag/gazelle_haskell_modules/archive/54699c8a9e4b488fab2f38cd7d960a43cc25a05c.tar.gz",
+        sha256 = "5478a564c3ccb390353860e225b05fe70f1d28055091b92f0ea0e1a0c2225cde",
+        strip_prefix = "gazelle_haskell_modules-a9efbc99a56a45f63f683e37d90ee5896e722366",
+        url = "https://github.com/tweag/gazelle_haskell_modules/archive/a9efbc99a56a45f63f683e37d90ee5896e722366.tar.gz",
     )
 
 init = module_extension(
