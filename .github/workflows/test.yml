@@ -13,6 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
+        # Check out the actual PR head instead of the synthetic merge commit
+        # that actions/checkout uses for pull_request events. Otherwise commits
+        # created below and pushed back to the PR branch would include that
+        # merge commit.
+        ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.pull_request.number) || github.ref }}
         fetch-depth: 42
         persist-credentials: false
     - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # 31.11.3
@@ -32,8 +37,6 @@ jobs:
     - name: Update bazel-central-registry flake input
       if: github.event.pull_request.user.login == 'renovate[bot]' && github.repository == 'avdv/replay'
       run: |-
-        git switch -c pr-branch ${{ github.event.pull_request.head.sha }}
-
         nix flake lock --update-input bazel-central-registry --commit-lock-file
     - name: Update replay.deps hash
       id: hash-update
@@ -53,11 +56,22 @@ jobs:
           git commit -m 'Update Bazel Lockfile' MODULE.bazel.lock
         fi
     - name: Push changes to PR
-      if: steps.hash-update.outputs.exit != '0'
+      if: >-
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        steps.hash-update.outputs.exit == '1'
       env:
         GH_HEAD_REF: ${{ github.head_ref }}
       run: |-
         git push origin "HEAD:$GH_HEAD_REF"
+        exit 1
+    - name: Fail if changes cannot be pushed to a fork
+      if: >-
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name != github.repository &&
+        steps.hash-update.outputs.exit == '1'
+      run: |-
+        echo "::error::This pull request comes from a fork, so the updated replay.deps hash cannot be pushed. Please run '.github/update-hash replay.deps' locally and commit the result."
         exit 1
 
   test-package:
